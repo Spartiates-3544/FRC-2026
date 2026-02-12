@@ -1,0 +1,16 @@
+# Protections des merges/PR
+
+# Dossier mentor: un mentor (et un lead ne peut pas, car pas owner ici)
+/src/main/java/frc/mentor/ @Spartiates-3544/mentor
+
+# Code robot: une approbation, soit mentor soit lead-programmer
+/src/main/java/frc/robot/ @Spartiates-3544/mentor @Spartiates-3544/lead-programmer
+
+# Deploy (PathPlanner): une approbation soit mentor soit lead-programmer
+/src/main/deploy/ @Spartiates-3544/mentor @Spartiates-3544/lead-programmer
+
+# Docs: n’importe quel programmeur (ou lead/mentor aussi)
+/docs/ @Spartiates-3544/programmer @Spartiates-3544/mentor @Spartiates-3544/lead-programmer
+
+# Catch-all: au minimum lead-programmer ou mentor pour tout le reste
+* @Spartiates-3544/lead-programmer @Spartiates-3544/mentor
