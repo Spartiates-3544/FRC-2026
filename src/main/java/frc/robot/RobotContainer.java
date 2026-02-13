@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import frc.mentor.logging.ExtendedLogger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
