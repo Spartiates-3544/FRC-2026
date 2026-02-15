@@ -1,4 +1,4 @@
-package frc.mentor.logic;
+package frc.mentor.utils;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -14,7 +14,6 @@ import java.util.function.DoubleUnaryOperator;
 public final class MathUtils {
   private MathUtils() {
   }
-
   /**
    * Force une valeur à rester dans une plage [lo, hi].
    *
@@ -22,9 +21,12 @@ public final class MathUtils {
    * - clamp(12, 0, 10) -> 10
    * - clamp(-2, 0, 10) -> 0
    *
-   * @param x  valeur à limiter
-   * @param lo minimum
-   * @param hi maximum
+   * @param x
+   *          valeur à limiter
+   * @param lo
+   *          minimum
+   * @param hi
+   *          maximum
    * @return x ramené dans [lo, hi]
    */
   public static double clamp(double x, double lo, double hi) {
@@ -38,7 +40,8 @@ public final class MathUtils {
    * Parce que les angles "bouclent": 181° c'est presque pareil que -179°.
    * Sans wrap, on peut avoir des énormes sauts et des calculs faux.
    *
-   * @param a angle en radians
+   * @param a
+   *          angle en radians
    * @return angle équivalent, entre (-pi, +pi]
    */
   public static double wrapRad(double a) {
@@ -51,8 +54,10 @@ public final class MathUtils {
    * Exemple:
    * - a = 179°, b = -179° -> diff ~ 2° (pas 358°)
    *
-   * @param a angle A (rad)
-   * @param b angle B (rad)
+   * @param a
+   *          angle A (rad)
+   * @param b
+   *          angle B (rad)
    * @return différence signée la plus courte (rad)
    */
   public static double angleDiffRad(double a, double b) {
@@ -67,9 +72,12 @@ public final class MathUtils {
    * - 1.0 -> retourne b
    * - 0.5 -> au milieu (dans le sens le plus court)
    *
-   * @param a angle départ (rad)
-   * @param b angle cible (rad)
-   * @param t fraction (souvent 0..1)
+   * @param a
+   *          angle départ (rad)
+   * @param b
+   *          angle cible (rad)
+   * @param t
+   *          fraction (souvent 0..1)
    * @return angle interpolé (rad), wrapé
    */
   public static double angleLerpRad(double a, double b, double t) {
@@ -84,9 +92,12 @@ public final class MathUtils {
    * Exemple: tu veux aller de 0 à 10, mais maxDelta=2:
    * - 0 -> 2 -> 4 -> 6 -> 8 -> 10
    *
-   * @param curr     valeur actuelle
-   * @param target   valeur désirée
-   * @param maxDelta changement max autorisé (par appel)
+   * @param curr
+   *          valeur actuelle
+   * @param target
+   *          valeur désirée
+   * @param maxDelta
+   *          changement max autorisé (par appel)
    * @return nouvelle valeur (un pas vers target)
    */
   public static double rateLimit(double curr, double target, double maxDelta) {
@@ -99,13 +110,56 @@ public final class MathUtils {
   }
 
   /**
+   * Wrap un angle en degrés dans (-180, 180].
+   *
+   * Ça sert quand tu veux comparer des angles en degrés (ex: blind spot turret),
+   * sans te faire avoir par le wrap 180/-180.
+   *
+   * @param deg
+   *          angle en degrés
+   * @return angle équivalent wrapé en degrés (-180, 180]
+   */
+  public static double wrapDeg(double deg) {
+    return Math.toDegrees(wrapRad(Math.toRadians(deg)));
+  }
+
+  /**
+   * Vérifie si un angle (deg) est dans une bande [center - halfWidth, center + halfWidth],
+   * en tenant compte du wrap -180/180.
+   *
+   * Si halfWidthDeg &lt;= 0, la bande est considérée comme désactivée.
+   *
+   * @param deg
+   *          angle à tester (deg)
+   * @param centerDeg
+   *          centre de la bande (deg)
+   * @param halfWidthDeg
+   *          demi-largeur de la bande (deg)
+   * @return true si deg est dans la bande
+   */
+  public static boolean inBandDeg(double deg, double centerDeg, double halfWidthDeg) {
+    if (halfWidthDeg <= 0.0)
+      return false;
+    double d = wrapDeg(deg - centerDeg);
+    return Math.abs(d) <= halfWidthDeg;
+  }
+
+  // -------------------------
+  // minimisation
+  // -------------------------
+
+  /**
    * Résultat "Bracket": un petit intervalle [a, b] qui contient
    * probablement le minimum, plus le meilleur point trouvé.
    *
-   * @param a     borne gauche
-   * @param b     borne droite
-   * @param xBest x qui a donné le plus petit f(x) pendant l'échantillonnage
-   * @param fBest valeur f(xBest)
+   * @param a
+   *          borne gauche
+   * @param b
+   *          borne droite
+   * @param xBest
+   *          x qui a donné le plus petit f(x) pendant l'échantillonnage
+   * @param fBest
+   *          valeur f(xBest)
    */
   public static record Bracket(double a, double b, double xBest, double fBest) {
   }
@@ -118,10 +172,14 @@ public final class MathUtils {
    * - on prend le point où f(x) est le plus petit
    * - on retourne un petit intervalle autour (point avant / point après)
    *
-   * @param lo borne basse
-   * @param hi borne haute
-   * @param n  nombre de tests (min 3)
-   * @param f  fonction qu'on veut minimiser
+   * @param lo
+   *          borne basse
+   * @param hi
+   *          borne haute
+   * @param n
+   *          nombre de tests (min 3)
+   * @param f
+   *          fonction qu'on veut minimiser
    * @return un Bracket [a,b] + meilleur point observé
    */
   public static Bracket bracketFromSamples(double lo, double hi, int n, DoubleUnaryOperator f) {
@@ -165,8 +223,10 @@ public final class MathUtils {
   /**
    * Résultat d'une minimisation: le meilleur x et sa valeur f(x).
    *
-   * @param x  meilleur x trouvé
-   * @param fx f(x)
+   * @param x
+   *          meilleur x trouvé
+   * @param fx
+   *          f(x)
    */
   public static record MinResult(double x, double fx) {
   }
@@ -179,10 +239,14 @@ public final class MathUtils {
    * - ça marche super bien si f(x) descend puis remonte (un seul creux)
    * - plus iters est grand, plus c'est précis (mais plus lent)
    *
-   * @param f     fonction à minimiser
-   * @param a     borne gauche
-   * @param b     borne droite
-   * @param iters nombre d'itérations (min 1)
+   * @param f
+   *          fonction à minimiser
+   * @param a
+   *          borne gauche
+   * @param b
+   *          borne droite
+   * @param iters
+   *          nombre d'itérations (min 1)
    * @return MinResult(x, f(x)) pour le meilleur point trouvé
    */
   public static MinResult goldenSectionMinimize(DoubleUnaryOperator f, double a, double b, int iters) {
