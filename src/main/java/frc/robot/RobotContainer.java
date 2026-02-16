@@ -16,6 +16,7 @@ import frc.mentor.robot.Records;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 // import frc.robot.subsystems.ShooterSubsystem; // futur
+import frc.robot.subsystems.ExampleSubsystem;
 
 public class RobotContainer {
     private final double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
@@ -35,6 +36,8 @@ public class RobotContainer {
 
     // Futur:
     // private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain, SHOOTER_DEFAULTS);
+    @SuppressWarnings("unused")
+    private final ExampleSubsystem example = new ExampleSubsystem();
 
     public RobotContainer() {
         configureBindings();
