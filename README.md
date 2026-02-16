@@ -1,4 +1,3 @@
-```md
 # FRC-2026 — Code Robot Équipe 3544 (WPILib Java)
 
 Stack technique :
