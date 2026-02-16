@@ -4,6 +4,8 @@ package frc.mentor.logic;
 import frc.mentor.robot.Config;
 import frc.mentor.robot.Records;
 
+// TODO: UPDATE POUR QUE ÇA FONCTIONNE AVEC DES TUNABLES
+
 /**
  * <p>
  * Tuning live des {@link Records.ShooterParams} via NetworkTables.
