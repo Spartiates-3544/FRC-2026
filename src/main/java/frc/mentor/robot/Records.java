@@ -1,9 +1,11 @@
 // frc/mentor/robot/Records.java
 package frc.mentor.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
  * <p>
@@ -268,6 +270,38 @@ public final class Records {
                         Translation2d velXY,
                         double omegaRadS,
                         Translation2d accelXY) {
+        
+                
+                /**
+                 * Construire un nouveau RobotState à partir de la position du robot.
+                 * @param robotPose
+                 *                    position du robot sur le terrain.
+                 * @param speed
+                 *                    vitesse du robot sur le terrain.
+                 * @param acceleration
+                 *                    accélération XY (m/s^2) du robot sur le terrain.
+                 * @return
+                 *                    un objet RobotState représentant l'état actuel du robot.
+                 */
+                public static RobotState fromRobotPose(Pose2d robotPose, ChassisSpeeds speed, Translation2d acceleration) {
+                        Translation2d speed2d = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+                        return new RobotState(robotPose.getTranslation(), robotPose.getRotation(), speed2d, speed.omegaRadiansPerSecond, acceleration);  
+                }
+
+                /**
+                 * Construire un nouveau RobotState à partir de la position du robot,
+                 * en considérant que son accélération est nulle.
+                 * @param robotPose
+                 *                    position du robot sur le terrain.
+                 * @param speed
+                 *                    vitesse du robot sur le terrain.
+                 * @return 
+                 *                    un objet RobotState représentant l'état actuel du robot.
+                 */
+                public static RobotState fromRobotPose(Pose2d robotPose, ChassisSpeeds speed) {
+                        Translation2d speed2d = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
+                        return new RobotState(robotPose.getTranslation(), robotPose.getRotation(), speed2d, speed.omegaRadiansPerSecond, Translation2d.kZero);  
+                }
         }
 
         /**
