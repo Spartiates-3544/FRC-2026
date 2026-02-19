@@ -1,14 +1,12 @@
-// frc/mentor/logic/BallisticSolver.java
-package frc.mentor.logic;
+package frc.lib.logic;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import frc.lib.robot.Records;
+import frc.lib.utils.MathUtils;
 
 import java.util.function.DoubleUnaryOperator;
-
-import frc.mentor.robot.Records;
-import frc.mentor.utils.MathUtils;
 
 /**
  * <p>

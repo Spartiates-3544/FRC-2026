@@ -1,4 +1,4 @@
-package frc.mentor.logging;
+package frc.lib.logging;
 
 import java.lang.annotation.*;
 import java.lang.reflect.Field;
@@ -11,7 +11,7 @@ import edu.wpi.first.units.Measure;
 
 /**
  * <p>
- * Logger simple pour les jeunes qui wrap DogLog.
+ * Logger simple qui wrap DogLog.
  * </p>
  *
  * Objectif:

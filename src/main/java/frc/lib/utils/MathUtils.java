@@ -1,4 +1,4 @@
-package frc.mentor.utils;
+package frc.lib.utils;
 
 import java.util.function.DoubleUnaryOperator;
 

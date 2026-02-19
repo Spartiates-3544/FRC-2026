@@ -9,8 +9,8 @@ Stack technique :
 
 Objectif : robot prêt pour le **shoot-on-the-move** (balistique + latency), avec une séparation claire entre :
 
-- **`frc.mentor/`** : librairie mentor (logique avancée, testable, réutilisable d'années en années)
-- **`frc.robot/`** : code étudiant (subsystems/commands simple, lisible, débuggable et tunable)
+- **`frc.lib/`** : librairie interne (logique avancée, testable, réutilisable d'années en années)
+- **`frc.robot/`** : code robot (subsystems/commands simple, lisible, débuggable et tunable)
 
 ---
 
@@ -18,7 +18,7 @@ Objectif : robot prêt pour le **shoot-on-the-move** (balistique + latency), ave
 ```
 
 src/main/java/frc
-├─ mentor/ # librairie mentor / lead programmer (black boxes réutilisables)
+├─ lib/ # librairie interne (black boxes réutilisables et wrappers)
 │ ├─ logging/ # logging DogLog + helpers
 │ │ └─ ExtendedLogger.java
 │ ├─ logic/ # balistique, dynamique, visée (pur/testable)
@@ -33,7 +33,7 @@ src/main/java/frc
 │ └─ utils/ # filtres, maths, helpers
 │ ├─ Filters.java
 │ └─ MathUtils.java
-└─ robot/ # code robot (étudiants)
+└─ robot/ # code robot
 ├─ subsystems/ # moteurs/capteurs/PID + contrôle mécanismes
 ├─ commands/ # driver controls, séquences, automation
 ├─ RobotContainer.java
@@ -105,7 +105,7 @@ Dans `Robot.robotPeriodic()` :
 @Override
 public void robotPeriodic() {
   Tunables.run();                   // update des valeurs tunables (NetworkTables)
-  frc.mentor.logging.ExtendedLogger.run(); // log DogLog (auto-logging)
+  frc.lib.logging.ExtendedLogger.run(); // log DogLog (auto-logging)
   CommandScheduler.getInstance().run();
 }
 ```
@@ -165,11 +165,11 @@ Dans n’importe quel dashboard qui voit NetworkTables :
 - Fusion dans un pose estimator WPILib
 - Le shooter consomme ensuite une pose standardisée (pose + timestamp + confiance)
 
-_(Les détails d’implémentation viendront dans `frc.mentor.vision` ou bien dans `frc.robot.vision`.)_
+_(Les détails d’implémentation viendront dans `frc.lib.vision` ou bien dans `frc.robot.vision`.)_
 
 ---
 
-## Utiliser la librairie mentor — exemples
+## Utiliser la librairie interne — exemples
 
 ### A) ShooterAim “mode simple” (recommandé)
 
@@ -210,7 +210,7 @@ Ensuite : ouvrir une Pull Request sur GitHub.
 
 ### CODEOWNERS / reviews
 
-- `src/main/java/frc/mentor/**` : review mentor obligatoire
+- `src/main/java/frc/lib/**` : review d'un mentor obligatoire
 - `src/main/java/frc/robot/**` + `src/main/deploy/**` : mentor OU lead-programmer
 - `docs/**` : programmer (ou lead-programmer/mentor)
 
@@ -220,7 +220,7 @@ Ensuite : ouvrir une Pull Request sur GitHub.
 
 - **Unités dans les noms** : `Deg`, `Mps`, `Volts`, `Sec`, etc.
 - **Commentaires en français et code en anglais** : Mieux pour la cohérence entre les librairies anglophones
-- **Records pour le data** : utiliser `frc.mentor.robot.Records` pour standardiser les échanges
+- **Records pour le data** : utiliser `frc.lib.robot.Records` pour standardiser les échanges
 
 Exemples :
 

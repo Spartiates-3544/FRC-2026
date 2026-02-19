@@ -1,10 +1,9 @@
-// frc/mentor/logic/ShooterLogic.java
-package frc.mentor.logic;
+package frc.lib.logic;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.mentor.robot.Records;
-import frc.mentor.utils.MathUtils;
+import frc.lib.robot.Records;
+import frc.lib.utils.MathUtils;
 
 /**
  * <p>
