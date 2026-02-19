@@ -7,10 +7,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.mentor.logging.ExtendedLogger;
-import frc.mentor.robot.Tunables;
-import frc.mentor.utils.MathUtils;
+import frc.lib.logging.ExtendedLogger;
+import frc.lib.robot.Tunables;
+import frc.lib.utils.MathUtils;
 
 /**
  * ClimberSubsystem (EXEMPLE ULTRA SIMPLE)

@@ -1,8 +1,7 @@
-// frc/mentor/logic/ShooterTuning.java
-package frc.mentor.logic;
+package frc.lib.logic;
 
-import frc.mentor.robot.Config;
-import frc.mentor.robot.Records;
+import frc.lib.robot.Config;
+import frc.lib.robot.Records;
 
 // TODO: UPDATE POUR QUE ÇA FONCTIONNE AVEC DES TUNABLES
 

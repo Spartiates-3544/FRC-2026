@@ -1,7 +1,7 @@
-package frc.mentor.logic;
+package frc.lib.logic;
 
 import edu.wpi.first.math.geometry.Translation3d;
-import frc.mentor.robot.Records;
+import frc.lib.robot.Records;
 
 /**
  * <p>
@@ -14,7 +14,7 @@ import frc.mentor.robot.Records;
  * <ul>
  * <li><b>BallisticSolver</b> = math</li>
  * <li><b>ShooterLogic</b> = helpers (géométrie + sim + blind spot)</li>
- * <li><b>ShooterAim</b> = API simple pour les jeunes</li>
+ * <li><b>ShooterAim</b> = API simple</li>
  * <li><b>ShooterTuning</b> = tuning des paramètres en temps réel du shooter</li>
  * </ul>
  *
@@ -23,7 +23,7 @@ import frc.mentor.robot.Records;
  * </p>
  *
  * <p>
- * <b>(A) Mode simple</b> (recommandé pour les jeunes):
+ * <b>(A) Mode simple</b> (recommandé):
  * </p>
  * 
  * <pre>{@code

@@ -1,5 +1,4 @@
-// frc/mentor/robot/Records.java
-package frc.mentor.robot;
+package frc.lib.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,7 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 /**
  * <p>
- * Records "data only" utilisés par la logique mentor (shooter, solver, sim).
+ * Records "data only" utilisés par la logique réutilisable (shooter, solver, sim).
  * </p>
  *
  * Idée:

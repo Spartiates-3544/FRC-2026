@@ -9,16 +9,15 @@ import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
-import frc.mentor.robot.Tunables;
-import frc.mentor.logging.ExtendedLogger;
+import frc.lib.logging.ExtendedLogger;
+import frc.lib.robot.Tunables;
 
 /**
  * Robot.java
  *
  * "Main loop" du robot (WPILib).
  *
- * À retenir pour les jeunes:
+ * À retenir :
  * - robotPeriodic() roule à ~50Hz (toutes les 20ms)
  * - CommandScheduler = exécute les Commands et appelle periodic() des Subsystems
  * - Tunables.run() = met à jour les valeurs live depuis NetworkTables

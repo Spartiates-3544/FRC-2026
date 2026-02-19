@@ -1,5 +1,4 @@
-// frc/mentor/robot/Config.java
-package frc.mentor.robot;
+package frc.lib.robot;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
