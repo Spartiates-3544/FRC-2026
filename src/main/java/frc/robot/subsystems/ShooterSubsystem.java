@@ -1,18 +1,14 @@
 package frc.robot.subsystems;
-import static edu.wpi.first.units.Units.Rotation;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.PneumaticHub;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class ShooterSubsystem { 
+public class ShooterSubsystem extends SubsystemBase{ 
 
     private TalonFX kickerMotor = new TalonFX(5);
     private TalonFX shooterMotor1 = new TalonFX(6);
