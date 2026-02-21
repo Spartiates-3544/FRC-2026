@@ -1,6 +1,8 @@
 // frc/robot/Constants.java
 package frc.robot;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
+
 import frc.lib.robot.Records;
 
 /**
@@ -117,5 +119,30 @@ public final class Constants {
                     6,
                     0.02);
         }
+
+        public static Slot0Configs kickerConfigs = new Slot0Configs();
+        static {
+            kickerConfigs.kP = 0;
+            kickerConfigs.kI = 0;
+            kickerConfigs.kD = 0;
+        }
+        
+        public static Slot0Configs shooterConfigs = new Slot0Configs();
+        static {
+            shooterConfigs.kP = 0;
+            shooterConfigs.kI = 0;
+            shooterConfigs.kD = 0;
+        }
+    
+        public static Slot0Configs hoodConfigs = new Slot0Configs();
+        static{
+            hoodConfigs.kP = 0;
+            hoodConfigs.kI = 0;
+            hoodConfigs.kD = 0;
+        }
+
+        public static double facteurConvertionToursParDegreHood = 0.483;
+
+        
     }
 }
