@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.logging.ExtendedLogger;
+import frc.lib.robot.LedStrips;
 import frc.lib.robot.Tunables;
 
 /**
@@ -43,6 +44,8 @@ public class Robot extends TimedRobot {
         // On construit RobotContainer 1 seule fois au boot.
         // C’est là que les subsystems sont créés.
         m_robotContainer = new RobotContainer();
+
+        LedStrips.init(0, 60);
     }
 
     @Override
