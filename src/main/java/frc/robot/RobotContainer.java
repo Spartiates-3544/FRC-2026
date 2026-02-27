@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.robot.Records;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-// import frc.robot.subsystems.ShooterSubsystem; // futur
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+
+
 
 public class RobotContainer {
+    public final TurretSubsystem turret = new TurretSubsystem();
     private final double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
@@ -32,11 +34,6 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-
-    // Futur:
-    // private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain, SHOOTER_DEFAULTS);
-    @SuppressWarnings("unused")
-    private final ExampleSubsystem example = new ExampleSubsystem();
 
     public RobotContainer() {
         configureBindings();
