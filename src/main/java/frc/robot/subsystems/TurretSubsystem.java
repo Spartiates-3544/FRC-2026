@@ -48,7 +48,9 @@ public final class TurretSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {}
+    public void periodic() {
+        
+    }
 
     public void setTurretDeg(double deg) {
         double clampedDeg = MathUtils.clamp(deg, -160, 160);
