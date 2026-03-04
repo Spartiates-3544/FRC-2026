@@ -38,7 +38,6 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Background logging thread (off main)
         ExtendedLogger.startBackground(20.0);
-        ShooterTuning.warmup();
     }
 
     @Override
@@ -52,7 +51,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void disabledPeriodic() {
+    public void disabledPeriodic() { 
     }
 
     @Override
