@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.robot.Records;
+import frc.robot.commands.PositionnerTourelle;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-// import frc.robot.subsystems.ShooterSubsystem; // futur
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.TurretSubsystem;
+
+
 
 public class RobotContainer {
+    public final TurretSubsystem turret = new TurretSubsystem();
     private final double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 
@@ -32,11 +35,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-
-    // Futur:
-    // private final ShooterSubsystem shooter = new ShooterSubsystem(drivetrain, SHOOTER_DEFAULTS);
-    @SuppressWarnings("unused")
-    private final ExampleSubsystem example = new ExampleSubsystem();
+    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
 
     public RobotContainer() {
         configureBindings();
@@ -65,6 +64,8 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        joystick.x().onTrue(positionnerTourelle);
     }
 
     public Command getAutonomousCommand() {
