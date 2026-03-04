@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logging.ExtendedLogger;
+import frc.lib.robot.LedStrips;
 import frc.lib.robot.Tunables;
+import frc.lib.robot.LedStrips.Couleurs;
 import frc.lib.utils.MathUtils;
 
 /**
@@ -62,6 +64,8 @@ public final class ExampleSubsystem extends SubsystemBase {
     public ExampleSubsystem() {
         ExtendedLogger.registerInstance(this);
         Tunables.registerInstance(this);
+
+        LedStrips.definirCouleurs(Couleurs.RED);
     }
 
     

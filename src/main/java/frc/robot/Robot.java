@@ -6,8 +6,19 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.logging.ExtendedLogger;
-import frc.lib.logic.ShooterTuning;
+import frc.lib.robot.LedStrips;
 
+/**
+ * Robot.java
+ *
+ * "Main loop" du robot (WPILib).
+ *
+ * À retenir :
+ * - robotPeriodic() roule à ~50Hz (toutes les 20ms)
+ * - CommandScheduler = exécute les Commands et appelle periodic() des Subsystems
+ * - Tunables.run() = met à jour les valeurs live depuis NetworkTables
+ * - ExtendedLogger.run() = log automatiquement les @LoggableField
+ */
 public class Robot extends TimedRobot {
 
     private Command m_autonomousCommand;
@@ -19,6 +30,8 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         m_robotContainer = new RobotContainer();
+
+        LedStrips.init(0, 60);
     }
 
     @Override
