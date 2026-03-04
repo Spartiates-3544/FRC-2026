@@ -1,4 +1,4 @@
-package frc.mentor.utils;
+package frc.lib.utils;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;

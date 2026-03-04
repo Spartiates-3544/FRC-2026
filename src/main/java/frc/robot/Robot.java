@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
@@ -9,50 +5,75 @@ import com.ctre.phoenix6.HootAutoReplay;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.logging.ExtendedLogger;
+import frc.lib.robot.LedStrips;
 
+/**
+ * Robot.java
+ *
+ * "Main loop" du robot (WPILib).
+ *
+ * À retenir :
+ * - robotPeriodic() roule à ~50Hz (toutes les 20ms)
+ * - CommandScheduler = exécute les Commands et appelle periodic() des Subsystems
+ * - Tunables.run() = met à jour les valeurs live depuis NetworkTables
+ * - ExtendedLogger.run() = log automatiquement les @LoggableField
+ */
 public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
 
+    private Command m_autonomousCommand;
     private final RobotContainer m_robotContainer;
 
-    /* log and replay timestamp and joystick data */
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
+            .withTimestampReplay()
+            .withJoystickReplay();
 
     public Robot() {
         m_robotContainer = new RobotContainer();
+
+        LedStrips.init(0, 60);
+    }
+
+    @Override
+    public void robotInit() {
+        // Background logging thread (off main)
+        ExtendedLogger.startBackground(20.0);
+        ShooterTuning.warmup();
     }
 
     @Override
     public void robotPeriodic() {
         m_timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run(); 
+        CommandScheduler.getInstance().run();
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+    }
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+    }
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+    }
 
     @Override
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
     }
 
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+    }
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+    }
 
     @Override
     public void teleopInit() {
@@ -62,10 +83,12 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+    }
 
     @Override
-    public void teleopExit() {}
+    public void teleopExit() {
+    }
 
     @Override
     public void testInit() {
@@ -73,11 +96,14 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 
     @Override
-    public void testExit() {}
+    public void testExit() {
+    }
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationPeriodic() {
+    }
 }
