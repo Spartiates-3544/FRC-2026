@@ -1,10 +1,7 @@
 // frc/robot/Constants.java
 package frc.robot;
-
 import com.ctre.phoenix6.configs.Slot0Configs;
-
 import frc.lib.robot.Records;
-import frc.lib.robot.Tunables;
 
 /**
  * <p>
@@ -26,7 +23,7 @@ public final class Constants {
     /**
      * <p>
      * Constantes du shooter (paramètres de modèle + limites).
-     * </p>
+     * </p> 
      *
      * Ces valeurs sont les "defaults" safe.
      * Tu peux les override live via ShooterTuning sans toucher à ce fichier.
