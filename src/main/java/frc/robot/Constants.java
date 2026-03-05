@@ -1,8 +1,12 @@
 // frc/robot/Constants.java
 package frc.robot;
+<<<<<<< HEAD
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 
+=======
+import com.ctre.phoenix6.configs.Slot0Configs;
+>>>>>>> main
 import frc.lib.robot.Records;
 
 /**
@@ -25,7 +29,7 @@ public final class Constants {
     /**
      * <p>
      * Constantes du shooter (paramètres de modèle + limites).
-     * </p>
+     * </p> 
      *
      * Ces valeurs sont les "defaults" safe.
      * Tu peux les override live via ShooterTuning sans toucher à ce fichier.
@@ -144,5 +148,16 @@ public final class Constants {
         public static double facteurConvertionToursParDegreHood = 0.483;
 
         
+    }
+
+    public static final class Turret {
+        public static Slot0Configs turretConfig = new Slot0Configs();
+        
+        static {
+            turretConfig.kP = 60;
+            turretConfig.kD = 0.0;
+        }
+
+        public static double ratio = 13.0;
     }
 }
