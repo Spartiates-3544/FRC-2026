@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.Ramasser;
+import frc.robot.subsystems.Ramasseur;
 import frc.lib.robot.Records;
 import frc.robot.commands.PositionnerTourelle;
 import frc.robot.generated.TunerConstants;
@@ -34,6 +36,8 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private final CommandXboxController joystick = new CommandXboxController(0);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    
+    public final Ramasseur ramasseur = new Ramasseur();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
     public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
 
@@ -52,6 +56,7 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
+        joystick.x().toggleOnTrue(new Ramasser(ramasseur));
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));

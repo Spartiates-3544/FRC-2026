@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logging.ExtendedLogger;
-import frc.lib.robot.Tunables;
+import frc.lib.robot.LedStrips;
+import frc.lib.robot.LedStrips.Couleurs;
 import frc.lib.utils.MathUtils;
 
 /**
@@ -27,11 +28,11 @@ public final class ExampleSubsystem extends SubsystemBase {
     // =========================================================
     
     /** Vitesse de “homing” vers le bas (pour trouver le switch bas). */
-    @Tunables.TunableNum(key = "Climber/homeDownSpeed", def = -0.2, hz = 2, clamp = true, min = -0.5, max = 0.5)
+    @ExtendedLogger.TunableField(key = "Climber/homeDownSpeed", min = -0.2, max = 0.2)
     private double homingSpeed = -0.2;
     
     /** Petit délai après avoir touché le switch bas (évite rebond). */
-    @Tunables.TunableNum(key = "Climber/homeSettleSec", def = 0.15, hz = 1, clamp = true, min = 0.0)
+    @ExtendedLogger.TunableField(key = "Climber/homeSettleSec", min = 0.0, max = 10.0)
     private double homingWaitTimeOnceHomed = 0.15;
 
     // =========================================================
@@ -61,7 +62,7 @@ public final class ExampleSubsystem extends SubsystemBase {
 
     public ExampleSubsystem() {
         ExtendedLogger.registerInstance(this);
-        Tunables.registerInstance(this);
+        LedStrips.definirCouleurs(Couleurs.RED);
     }
 
     
@@ -117,4 +118,4 @@ public final class ExampleSubsystem extends SubsystemBase {
     private double getMotorVoltage() {
         return climberMotor.getMotorVoltage().getValueAsDouble();
     }
-}
+} 

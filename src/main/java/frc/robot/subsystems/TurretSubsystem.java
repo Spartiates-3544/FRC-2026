@@ -4,11 +4,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.*;
 
 import frc.lib.logging.ExtendedLogger;
-import frc.lib.robot.Tunables;
 import frc.lib.utils.MathUtils;
 import frc.robot.Constants;
 
@@ -25,7 +23,7 @@ public final class TurretSubsystem extends SubsystemBase {
 
     // @ExtendedLogger.LoggableField(path = "Shooter/CurrentPos")
     // private double targetDegLog = 0.0;
-
+ 
     // @ExtendedLogger.LoggableField(path = "Shooter/CurrentPos")
     // private double posDegLog = 0.0;
 
@@ -39,7 +37,6 @@ public final class TurretSubsystem extends SubsystemBase {
 
     public TurretSubsystem() {
         ExtendedLogger.registerInstance(this);
-        Tunables.registerInstance(this);
         applyConfigs();
     }
 
