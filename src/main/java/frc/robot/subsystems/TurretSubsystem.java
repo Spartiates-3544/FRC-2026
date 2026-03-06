@@ -12,8 +12,8 @@ import frc.robot.Constants;
 
 public final class TurretSubsystem extends SubsystemBase {
     private static TalonFX turret = new TalonFX(8);
-    private DigitalInput limHoraire = new DigitalInput(0);
-    private DigitalInput limAntiHoraire = new DigitalInput(1);
+   /// private DigitalInput limHoraire = new DigitalInput(0);
+    private DigitalInput limAntiHoraire = new DigitalInput(7);
 
     // @Tunables.TunableNum(key = "Shooter/TurretMinDeg", def = -160.0, hz = 2, clamp = false)
     // private double minDeg = 13.0;
@@ -56,10 +56,31 @@ public final class TurretSubsystem extends SubsystemBase {
 
         PositionVoltage demande = new PositionVoltage(toursMoteur)
                 .withSlot(0)
-                .withLimitForwardMotion(limHoraire.get())
+               /// .withLimitForwardMotion(limHoraire.get())
                 .withLimitReverseMotion(limAntiHoraire.get());
         
         turret.setControl(demande);
+    }
+
+    public void setTourelleMoteur(double speed){
+        turret.set(speed);
+    }
+
+    public void stopTourelle(){
+        turret.stopMotor();
+        //turret.get
+    }
+
+    public boolean isTourelleAtHome(){
+        return limAntiHoraire.get();
+    }
+
+    public void resetTourellePosition(){
+        turret.setPosition(0);
+    }
+
+    public double getTourellePosition(){
+        return turret.getPosition().getValueAsDouble();
     }
 
 }
