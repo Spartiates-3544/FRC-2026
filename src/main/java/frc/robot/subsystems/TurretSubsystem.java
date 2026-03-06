@@ -74,11 +74,11 @@ public final class TurretSubsystem extends SubsystemBase {
     public boolean isTourelleAtHome(){
         return limAntiHoraire.get();
     }
-
+/* 
     public void resetTourellePosition(){
         turret.setPosition(0);
     }
-
+*/
     public double getTourellePosition(){
         return turret.getPosition().getValueAsDouble();
     }

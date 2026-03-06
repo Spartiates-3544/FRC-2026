@@ -15,6 +15,7 @@ import frc.robot.commands.Ramasser;
 import frc.robot.subsystems.Ramasseur;
 import frc.lib.robot.Records;
 import frc.robot.commands.PositionnerTourelle;
+import frc.robot.commands.PositionnerTourelleHome;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem;
@@ -39,7 +40,8 @@ public class RobotContainer {
     
     public final Ramasseur ramasseur = new Ramasseur();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
+    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);  
+    public PositionnerTourelleHome positionnerTourelleHome = new PositionnerTourelleHome(turret);  
 
     public RobotContainer() {
         configureBindings();
@@ -55,7 +57,7 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-
+/* 
         joystick.x().toggleOnTrue(new Ramasser(ramasseur));
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(
@@ -67,10 +69,11 @@ public class RobotContainer {
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
+*/
         drivetrain.registerTelemetry(logger::telemeterize);
 
         joystick.x().onTrue(positionnerTourelle);
+        joystick.y().onTrue(positionnerTourelleHome);
     }
 
     public Command getAutonomousCommand() {
