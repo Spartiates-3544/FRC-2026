@@ -43,12 +43,12 @@ public class ShooterSubsystem extends SubsystemBase{
         Records.ShooterParams p = Constants.Shooter.defaultParams();
         // TODO: verifier facteur convertion
         if(hoodAngle > p.hoodMinDeg() && hoodAngle < p.hoodMaxDeg()) {
-            double positionMoteur = Constants.Shooter.facteurConvertionToursParDegreHood*hoodAngle;
+            double positionMoteur = Constants.Shooter.facteurConvertionToursParDegreHood*(hoodAngle-p.hoodMinDeg());
             PositionVoltage demande = new PositionVoltage(positionMoteur)
                                             .withSlot(0)
                                             .withLimitReverseMotion(switchBas.get());
             hoodMoteur.setControl(demande);
-        } // todo: add else...  
+        } // todo: add else
         
     }    
 
