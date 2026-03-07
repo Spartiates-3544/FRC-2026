@@ -1,6 +1,8 @@
 // frc/robot/Constants.java
 package frc.robot;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.pathplanner.lib.config.RobotConfig;
+
 import frc.lib.robot.Records;
 
 /**
@@ -20,6 +22,17 @@ public final class Constants {
     private Constants() {
     }
 
+    public static final class Drive {
+        public static RobotConfig config;
+
+        static {
+            try {
+                config = RobotConfig.fromGUISettings();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * <p>
      * Constantes du shooter (paramètres de modèle + limites).
