@@ -13,7 +13,7 @@ public class PositionnerTourelle extends Command {
     
     @Override
     public void execute() {
-        turret.setTurretDeg(60);
+        turret.setTurretDeg(-60);
     }
 
 

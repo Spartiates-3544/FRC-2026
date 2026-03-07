@@ -57,8 +57,9 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-/* 
-        joystick.x().toggleOnTrue(new Ramasser(ramasseur));
+
+        // joystick.x().toggleOnTrue(new Ramasser(ramasseur));
+/*
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(
                 () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
@@ -72,8 +73,13 @@ public class RobotContainer {
 */
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.x().onTrue(positionnerTourelle);
-        joystick.y().onTrue(positionnerTourelleHome);
+        joystick.povUp().onTrue(turret.setTurretPosition(-150));
+        joystick.povLeft().onTrue(turret.setTurretPosition(-90));
+        joystick.povRight().onTrue(turret.setTurretPosition(90));
+        joystick.povDown().onTrue(turret.setTurretPosition(160));
+        joystick.y().toggleOnTrue(turret.home());
+
+        RobotModeTriggers.disabled().onTrue(Commands.run(() -> turret.stopTourelle(), turret));
     }
 
     public Command getAutonomousCommand() {
