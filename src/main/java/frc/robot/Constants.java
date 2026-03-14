@@ -1,6 +1,8 @@
 // frc/robot/Constants.java
 package frc.robot;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.pathplanner.lib.config.RobotConfig;
+
 import frc.lib.robot.Records;
 
 /**
@@ -20,6 +22,17 @@ public final class Constants {
     private Constants() {
     }
 
+    public static final class Drive {
+        public static RobotConfig config;
+
+        static {
+            try {
+                config = RobotConfig.fromGUISettings();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * <p>
      * Constantes du shooter (paramètres de modèle + limites).
@@ -142,6 +155,17 @@ public final class Constants {
         public static double facteurConvertionToursParDegreHood = 0.483;
 
         
+    }
+
+    public static final class Turret {
+        public static Slot0Configs turretConfig = new Slot0Configs();
+        
+        static {
+            turretConfig.kP = 60;
+            turretConfig.kD = 0.0;
+        }
+
+        public static double ratio = 13.0;
     }
 
     public static final class Turret {
