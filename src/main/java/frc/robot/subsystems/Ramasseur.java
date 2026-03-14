@@ -12,14 +12,14 @@ public class Ramasseur extends SubsystemBase {
     private Solenoid solenoidRamasseur = pneumaticHub.makeSolenoid(6);
     
     public void ouvrir() {
-        solenoidRamasseur.set(true);
-    }
-
-    public void fermer(){
         solenoidRamasseur.set(false);
     }
 
+    public void fermer(){
+        solenoidRamasseur.set(true);
+    }
+
     public void tourner(double vitesse) {
-        moteurRamasseur.set(vitesse);
+        moteurRamasseur.set(-vitesse);
     }
 }
