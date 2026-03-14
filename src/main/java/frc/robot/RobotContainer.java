@@ -21,37 +21,33 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem;
 
-
-
 public class RobotContainer {
-    public final TurretSubsystem turret = new TurretSubsystem();
-    private final double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-    private final double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond);
+        private final CommandXboxController joystick = new CommandXboxController(0);
 
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1)
-            .withRotationalDeadband(MaxAngularRate * 0.1)
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        private final double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        private final double MaxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond);
+        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+        .withDeadband(MaxSpeed * 0.1)
+        .withRotationalDeadband(MaxAngularRate * 0.1)
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+        private final Telemetry logger = new Telemetry(MaxSpeed);
+        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+                
+        public final Ramasseur ramasseur = new Ramasseur();
+        public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
+        
+        public final TurretSubsystem turret = new TurretSubsystem();
+        public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
 
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final Telemetry logger = new Telemetry(MaxSpeed);
-    private final CommandXboxController joystick = new CommandXboxController(0);
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    
-    public final Ramasseur ramasseur = new Ramasseur();
-    public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
+        public final Spindexer spindexer = new Spindexer();
 
-    public final Spindexer spindexer = new Spindexer();
-
-
-    private SendableChooser<Command> autoChooser;
+        private SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
         configureBindings();
-         autoChooser = AutoBuilder.buildAutoChooser();
-         SmartDashboard.putData("Auto Chooser", autoChooser);
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
         //  NamedCommands.registerCommand("ramasser", new Ramasser(ramasseur));
 
