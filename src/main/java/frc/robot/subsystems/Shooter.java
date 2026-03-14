@@ -1,15 +1,24 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.lib.robot.Records;
 
-public class ShooterSubsystem extends SubsystemBase{ 
+public class Shooter extends SubsystemBase{ 
 
     private TalonFX kickerMotor = new TalonFX(5);
     private TalonFX shooterMotor1 = new TalonFX(6);
@@ -18,18 +27,45 @@ public class ShooterSubsystem extends SubsystemBase{
 // private DigitalInput switchHaut = new DigitalInput(2); seulement une switch en bas 
     private DigitalInput switchBas = new DigitalInput(3);
 
-    public ShooterSubsystem() {
+    private final VoltageOut sysIdRequest = new VoltageOut(0.0);
+    private final SysIdRoutine sysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,        // Use default ramp rate (1 V/s)
+                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
+                null,        // Use default timeout (10 s)
+                            // Log state with Phoenix SignalLogger class
+                (state) -> SignalLogger.writeString("state", state.toString())
+            ),
+            new SysIdRoutine.Mechanism(
+                (volts) -> shooterMotor1.setControl(sysIdRequest.withOutput(volts.in(Volts))),
+                null,
+                this
+            )
+        );
+
+    public Shooter() {
         kickerMotor.getConfigurator().apply(Constants.Shooter.kickerConfigs);
         shooterMotor1.getConfigurator().apply(Constants.Shooter.shooterConfigs);
-        shooterMotor2.getConfigurator().apply(Constants.Shooter.shooterConfigs);
-        hoodMoteur.getConfigurator().apply(Constants.Shooter.hoodConfigs);
 
+        Follower followRequest = new Follower(6, MotorAlignmentValue.Aligned);
+        shooterMotor2.getConfigurator().apply(Constants.Shooter.shooterConfigs);
+        shooterMotor2.setControl(followRequest);
+
+        hoodMoteur.getConfigurator().apply(Constants.Shooter.hoodConfigs);
     }
 
-    public void setShooterSpeed(double shooterSpeed) {
-       VelocityVoltage demande = new VelocityVoltage(shooterSpeed/60).withSlot(0);
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return sysIdRoutine.quasistatic(direction).beforeStarting(() -> SignalLogger.start(), null);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return sysIdRoutine.dynamic(direction).beforeStarting(() -> SignalLogger.start(), null);
+    }
+
+    public void setShooterSpeed(double shooterSpeedRPM) {
+       VelocityVoltage demande = new VelocityVoltage(shooterSpeedRPM/60).withSlot(0);
        shooterMotor1.setControl(demande);
-       shooterMotor2.setControl(demande);
     }
 
     public void setKickerSpeed(double kickerSpeed) {
@@ -80,6 +116,10 @@ public class ShooterSubsystem extends SubsystemBase{
 
     public double getHoodPosition() {
         return hoodMoteur.getPosition().getValueAsDouble();
+    }
+
+    public Command setShooterMoteur(double shooterSpeed){
+        return Commands.runOnce(() -> setShooterSpeed(shooterSpeed), this);
     }
 }
 

@@ -14,12 +14,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Ramasser;
 import frc.robot.subsystems.Ramasseur;
 import frc.lib.robot.Records;
+import frc.robot.subsystems.Shooter;
 import frc.robot.commands.PositionnerTourelle;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem;
-
-
 
 public class RobotContainer {
     public final TurretSubsystem turret = new TurretSubsystem();
@@ -39,7 +38,8 @@ public class RobotContainer {
     
     public final Ramasseur ramasseur = new Ramasseur();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
+    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret); 
+    public final Shooter setShooterSpeed = new ();
 
     public RobotContainer() {
         configureBindings();
@@ -71,6 +71,8 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         joystick.x().onTrue(positionnerTourelle);
+
+        joystick.b().onTrue();
     }
 
     public Command getAutonomousCommand() {
