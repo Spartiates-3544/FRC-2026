@@ -1,6 +1,8 @@
 // frc/robot/Constants.java
 package frc.robot;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
 
 import frc.lib.robot.Records;
@@ -169,13 +171,14 @@ public final class Constants {
     }
 
     public static final class Turret {
-        public static Slot0Configs turretConfig = new Slot0Configs();
+        public static TalonFXConfiguration turretConfig = new TalonFXConfiguration();
         
         static {
-            turretConfig.kP = 60;
-            turretConfig.kD = 0.0;
+            turretConfig.Slot0.kP = 12;
+            turretConfig.Slot0.kD = 0.4;
+            turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         }
 
-        public static double ratio = 13.0;
+        public static double ratio = 7.8125;
     }
 }
