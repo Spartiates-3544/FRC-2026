@@ -27,7 +27,7 @@ public final class ExampleSubsystem extends SubsystemBase {
     // Tunables (modifiable en live dans les Network Tables)
     // =========================================================
     
-    /** Vitesse de “homing” vers le bas (pour trouver le switch bas). */
+    /** Vitesse de homing vers le bas (pour trouver le switch bas). */
     @ExtendedLogger.TunableField(key = "Climber/homeDownSpeed", min = -0.2, max = 0.2)
     private double homingSpeed = -0.2;
     

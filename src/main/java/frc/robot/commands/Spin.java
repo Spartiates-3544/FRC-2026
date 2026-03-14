@@ -18,13 +18,14 @@ public class Spin extends Command {
  
     @Override
     public void execute() {
-        spindexer.spin(1);
-      
+        spindexer.spin(0.5);
+        spindexer.spinAspirateur(-0.8);
     }
 
     @Override
     public void end(boolean interrupted) {
        spindexer.spin(0);
+       spindexer.spinAspirateur(0);
     }
 
     @Override

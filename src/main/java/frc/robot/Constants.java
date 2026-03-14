@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.config.RobotConfig;
 
 import frc.lib.robot.Records;
 
@@ -23,6 +24,17 @@ public final class Constants {
     private Constants() {
     }
 
+    public static final class Drive {
+        public static RobotConfig config;
+
+        static {
+            try {
+                config = RobotConfig.fromGUISettings();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * <p>
      * Constantes du shooter (paramètres de modèle + limites).
@@ -120,6 +132,42 @@ public final class Constants {
                     6,
                     0.02);
         }
+
+        public static Slot0Configs kickerConfigs = new Slot0Configs();
+        static {
+            kickerConfigs.kP = 0;
+            kickerConfigs.kI = 0;
+            kickerConfigs.kD = 0;
+        }
+        
+        public static Slot0Configs shooterConfigs = new Slot0Configs();
+        static {
+            shooterConfigs.kP = 0;
+            shooterConfigs.kI = 0;
+            shooterConfigs.kD = 0;
+        }
+    
+        public static Slot0Configs hoodConfigs = new Slot0Configs();
+        static{
+            hoodConfigs.kP = 0;
+            hoodConfigs.kI = 0;
+            hoodConfigs.kD = 0;
+        }
+
+        public static double facteurConvertionToursParDegreHood = 0.483;
+
+        
+    }
+
+    public static final class Turret {
+        public static Slot0Configs turretConfig = new Slot0Configs();
+        
+        static {
+            turretConfig.kP = 60;
+            turretConfig.kD = 0.0;
+        }
+
+        public static double ratio = 13.0;
     }
 
     public static final class Turret {
