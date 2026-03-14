@@ -13,6 +13,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -56,11 +57,11 @@ public class Shooter extends SubsystemBase{
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction).beforeStarting(() -> SignalLogger.start(), null);
+        return sysIdRoutine.quasistatic(direction).beforeStarting(() -> SignalLogger.start(), (Subsystem)null);
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction).beforeStarting(() -> SignalLogger.start(), null);
+        return sysIdRoutine.dynamic(direction).beforeStarting(() -> SignalLogger.start(), (Subsystem)null);
     }
 
     public void setShooterSpeed(double shooterSpeedRPM) {
@@ -120,6 +121,14 @@ public class Shooter extends SubsystemBase{
 
     public Command setShooterMoteur(double shooterSpeed){
         return Commands.runOnce(() -> setShooterSpeed(shooterSpeed), this);
+    }
+
+    public void setKicker(double speed) {
+        kickerMotor.set(speed);
+    }
+
+    public void setShooter(double speed) {
+        shooterMotor1.set(speed);
     }
 }
 

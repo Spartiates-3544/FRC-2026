@@ -39,7 +39,7 @@ public class RobotContainer {
     public final Ramasseur ramasseur = new Ramasseur();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
     public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret); 
-    public final Shooter setShooterSpeed = new ();
+    public final Shooter shooter = new Shooter();
 
     public RobotContainer() {
         configureBindings();
@@ -57,22 +57,26 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         joystick.x().toggleOnTrue(new Ramasser(ramasseur));
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(
-                () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        // joystick.b().whileTrue(drivetrain.applyRequest(
+        //         () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.x().onTrue(positionnerTourelle);
-
-        joystick.b().onTrue();
+        joystick.b().toggleOnTrue(Commands.run(() -> {
+                shooter.setKicker(1);
+                shooter.setShooter(1);
+        }, shooter).finallyDo(() -> {
+                shooter.setKicker(0);
+                shooter.setShooter(0);
+        }));
     }
 
     public Command getAutonomousCommand() {
