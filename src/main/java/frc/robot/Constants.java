@@ -6,6 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
 
 import frc.lib.robot.Records;
+import frc.lib.robot.Records.ShotSolution;
 
 /**
  * <p>
@@ -133,18 +134,24 @@ public final class Constants {
                     0.02);
         }
 
-        public static Slot0Configs kickerConfigs = new Slot0Configs();
+        public static TalonFXConfiguration kickerConfigs = new TalonFXConfiguration();
         static {
-            kickerConfigs.kP = 0;
-            kickerConfigs.kI = 0;
-            kickerConfigs.kD = 0;
+            kickerConfigs.Slot0.kP = 0.15948;
+            kickerConfigs.Slot0.kI = 0;
+            kickerConfigs.Slot0.kD = 0;
+            kickerConfigs.Slot0.kS = 0.47087;
+            kickerConfigs.Slot0.kV = 0.12977;
+            kickerConfigs.Slot0.kA = 0.0018328;
         }
         
-        public static Slot0Configs shooterConfigs = new Slot0Configs();
+        public static TalonFXConfiguration shooterConfigs = new TalonFXConfiguration();
         static {
-            shooterConfigs.kP = 0;
-            shooterConfigs.kI = 0;
-            shooterConfigs.kD = 0;
+            shooterConfigs.Slot0.kP = 0.18488;
+            shooterConfigs.Slot0.kI = 0;
+            shooterConfigs.Slot0.kD = 0;
+            shooterConfigs.Slot0.kS = 0.16649;
+            shooterConfigs.Slot0.kV = 0.12109;
+            shooterConfigs.Slot0.kA = 0.017213;
         }
     
         public static Slot0Configs hoodConfigs = new Slot0Configs();
@@ -154,20 +161,9 @@ public final class Constants {
             hoodConfigs.kD = 0;
         }
 
-        public static double facteurConvertionToursParDegreHood = 0.483;
-
+        // public static double facteurConvertionToursParDegreHood = 0.483;
+        public static double hoodRatio = 113.944;
         
-    }
-
-    public static final class Turret {
-        public static Slot0Configs turretConfig = new Slot0Configs();
-        
-        static {
-            turretConfig.kP = 60;
-            turretConfig.kD = 0.0;
-        }
-
-        public static double ratio = 13.0;
     }
 
     public static final class Turret {

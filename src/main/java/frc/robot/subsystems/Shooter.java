@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -39,29 +40,31 @@ public class Shooter extends SubsystemBase{
                 (state) -> SignalLogger.writeString("state", state.toString())
             ),
             new SysIdRoutine.Mechanism(
-                (volts) -> shooterMotor1.setControl(sysIdRequest.withOutput(volts.in(Volts))),
+                (volts) -> kickerMotor.setControl(sysIdRequest.withOutput(volts.in(Volts))),
                 null,
                 this
             )
         );
 
     public Shooter() {
+        setName("Shooter");
+
         kickerMotor.getConfigurator().apply(Constants.Shooter.kickerConfigs);
         shooterMotor1.getConfigurator().apply(Constants.Shooter.shooterConfigs);
 
-        Follower followRequest = new Follower(6, MotorAlignmentValue.Aligned);
         shooterMotor2.getConfigurator().apply(Constants.Shooter.shooterConfigs);
+        Follower followRequest = new Follower(6, MotorAlignmentValue.Aligned);
         shooterMotor2.setControl(followRequest);
 
         hoodMoteur.getConfigurator().apply(Constants.Shooter.hoodConfigs);
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.quasistatic(direction).beforeStarting(() -> SignalLogger.start(), (Subsystem)null);
+        return sysIdRoutine.quasistatic(direction);
     }
 
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return sysIdRoutine.dynamic(direction).beforeStarting(() -> SignalLogger.start(), (Subsystem)null);
+        return sysIdRoutine.dynamic(direction);
     }
 
     public void setShooterSpeed(double shooterSpeedRPM) {
@@ -69,19 +72,19 @@ public class Shooter extends SubsystemBase{
        shooterMotor1.setControl(demande);
     }
 
-    public void setKickerSpeed(double kickerSpeed) {
-        VelocityVoltage demande = new VelocityVoltage(kickerSpeed/60).withSlot(0);
+    public void setKickerSpeed(double kickerSpeedRPM) {
+        VelocityVoltage demande = new VelocityVoltage(kickerSpeedRPM/60).withSlot(0);
         kickerMotor.setControl(demande);
     }
 
     // hoodAngle: degrees 
     public void setHoodAngle(double hoodAngle) { 
-
         Records.ShooterParams p = Constants.Shooter.defaultParams();
-        // TODO: verifier facteur convertion
-        if(hoodAngle > p.hoodMinDeg() && hoodAngle < p.hoodMaxDeg()) {
-            double positionMoteur = Constants.Shooter.facteurConvertionToursParDegreHood*(hoodAngle-p.hoodMinDeg());
-            PositionVoltage demande = new PositionVoltage(positionMoteur)
+
+        if (hoodAngle > p.hoodMinDeg() && hoodAngle < p.hoodMaxDeg()) {
+            double toursHood = hoodAngle / 360.0;
+            double toursMoteur = toursHood * Constants.Shooter.hoodRatio;
+            PositionVoltage demande = new PositionVoltage(toursMoteur)
                                             .withSlot(0)
                                             .withLimitReverseMotion(switchBas.get());
             hoodMoteur.setControl(demande);
@@ -89,9 +92,8 @@ public class Shooter extends SubsystemBase{
         
     }    
 
-
     /** Move elevator at given speed (-1.0 to 1.0) */
-    public void sethoodMoteur(double speed) {
+    public void setHoodMoteur(double speed) {
         hoodMoteur.set(speed);
     }
 

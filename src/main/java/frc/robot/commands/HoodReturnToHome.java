@@ -18,7 +18,7 @@ public class HoodReturnToHome extends Command {
     public void initialize() {
         // Start moving toward home
         if(homingSpeed>=0 && homingSpeed <=1.0) {
-            hood.sethoodMoteur(-Math.abs(homingSpeed)); // Negative = down
+            hood.setHoodMoteur(-Math.abs(homingSpeed)); // Negative = down
         } // TODO: else
     }
 
