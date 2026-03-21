@@ -80,7 +80,6 @@ public class Shooter extends SubsystemBase{
     // hoodAngle: degrees 
     public void setHoodAngle(double hoodAngle) { 
         Records.ShooterParams p = Constants.Shooter.defaultParams();
-
         if (hoodAngle > p.hoodMinDeg() && hoodAngle < p.hoodMaxDeg()) {
             double toursHood = hoodAngle / 360.0;
             double toursMoteur = toursHood * Constants.Shooter.hoodRatio;
