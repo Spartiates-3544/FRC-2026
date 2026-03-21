@@ -28,19 +28,6 @@ public final class ShooterLogic {
     private ShooterLogic() {
     }
 
-    // -----------------------------
-    // Turret blind-spot config
-    // -----------------------------
-    // !!! À tuner sur le vrai robot !!!
-    //
-    // Idée:
-    // - Il y a des zones où tu ne veux PAS que la turret aille (câbles, hard-stop (limites), bumper, intake, etc.)
-    // - On définit une zone interdite par un centre (deg) et une demi-largeur (deg)
-    //
-    // Exemple: centre 0°, largeur ±12° -> interdit de -12° à +12°.
-    private static final double BLIND_CENTER_DEG_1 = 0.0;
-    private static final double BLIND_HALF_WIDTH_DEG_1 = 40.0;
-
     /**
      * <p>
      * Retourne true si le yaw désiré tombe dans une zone interdite (blind spot).
@@ -61,8 +48,13 @@ public final class ShooterLogic {
      * @return true si le yaw est dans une zone interdite
      */
     public static boolean isTurretBlindSpot(Records.ShooterParams p, double yawRelRad) {
+        double halfWidthDeg = p.turretBlindHalfWidthDeg();
+        if (halfWidthDeg <= 0.0) {
+            return false;
+        }
+
         double deg = MathUtils.wrapDeg(Math.toDegrees(MathUtils.wrapRad(yawRelRad)));
-        return MathUtils.inBandDeg(deg, BLIND_CENTER_DEG_1, BLIND_HALF_WIDTH_DEG_1);
+        return MathUtils.inBandDeg(deg, p.turretBlindCenterDeg(), halfWidthDeg);
     }
 
     /**
@@ -90,7 +82,6 @@ public final class ShooterLogic {
             return desired;
         }
 
-        // Hold le dernier yaw safe (typiquement le yaw mesuré du turret)
         return clampTurretYaw(p, MathUtils.wrapRad(holdYawRelRad));
     }
 

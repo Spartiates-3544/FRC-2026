@@ -6,7 +6,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
 
 import frc.lib.robot.Records;
-import frc.lib.robot.Records.ShotSolution;
 
 /**
  * <p>
@@ -55,83 +54,88 @@ public final class Constants {
          *
          * @return Records.ShooterParams (defaults safe)
          */
+        public static final Records.ShooterParams DEFAULT_PARAMS = new Records.ShooterParams(
+                9.80665,
+                1.225,
+                0.2267,
+                0.127,
+
+                0.45,
+                true,
+
+                0.50,
+                0.00,
+                0.00,
+
+                0.1016,
+                0.90,
+                0.3,
+
+                1250,
+                5500,
+
+                56.30,
+                36.14,
+                56.30,
+
+                -150,
+                160,
+                180.0,
+                19.9,
+
+                0.080,
+                0.5,
+
+                0.020,
+                2.0,
+                0.020,
+
+                "top_entry",
+                0.55,
+                true,
+                true,
+
+                1200,
+                180,
+                6500,
+
+                false,
+                true,
+
+                0.7,
+
+                0.03,
+                true,
+                1e-6,
+
+                2,
+
+                7,
+                6,
+                7,
+                6,
+                7,
+                6,
+
+                0.8,
+                10.0,
+
+                250,
+                2500,
+
+                0.5,
+                8.0,
+
+                true,
+                1,
+                1.8,
+                1.6,
+
+                4,
+                0.02);
+
         public static Records.ShooterParams defaultParams() {
-            return new Records.ShooterParams(
-                    9.80665,
-                    1.225,
-                    0.2267,
-                    0.127,
-
-                    0.45,
-                    true,
-
-                    0.50,
-                    0.00,
-                    0.00,
-
-                    0.0762,
-                    0.90,
-                    0.5,
-
-                    1200,
-                    4500,
-
-                    60,
-                    50,
-                    70,
-
-                    -160,
-                    160,
-
-                    0.120,
-                    0.4,
-
-                    0.005,
-                    3.0,
-
-                    "top_entry",
-                    0.55,
-                    true,
-                    true,
-
-                    840,
-                    240,
-                    12000,
-
-                    true,
-                    true,
-
-                    0.7,
-
-                    0.03,
-                    true,
-                    1e-6,
-
-                    2,
-
-                    9,
-                    10,
-                    9,
-                    10,
-                    9,
-                    10,
-
-                    0.8,
-                    10.0,
-
-                    250,
-                    2500,
-
-                    0.5,
-                    8.0,
-
-                    true,
-                    2,
-                    1.8,
-                    1.6,
-
-                    6,
-                    0.02);
+            return DEFAULT_PARAMS;
         }
 
         public static TalonFXConfiguration kickerConfigs = new TalonFXConfiguration();

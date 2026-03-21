@@ -45,9 +45,6 @@ public final class BallisticSolver {
     // L'amplitude de recherche du hood est scaled par cette valeur (sensibilité du hood)
     private static final double HOOD_SPAN_SCALE = 0.45;
 
-    // Empêche le solver de demander des sauts de RPM trop petits (ça aide la stabilité)
-    private static final double MIN_RPM_STEP_PER_TICK = 50.0;
-
     /**
      * <p>
      * Prédit l'état du robot après un temps t.
@@ -150,10 +147,6 @@ public final class BallisticSolver {
         for (int i = 0; i < 2; i++) {
             // Prédit le moment où on pense tirer
             Records.RobotState pred = predictRobot(robotNow, tFire);
-
-            // Solve avec :
-            // - Une recherche locale (https://elib.dlr.de/73550/1/Lampariello.pdf en partie, plein de choses que j'ai pas check)
-            // - Section dorée (https://homepages.math.uic.edu/~jan/mcs471/goldensection.pdf)
             SolvePoseOut poseOut = solveForPoseInstant(p, pred, actNow, targetXYZ, (sol == null) ? warm : sol);
             PoseSolution ps = poseOut.sol();
 
@@ -403,13 +396,6 @@ public final class BallisticSolver {
         final double rpmJumpWindowS = 0.10;
         final double maxRpmJumpPerSolve = Math.max(250.0, p.flywheelAccelRpmS() * rpmJumpWindowS);
 
-        // Limite par tick de simulateur pour simuler un slew (ça évite de choisir un rpm qui serait fou)
-        final double dtTick = Math.max(1e-3, p.rtDt());
-        final double maxRpmStepPerTick = Math.max(MIN_RPM_STEP_PER_TICK, p.flywheelAccelRpmS() * dtTick);
-
-        // Base RPM pour appliquer la limite de slew
-        final double baseRpmForSlew = (warm != null) ? warm.flywheelRpm() : actNow.flywheelRpm();
-
         // -----------------------------
         // 5) Préférence du hood (tie-breaker)
         // -----------------------------
@@ -557,7 +543,6 @@ public final class BallisticSolver {
 
             // Clamp de RPM + slew par tick
             double rpmCmd = MathUtils.clamp(rpmRaw, p.flywheelRpmMin(), p.flywheelRpmMax());
-            rpmCmd = MathUtils.clamp(rpmCmd, baseRpmForSlew - maxRpmStepPerTick, baseRpmForSlew + maxRpmStepPerTick);
 
             // Flags de debug
             boolean turretClamped = Math.abs(MathUtils.wrapRad(yawCmd - yawRaw)) > Math.toRadians(0.02);
@@ -757,27 +742,17 @@ public final class BallisticSolver {
         double lo = MathUtils.clamp(hood - span, p.hoodMinDeg(), p.hoodMaxDeg());
         double hi = MathUtils.clamp(hood + span, p.hoodMinDeg(), p.hoodMaxDeg());
 
-        final double hoodRange = Math.max(1e-6, p.hoodMaxDeg() - p.hoodMinDeg());
-        final double hoodPreferSign = p.hoodPreferHigh() ? 1.0 : -1.0;
-
         DoubleUnaryOperator f = (hh) -> {
             double rUse = rpm;
 
-            // Option: si on solve RPM, on approxime un RPM cohérent avec le nouveau hood
             if (p.solveForRpm()) {
                 Double g = rpmGuessNoDrag(p, robot, hh, target);
-                if (g != null)
+                if (g != null) {
                     rUse = 0.70 * g + 0.30 * rpm;
+                }
             }
 
-            double miss = ShooterLogic.simulateMissFast(p, robot, yaw, rUse, hh, target).missM();
-
-            // Poids pour préférer hood haut/bas si demandé
-            if (p.hoodPreferWeight() > 0.0) {
-                double hn = (hh - p.hoodMinDeg()) / hoodRange;
-                miss -= hoodPreferSign * p.hoodPreferWeight() * hn;
-            }
-            return miss;
+            return ShooterLogic.simulateMissFast(p, robot, yaw, rUse, hh, target).missM();
         };
 
         MathUtils.Bracket br = MathUtils.bracketFromSamples(lo, hi, p.instantHoodSamples(), f);

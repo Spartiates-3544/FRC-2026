@@ -100,7 +100,7 @@ public final class ShooterAim {
         @ExtendedLogger.LoggableField(path = "ShooterAim/last", hz = 2)
         private volatile AimResult lastLogged = null;
 
-        @ExtendedLogger.LoggableField(path = "ShooterAim/holdYawRelDeg", hz = 20)
+        @ExtendedLogger.LoggableField(path = "ShooterAim/holdYawRelDeg", hz = 2)
         private volatile double holdYawRelDegLogged = 0.0;
 
         // Warm-start: la dernière solution "desired" qu'on réinjecte au solve suivant

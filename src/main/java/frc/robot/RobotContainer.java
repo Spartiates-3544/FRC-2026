@@ -14,13 +14,17 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.Ramasser;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootMoving;
+import frc.robot.commands.Spin;
 import frc.robot.subsystems.Ramasseur;
 import frc.lib.robot.Records;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterLoop;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.Unjammer;
 
 public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -41,8 +45,11 @@ public class RobotContainer {
 
     public final Spindexer spindexer = new Spindexer();
     public final Shooter shooter = new Shooter();
+    public final Unjammer unjammer = new Unjammer();
 
     private SendableChooser<Command> autoChooser;
+
+    // private final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
 
     public RobotContainer() {
         configureBindings();
@@ -63,7 +70,7 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-
+        
         joystick.x().toggleOnTrue(new Ramasser(ramasseur));
       
         // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
@@ -85,17 +92,13 @@ public class RobotContainer {
         joystick.y().toggleOnTrue(turret.home());
 
         RobotModeTriggers.disabled().onTrue(Commands.run(() -> turret.stopTourelle(), turret));
-        joystick.b().toggleOnTrue(Commands.run(() -> {
-                shooter.setKicker(1);
-                shooter.setShooter(1);
-        }, shooter).finallyDo(() -> {
-                shooter.setKicker(0);
-                shooter.setShooter(0);
-        }));
       
-    //    joystick.a().toggleOnTrue(new Spin(spindexer));
+        // joystick.a().toggleOnTrue(Commands.sequence(
+        //                             new Shoot(shooter).withTimeout(1),
+        //                             Commands.parallel(new Spin(spindexer), new ShootMoving(shooter, turret, shooterLoop), Commands.runEnd(() -> unjammer.set(0.5), () -> unjammer.set(0), unjammer))));
 
-        joystick.a().toggleOnTrue(new Shoot(shooter));
+        joystick.b().onTrue(shooter.homeHood());
+        // , Commands.run(() -> spindexer.spinAspirateur(-0.8), spindexer).finallyDo(() -> spindexer.spinAspirateur(0)).withTimeout(2)
         
         // joystick.leftBumper().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         // joystick.rightBumper().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
@@ -103,6 +106,13 @@ public class RobotContainer {
         // joystick.povDown().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
         // joystick.povLeft().whileTrue(shooter.sysIdDynamic(Direction.kForward));
         // joystick.povRight().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
+    }
+
+    public Command getInitCommand() {
+        return Commands.sequence(
+            Commands.parallel(turret.home()),
+            turret.setTurretPosition(0)
+        );
     }
 
     public Command getAutonomousCommand() {

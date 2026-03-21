@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -14,11 +13,11 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.lib.robot.Records;
+import frc.lib.robot.Records.ActuatorState;
 
 public class Shooter extends SubsystemBase{ 
 
@@ -27,7 +26,7 @@ public class Shooter extends SubsystemBase{
     private TalonFX shooterMotor2 = new TalonFX(7);
     private TalonFX hoodMoteur = new TalonFX(9);
 // private DigitalInput switchHaut = new DigitalInput(2); seulement une switch en bas 
-    private DigitalInput switchBas = new DigitalInput(3);
+    private DigitalInput switchBas = new DigitalInput(8);
 
     private final VoltageOut sysIdRequest = new VoltageOut(0.0);
     private final SysIdRoutine sysIdRoutine =
@@ -45,6 +44,7 @@ public class Shooter extends SubsystemBase{
                 this
             )
         );
+
 
     public Shooter() {
         setName("Shooter");
@@ -130,6 +130,14 @@ public class Shooter extends SubsystemBase{
 
     public void setShooter(double speed) {
         shooterMotor1.set(speed);
+    }
+
+    public Command homeHood() {
+        return Commands.run(() -> hoodMoteur.set(0.10), this).until(() -> isHoodAtHome()).finallyDo(() -> hoodMoteur.stopMotor());
+    }
+
+    public double getShooterRPM() {
+        return shooterMotor1.getVelocity().getValueAsDouble() * 60.0;
     }
 }
 

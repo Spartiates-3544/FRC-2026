@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.logging.ExtendedLogger;
 import frc.lib.robot.LedStrips;
 
@@ -31,27 +32,28 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Background logging thread (off main)
-        ExtendedLogger.startBackground(20.0);
-    }
+        // ExtendedLogger.startBackground(20.0);
 
+    }
+    
     @Override
     public void robotPeriodic() {
         // m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
     }
-
+    
     @Override
     public void disabledInit() {
     }
-
+    
     @Override
     public void disabledPeriodic() { 
     }
-
+    
     @Override
     public void disabledExit() {
     }
-
+    
     @Override
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -59,20 +61,21 @@ public class Robot extends TimedRobot {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
     }
-
+    
     @Override
     public void autonomousPeriodic() {
     }
-
+    
     @Override
     public void autonomousExit() {
     }
-
+    
     @Override
     public void teleopInit() {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
+        CommandScheduler.getInstance().schedule(m_robotContainer.getInitCommand());
     }
 
     @Override

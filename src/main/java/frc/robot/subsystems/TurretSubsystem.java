@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.*;
 
 import frc.lib.logging.ExtendedLogger;
+import frc.lib.logging.ExtendedLogger.LoggableField;
 import frc.lib.utils.MathUtils;
 import frc.robot.Constants;
 
@@ -37,6 +38,8 @@ public final class TurretSubsystem extends SubsystemBase {
     // private double cmdMotorRotLog = 0.0;
 
     // private double turretTargetDeg = 0.0;
+    @LoggableField(path = "Turret/limit")
+    private boolean limitStatus = false;
 
     public TurretSubsystem() {
         ExtendedLogger.registerInstance(this);
@@ -49,11 +52,11 @@ public final class TurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        
+        limitStatus = isTourelleAtHome();
     }
 
     public void setTurretDeg(double deg) {
-        double clampedDeg = MathUtils.clamp(deg, -150, 160);
+        double clampedDeg = MathUtils.clamp(deg, Constants.Shooter.defaultParams().hoodMinDeg(), Constants.Shooter.defaultParams().hoodMaxDeg());
         double toursTourelle = clampedDeg / 360.0;
         double toursMoteur = toursTourelle * Constants.Turret.ratio;
 
@@ -90,8 +93,12 @@ public final class TurretSubsystem extends SubsystemBase {
         return Commands.runOnce(() -> setTurretDeg(angleDegrees), this);
     }
 
-    public double getTourellePosition(){
-        return turret.getPosition().getValueAsDouble();
+    public double getTourelleAngle(){
+        return MathUtils.clamp(
+            (turret.getPosition().getValueAsDouble() / Constants.Turret.ratio) * 360.0,
+            Constants.Shooter.defaultParams().turretMinDeg(),
+            Constants.Shooter.defaultParams().turretMaxDeg()
+        );
     }
 
 }
