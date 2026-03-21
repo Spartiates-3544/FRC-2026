@@ -79,6 +79,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     );
 
     private Field2d field = new Field2d();
+    private Vision vision = new Vision(this::addVisionMeasurement);
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
     @SuppressWarnings("unused")
@@ -265,6 +266,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         field.setRobotPose(getPose());
+        vision.update();
     }
     
 
@@ -354,5 +356,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             () -> false,
             this
         );
+
     }
 }

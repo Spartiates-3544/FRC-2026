@@ -1,10 +1,15 @@
 // frc/robot/Constants.java
 package frc.robot;
+import javax.xml.crypto.dsig.Transform;
+
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import frc.lib.robot.Records;
 import frc.lib.robot.Records.ShotSolution;
 
@@ -176,5 +181,10 @@ public final class Constants {
         }
 
         public static double ratio = 7.8125;
+    }
+
+    public static final class Vision {
+        public static Transform3d limelightV2Pos = new Transform3d(-0.3, 0.113, 0.282, new Rotation3d(0, -0.349, 2.533));
+        public static Transform3d limelightV3Pos = new Transform3d(-0.3, 0.83, 0.291, new Rotation3d(0, -0.349, -2.533));
     }
 }

@@ -14,8 +14,8 @@ public class Shoot extends Command{
  
     @Override
     public void execute() {
-        shooter.setKickerSpeed(-1500);
-        shooter.setShooterSpeed(1500);
+        shooter.setKickerSpeed(-6000);
+        shooter.setShooterSpeed(3544);
     }
 
     @Override

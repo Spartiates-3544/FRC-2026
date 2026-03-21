@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.Ramasser;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.Spin;
 import frc.robot.subsystems.Ramasseur;
 import frc.lib.robot.Records;
 import frc.robot.subsystems.Shooter;
@@ -21,6 +22,7 @@ import frc.robot.subsystems.Spindexer;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.Unjammer;
 
 public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -41,6 +43,7 @@ public class RobotContainer {
 
     public final Spindexer spindexer = new Spindexer();
     public final Shooter shooter = new Shooter();
+    public final Unjammer unjammer = new Unjammer();
 
     private SendableChooser<Command> autoChooser;
 
@@ -78,20 +81,16 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.povUp().onTrue(turret.setTurretPosition(-150));
+        joystick.povUp().onTrue(turret.setTurretPosition(0));
         joystick.povLeft().onTrue(turret.setTurretPosition(-90));
         joystick.povRight().onTrue(turret.setTurretPosition(90));
         joystick.povDown().onTrue(turret.setTurretPosition(160));
         joystick.y().toggleOnTrue(turret.home());
 
         RobotModeTriggers.disabled().onTrue(Commands.run(() -> turret.stopTourelle(), turret));
-        joystick.b().toggleOnTrue(Commands.run(() -> {
-                shooter.setKicker(1);
-                shooter.setShooter(1);
-        }, shooter).finallyDo(() -> {
-                shooter.setKicker(0);
-                shooter.setShooter(0);
-        }));
+        joystick.a().toggleOnTrue(Commands.sequence(
+                                    new Shoot(shooter).withTimeout(1),
+                                    Commands.parallel(new Spin(spindexer), new Shoot(shooter), Commands.runEnd(() -> unjammer.set(0.5), () -> unjammer.set(0), unjammer))));
       
     //    joystick.a().toggleOnTrue(new Spin(spindexer));
 
