@@ -3,19 +3,24 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Ramasser;
+import frc.robot.commands.Shoot;
 import frc.robot.subsystems.Ramasseur;
 import frc.lib.robot.Records;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.commands.PositionnerTourelle;
 import frc.robot.commands.Spin;
 import frc.robot.generated.TunerConstants;
@@ -81,16 +86,24 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.b().toggleOnTrue(Commands.run(() -> {
-                shooter.setKicker(1);
-                shooter.setShooter(1);
-        }, shooter).finallyDo(() -> {
-                shooter.setKicker(0);
-                shooter.setShooter(0);
-        }));
+        // joystick.b().toggleOnTrue(Commands.run(() -> {
+        //         shooter.setKicker(1);
+        //         shooter.setShooter(1);
+        // }, shooter).finallyDo(() -> {
+        //         shooter.setKicker(0);
+        //         shooter.setShooter(0);
+        // }));
       
-       joystick.a().toggleOnTrue(new Spin(spindexer));
+    //    joystick.a().toggleOnTrue(new Spin(spindexer));
 
+        joystick.a().toggleOnTrue(new Shoot(shooter));
+        
+        // joystick.leftBumper().onTrue(Commands.runOnce(() -> SignalLogger.start()));
+        // joystick.rightBumper().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
+        // joystick.povUp().whileTrue(shooter.sysIdQuasistatic(Direction.kForward));
+        // joystick.povDown().whileTrue(shooter.sysIdQuasistatic(Direction.kReverse));
+        // joystick.povLeft().whileTrue(shooter.sysIdDynamic(Direction.kForward));
+        // joystick.povRight().whileTrue(shooter.sysIdDynamic(Direction.kReverse));
     }
 
     public Command getAutonomousCommand() {
