@@ -39,12 +39,10 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+    
     public final Ramasseur ramasseur = new Ramasseur();
     public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-
     public final TurretSubsystem turret = new TurretSubsystem();
-    public PositionnerTourelle positionnerTourelle = new PositionnerTourelle(turret);    
 
     public final Spindexer spindexer = new Spindexer();
     public final Shooter shooter = new Shooter();
@@ -83,16 +81,22 @@ public class RobotContainer {
         // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // joystick.b().toggleOnTrue(Commands.run(() -> {
-        //         shooter.setKicker(1);
-        //         shooter.setShooter(1);
-        // }, shooter).finallyDo(() -> {
-        //         shooter.setKicker(0);
-        //         shooter.setShooter(0);
-        // }));
+        joystick.povUp().onTrue(turret.setTurretPosition(-150));
+        joystick.povLeft().onTrue(turret.setTurretPosition(-90));
+        joystick.povRight().onTrue(turret.setTurretPosition(90));
+        joystick.povDown().onTrue(turret.setTurretPosition(160));
+        joystick.y().toggleOnTrue(turret.home());
+
+        RobotModeTriggers.disabled().onTrue(Commands.run(() -> turret.stopTourelle(), turret));
+        joystick.b().toggleOnTrue(Commands.run(() -> {
+                shooter.setKicker(1);
+                shooter.setShooter(1);
+        }, shooter).finallyDo(() -> {
+                shooter.setKicker(0);
+                shooter.setShooter(0);
+        }));
       
     //    joystick.a().toggleOnTrue(new Spin(spindexer));
 
