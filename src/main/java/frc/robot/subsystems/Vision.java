@@ -24,10 +24,10 @@ public class Vision {
     private final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
     private PhotonPoseEstimator limelightV2Estimator = new PhotonPoseEstimator(layout, Constants.Vision.limelightV2Pos);
     private PhotonPoseEstimator limelightV3Estimator = new PhotonPoseEstimator(layout, Constants.Vision.limelightV3Pos);
-    // private PhotonPoseEstimator heliosLeftEstimator = new PhotonPoseEstimator(layout, Constants.Vision.limelightV2Pos);
-    // private PhotonPoseEstimator heliosrightEstimator = new PhotonPoseEstimator(layout, Constants.Vision.limelightV2Pos);
-    private PhotonCamera[] cameras = {limelightV2, limelightV3};
-    private PhotonPoseEstimator[] poseEstimators = {limelightV2Estimator, limelightV3Estimator};
+    private PhotonPoseEstimator heliosLeftEstimator = new PhotonPoseEstimator(layout, Constants.Vision.heliosLeftPos);
+    private PhotonPoseEstimator heliosrightEstimator = new PhotonPoseEstimator(layout, Constants.Vision.heliosRightPos);
+    private PhotonCamera[] cameras = {limelightV2, limelightV3, heliosLeft, heliosRight};
+    private PhotonPoseEstimator[] poseEstimators = {limelightV2Estimator, limelightV3Estimator, heliosLeftEstimator, heliosrightEstimator};
 
     private EstimateConsumer consumer;
     
