@@ -15,48 +15,44 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants;
 import frc.lib.robot.Records;
-import frc.lib.robot.Records.ActuatorState;
+import frc.robot.Constants;
 
-public class Shooter extends SubsystemBase{ 
+public class Shooter extends SubsystemBase {
 
-    private TalonFX kickerMotor = new TalonFX(5);
-    private TalonFX shooterMotor1 = new TalonFX(6);
-    private TalonFX shooterMotor2 = new TalonFX(7);
-    private TalonFX hoodMoteur = new TalonFX(9);
-// private DigitalInput switchHaut = new DigitalInput(2); seulement une switch en bas 
-    private DigitalInput switchBas = new DigitalInput(8);
+    private static final double SHOOTER_RPM_TOLERANCE = 150.0;
+    private static final double HOOD_DEG_TOLERANCE = 1.0;
+
+    private final TalonFX kickerMotor = new TalonFX(5, Constants.CAN.rio);
+    private final TalonFX shooterMotor1 = new TalonFX(6, Constants.CAN.rio);
+    private final TalonFX shooterMotor2 = new TalonFX(7, Constants.CAN.rio);
+    private final TalonFX hoodMotor = new TalonFX(9, Constants.CAN.rio);
+    private final DigitalInput hoodHomeSwitch = new DigitalInput(8);
 
     private final VoltageOut sysIdRequest = new VoltageOut(0.0);
-    private final SysIdRoutine sysIdRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null,        // Use default ramp rate (1 V/s)
-                Volts.of(4), // Reduce dynamic step voltage to 4 to prevent brownout
-                null,        // Use default timeout (10 s)
-                            // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())
-            ),
-            new SysIdRoutine.Mechanism(
-                (volts) -> kickerMotor.setControl(sysIdRequest.withOutput(volts.in(Volts))),
-                null,
-                this
-            )
-        );
 
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(
+                    null,
+                    Volts.of(4),
+                    null,
+                    state -> SignalLogger.writeString("state", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    volts -> kickerMotor.setControl(sysIdRequest.withOutput(volts.in(Volts))),
+                    null,
+                    this));
 
     public Shooter() {
         setName("Shooter");
+        configureMotors();
+    }
 
+    private void configureMotors() {
         kickerMotor.getConfigurator().apply(Constants.Shooter.kickerConfigs);
         shooterMotor1.getConfigurator().apply(Constants.Shooter.shooterConfigs);
-
         shooterMotor2.getConfigurator().apply(Constants.Shooter.shooterConfigs);
-        Follower followRequest = new Follower(6, MotorAlignmentValue.Aligned);
-        shooterMotor2.setControl(followRequest);
-
-        hoodMoteur.getConfigurator().apply(Constants.Shooter.hoodConfigs);
+        hoodMotor.getConfigurator().apply(Constants.Shooter.hoodConfigs);
+        shooterMotor2.setControl(new Follower(6, MotorAlignmentValue.Aligned));
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -68,60 +64,66 @@ public class Shooter extends SubsystemBase{
     }
 
     public void setShooterSpeed(double shooterSpeedRPM) {
-       VelocityVoltage demande = new VelocityVoltage(shooterSpeedRPM/60).withSlot(0);
-       shooterMotor1.setControl(demande);
+        shooterMotor1.setControl(
+                new VelocityVoltage(rpmToRps(shooterSpeedRPM)).withSlot(0));
     }
 
     public void setKickerSpeed(double kickerSpeedRPM) {
-        VelocityVoltage demande = new VelocityVoltage(kickerSpeedRPM/60).withSlot(0);
-        kickerMotor.setControl(demande);
+        kickerMotor.setControl(
+                new VelocityVoltage(rpmToRps(kickerSpeedRPM)).withSlot(0));
     }
 
-    // hoodAngle: degrees 
-    public void setHoodAngle(double hoodAngle) { 
-        Records.ShooterParams p = Constants.Shooter.defaultParams();
-        if (hoodAngle > p.hoodMinDeg() && hoodAngle < p.hoodMaxDeg()) {
-            double toursHood = hoodAngle / 360.0;
-            double toursMoteur = toursHood * Constants.Shooter.hoodRatio;
-            PositionVoltage demande = new PositionVoltage(toursMoteur)
-                                            .withSlot(0)
-                                            .withLimitReverseMotion(switchBas.get());
-            hoodMoteur.setControl(demande);
-        } // todo: add else
-        
-    }    
-
-    /** Move elevator at given speed (-1.0 to 1.0) */
-    public void setHoodMoteur(double speed) {
-        hoodMoteur.set(speed);
+    public void stopKicker() {
+        kickerMotor.stopMotor();
     }
 
-    /** Stop the elevator motor */
+    public double getShooterRPM() {
+        return rpsToRpm(shooterMotor1.getVelocity().getValueAsDouble());
+    }
+
+    public void setHoodAngle(double hoodAngleDeg) {
+        double clampedDeg = clampHoodAngleDeg(hoodAngleDeg);
+        double motorRotations = hoodDegToMotorRotations(clampedDeg);
+
+        PositionVoltage request = new PositionVoltage(motorRotations)
+                .withSlot(0)
+                .withLimitReverseMotion(isHoodAtHome());
+
+        hoodMotor.setControl(request);
+    }
+
+    public void setHoodMotor(double speed) {
+        hoodMotor.set(speed);
+    }
+
     public void stopHood() {
-        hoodMoteur.stopMotor();
+        hoodMotor.stopMotor();
     }
 
-    /** Returns true if the limit switch is pressed */
     public boolean isHoodAtHome() {
-        return switchBas.get(); 
+        return hoodHomeSwitch.get();
     }
 
-    /** Reset encoder position to zero */
     public void resetHoodPosition() {
-        hoodMoteur.setPosition(0);
+        hoodMotor.setPosition(0.0);
     }
 
-    /** Simulated encoder update (replace with real encoder code) */
-    public void updatePosition(double delta) {
-//        position += delta;
+    public double getHoodMotorPosition() {
+        return hoodMotor.getPosition().getValueAsDouble();
     }
 
-    public double getHoodPosition() {
-        return hoodMoteur.getPosition().getValueAsDouble();
+    public double getHoodAngleDeg() {
+        double motorRot = hoodMotor.getPosition().getValueAsDouble();
+        double hoodRot = motorRot / Constants.Shooter.hoodRatio;
+        return hoodRot * 360.0;
     }
 
-    public Command setShooterMoteur(double shooterSpeed){
-        return Commands.runOnce(() -> setShooterSpeed(shooterSpeed), this);
+    public boolean atShooterSpeed(double targetRpm) {
+        return Math.abs(getShooterRPM() - targetRpm) <= SHOOTER_RPM_TOLERANCE;
+    }
+
+    public boolean atHoodAngle(double targetDeg) {
+        return Math.abs(getHoodAngleDeg() - targetDeg) <= HOOD_DEG_TOLERANCE;
     }
 
     public void setKicker(double speed) {
@@ -132,13 +134,41 @@ public class Shooter extends SubsystemBase{
         shooterMotor1.set(speed);
     }
 
-    public Command homeHood() {
-        return Commands.run(() -> hoodMoteur.set(0.10), this).until(() -> isHoodAtHome()).finallyDo(() -> hoodMoteur.stopMotor());
+    public void stopShooter() {
+        shooterMotor1.stopMotor();
+        shooterMotor2.stopMotor();
     }
 
-    public double getShooterRPM() {
-        return shooterMotor1.getVelocity().getValueAsDouble() * 60.0;
+    public Command setShooterMotorCommand(double shooterSpeedRPM) {
+        return Commands.runOnce(() -> setShooterSpeed(shooterSpeedRPM), this);
+    }
+
+    public Command homeHood() {
+        return Commands.run(() -> hoodMotor.set(-0.10), this)
+                .until(this::isHoodAtHome)
+                .finallyDo(interrupted -> {
+                    hoodMotor.stopMotor();
+                    if (!interrupted) {
+                        resetHoodPosition();
+                    }
+                });
+    }
+
+    private static double rpmToRps(double rpm) {
+        return rpm / 60.0;
+    }
+
+    private static double rpsToRpm(double rps) {
+        return rps * 60.0;
+    }
+
+    private static double hoodDegToMotorRotations(double hoodAngleDeg) {
+        double hoodRotations = hoodAngleDeg / 360.0;
+        return hoodRotations * Constants.Shooter.hoodRatio;
+    }
+
+    private static double clampHoodAngleDeg(double hoodAngleDeg) {
+        Records.ShooterParams p = Constants.Shooter.defaultParams();
+        return Math.max(p.hoodMinDeg(), Math.min(p.hoodMaxDeg(), hoodAngleDeg));
     }
 }
-
-   

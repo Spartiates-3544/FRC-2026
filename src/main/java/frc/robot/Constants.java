@@ -1,5 +1,6 @@
-// frc/robot/Constants.java
 package frc.robot;
+
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -7,19 +8,6 @@ import com.pathplanner.lib.config.RobotConfig;
 
 import frc.lib.robot.Records;
 
-/**
- * <p>
- * Constantes globales du robot.
- * </p>
- *
- * Ici on met:
- * - des valeurs fixes (IDs, offsets, limites)
- * - des paramètres "par défaut" safe
- *
- * Notes:
- * - Si tu veux tuner live, tu gardes ces defaults ici,
- * puis tu lis des overrides via NetworkTables (ShooterTuning).
- */
 public final class Constants {
     private Constants() {
     }
@@ -35,25 +23,19 @@ public final class Constants {
             }
         }
     }
-    /**
-     * <p>
-     * Constantes du shooter (paramètres de modèle + limites).
-     * </p> 
-     *
-     * Ces valeurs sont les "defaults" safe.
-     * Tu peux les override live via ShooterTuning sans toucher à ce fichier.
-     */
+
+    public static final class CAN {
+        private CAN() {
+        }
+
+        public static final CANBus rio = new CANBus("rio");
+        public static final CANBus canivore = new CANBus("canivore");
+    }
+
     public static final class Shooter {
         private Shooter() {
         }
 
-        /**
-         * <p>
-         * Paramètres par défaut du solveur balistique.
-         * </p>
-         *
-         * @return Records.ShooterParams (defaults safe)
-         */
         public static final Records.ShooterParams DEFAULT_PARAMS = new Records.ShooterParams(
                 9.80665,
                 1.225,
@@ -138,7 +120,7 @@ public final class Constants {
             return DEFAULT_PARAMS;
         }
 
-        public static TalonFXConfiguration kickerConfigs = new TalonFXConfiguration();
+        public static final TalonFXConfiguration kickerConfigs = new TalonFXConfiguration();
         static {
             kickerConfigs.Slot0.kP = 0.15948;
             kickerConfigs.Slot0.kI = 0;
@@ -147,8 +129,8 @@ public final class Constants {
             kickerConfigs.Slot0.kV = 0.12977;
             kickerConfigs.Slot0.kA = 0.0018328;
         }
-        
-        public static TalonFXConfiguration shooterConfigs = new TalonFXConfiguration();
+
+        public static final TalonFXConfiguration shooterConfigs = new TalonFXConfiguration();
         static {
             shooterConfigs.Slot0.kP = 0.18488;
             shooterConfigs.Slot0.kI = 0;
@@ -157,28 +139,30 @@ public final class Constants {
             shooterConfigs.Slot0.kV = 0.12109;
             shooterConfigs.Slot0.kA = 0.017213;
         }
-    
-        public static Slot0Configs hoodConfigs = new Slot0Configs();
-        static{
-            hoodConfigs.kP = 0;
-            hoodConfigs.kI = 0;
-            hoodConfigs.kD = 0;
+
+        public static final Slot0Configs hoodConfigs = new Slot0Configs();
+        static {
+            // kP était à 0, probablement pourquoi il bougeais pas
+            hoodConfigs.kP = 25.0;
+            hoodConfigs.kI = 0.0;
+            hoodConfigs.kD = 0.4;
         }
 
-        // public static double facteurConvertionToursParDegreHood = 0.483;
-        public static double hoodRatio = 113.944;
-        
+        public static final double hoodRatio = 113.944;
     }
 
     public static final class Turret {
-        public static TalonFXConfiguration turretConfig = new TalonFXConfiguration();
-        
+        private Turret() {
+        }
+
+        public static final TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+
         static {
             turretConfig.Slot0.kP = 12;
             turretConfig.Slot0.kD = 0.4;
             turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         }
 
-        public static double ratio = 7.8125;
+        public static final double ratio = 7.8125;
     }
 }

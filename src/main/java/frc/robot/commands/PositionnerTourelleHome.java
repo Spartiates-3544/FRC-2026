@@ -25,6 +25,8 @@ public class PositionnerTourelleHome extends Command {
     @Override
     public void end(boolean interrupted) {
         turret.setTourelleMoteur(0);
-        turret.resetTourellePosition(5.42);
+        if (!interrupted) {
+            turret.resetTourellePosition(5.42);
+        }
     }
 }
