@@ -8,6 +8,8 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.lib.robot.Records;
+import frc.robot.Constants.Drive;
 import frc.robot.commands.Ramasser;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootMoving;
 import frc.robot.commands.Spin;
 import frc.robot.generated.TunerConstants;
@@ -97,6 +101,8 @@ public class RobotContainer {
                 configureShooterBindings();
                 configureIntakeBindings();
                 configureDisabledBindings();
+
+                joystick.back().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3, 4, Rotation2d.kZero))));
         }
 
         private void configureDashboard() {
@@ -136,14 +142,17 @@ public class RobotContainer {
         // Commands (TODO: BOUGER VERS UN FICHIER COMMAND)
         // =========================
         private Command buildMovingShootCommand() {
-                return Commands.parallel(
-                                new ShootMoving(shooter, turret, shooterLoop),
-                                new Spin(spindexer),
-                                new Ramasser(ramasseur),
-                                Commands.runEnd(
-                                                () -> unjammer.set(0.5),
-                                                () -> unjammer.set(0.0),
-                                                unjammer));
+                return Commands.sequence(
+                        new Shoot(shooter).withTimeout(1),
+                        Commands.parallel(
+                                        new ShootMoving(shooter, turret, shooterLoop),
+                                        new Spin(spindexer),
+                                        new Ramasser(ramasseur),
+                                        Commands.runEnd(
+                                                        () -> unjammer.set(0.5),
+                                                        () -> unjammer.set(0.0),
+                                                        unjammer))
+                );
         }
 
         // =========================

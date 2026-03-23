@@ -36,6 +36,14 @@ public class ShootMoving extends Command {
         shooter.applyShot(shot);
 
         double turretTargetDeg = -Math.toDegrees(shot.turretYawRelRad());
+
+        // Reverse turret by 180 degrees
+        if (turretTargetDeg > 0.0) {
+            turretTargetDeg -= 180.0;
+        } else {
+            turretTargetDeg += 180.0;
+        }
+
         turret.setTurretDeg(turretTargetDeg);
         shooter.setKickerSpeed(-6000.0);
     }
