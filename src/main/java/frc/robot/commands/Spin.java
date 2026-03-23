@@ -18,7 +18,7 @@ public class Spin extends Command {
  
     @Override
     public void execute() {
-        spindexer.spin(0.5);
+        spindexer.spin(0.25);
         spindexer.spinAspirateur(-0.8);
     }
 

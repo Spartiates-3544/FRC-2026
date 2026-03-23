@@ -5,50 +5,53 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
-public class LedStrips {
+public final class LedStrips {
     private static AddressableLED led;
+    private static AddressableLEDBuffer buffer;
 
-    private static int length2 = 0;
+    public enum LedColor {
+        RED, GREEN, BLUE, ERROR,
+    }
 
-    public static enum Couleurs {
-        RED,
-        GREEN,
-        BLUE,
-        ERREUR_MOTEUR_BRISE
+    private LedStrips() {
     }
 
     public static void init(int port, int length) {
         led = new AddressableLED(port);
+        buffer = new AddressableLEDBuffer(length);
+
         led.setLength(length);
+        led.setData(buffer);
         led.start();
-        length2 = length;
     }
 
-    public static void definirCouleurs(Couleurs couleur) {
+    public static void setLED(LedColor color) {
+        if (led == null || buffer == null) {
+            return;
+        }
+
         LEDPattern pattern;
-    
-        switch (couleur) {
+
+        switch (color) {
             case RED:
                 pattern = LEDPattern.solid(Color.kRed);
                 break;
-            
+
             case BLUE:
                 pattern = LEDPattern.solid(Color.kBlue);
                 break;
-        
+
             case GREEN:
                 pattern = LEDPattern.solid(Color.kGreen);
                 break;
 
-            default: 
+            case ERROR:
+            default:
                 pattern = LEDPattern.solid(Color.kBlack);
                 break;
         }
 
-        AddressableLEDBuffer liste = new AddressableLEDBuffer(length2);
-        pattern.applyTo(liste);
-        led.setData(liste);
+        pattern.applyTo(buffer);
+        led.setData(buffer);
     }
-
-
 }
