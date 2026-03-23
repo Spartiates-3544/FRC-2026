@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.logic.ShooterAim.AimResult;
 import frc.lib.robot.Records;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterLoop;
@@ -13,10 +12,10 @@ public class ShootMoving extends Command {
     private final TurretSubsystem turret;
     private final ShooterLoop shooterLoop;
 
-    public ShootMoving(Shooter shoot, TurretSubsystem tur, ShooterLoop loop) {
-        shooter = shoot;
-        turret = tur;
-        shooterLoop = loop;
+    public ShootMoving(Shooter shooter, TurretSubsystem turret, ShooterLoop shooterLoop) {
+        this.shooter = shooter;
+        this.turret = turret;
+        this.shooterLoop = shooterLoop;
         addRequirements(shooter, turret);
     }
 
@@ -27,29 +26,26 @@ public class ShootMoving extends Command {
 
     @Override
     public void execute() {
-        AimResult target = shooterLoop.getShotSolution();
+        Records.ShotSolution shot = shooterLoop.getCommandedShot();
 
-        if (target == null || !target.ok()) {
-            shooter.setKickerSpeed(0);
-            shooter.setShooterSpeed(0);
+        if (shot == null) {
+            shooter.setKickerSpeed(0.0);
             return;
         }
 
-        Records.ShotSolution cmd = target.cmd();
+        shooter.applyShot(shot);
 
-        shooter.setShooterSpeed(cmd.flywheelRpm());
-        shooter.setHoodAngle(cmd.hoodDeg());
-        turret.setTurretDeg(Math.toDegrees(cmd.turretYawRelRad()));
-        shooter.setKickerSpeed(-6000);
+        double turretTargetDeg = -Math.toDegrees(shot.turretYawRelRad());
+        turret.setTurretDeg(turretTargetDeg);
+        shooter.setKickerSpeed(-6000.0);
     }
 
     @Override
     public void end(boolean interrupted) {
         shooterLoop.disable();
 
-        shooter.setKickerSpeed(0);
-        shooter.setShooterSpeed(0);
-        shooter.stopHood();
+        shooter.setKickerSpeed(0.0);
+        shooter.stopShooter();
         turret.stopTourelle();
     }
 

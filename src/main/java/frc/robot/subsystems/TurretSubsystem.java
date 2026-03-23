@@ -1,28 +1,37 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.logging.ExtendedLogger;
-import frc.lib.logging.ExtendedLogger.LoggableField;
 import frc.lib.utils.MathUtils;
 import frc.robot.Constants;
 
 public final class TurretSubsystem extends SubsystemBase {
-    private static final double HOME_SENSOR_POSITION_MOTOR_ROT = 3.30;
+    private static final double TURRET_DEG_TOLERANCE = 2.0;
+
+    /**
+     * Mechanical convention:
+     * - limit switch side = physical turret MAX angle
+     * - after homing, motor position = 0 at the switch
+     * - positive commanded angle = toward switch
+     * - negative commanded angle = away from switch
+     *
+     * Observed hardware behavior:
+     * - open-loop positive motor output moves toward switch
+     * - closed-loop negative motor position moves away from switch
+     */
+    private static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
 
     private final TalonFX turret = new TalonFX(8, Constants.CAN.rio);
     private final DigitalInput limAntiHoraire = new DigitalInput(7);
 
-    @LoggableField(path = "Turret/limit")
-    private boolean limitStatus = false;
+    private final MotionMagicVoltage turretMotionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
 
     public TurretSubsystem() {
-        ExtendedLogger.registerInstance(this);
         applyConfigs();
     }
 
@@ -32,7 +41,6 @@ public final class TurretSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        limitStatus = isTourelleAtHome();
     }
 
     public void setTurretDeg(double deg) {
@@ -41,11 +49,15 @@ public final class TurretSubsystem extends SubsystemBase {
                 Constants.Shooter.defaultParams().turretMinDeg(),
                 Constants.Shooter.defaultParams().turretMaxDeg());
 
-        double toursTourelle = clampedDeg / 360.0;
-        double toursMoteur = toursTourelle * Constants.Turret.ratio;
+        double maxDeg = Constants.Shooter.defaultParams().turretMaxDeg();
 
-        PositionVoltage demande = new PositionVoltage(toursMoteur).withSlot(0);
-        turret.setControl(demande);
+        // At home/switch, angle = maxDeg and motor position = 0.
+        // Moving away from switch must go NEGATIVE in motor rotations.
+        double turretDegFromHome = clampedDeg - maxDeg;
+        double turretRotationsFromHome = turretDegFromHome / 360.0;
+        double motorRotations = turretRotationsFromHome * Constants.Turret.ratio;
+
+        turret.setControl(turretMotionMagicRequest.withPosition(motorRotations));
     }
 
     public void setTourelleMoteur(double speed) {
@@ -65,7 +77,7 @@ public final class TurretSubsystem extends SubsystemBase {
     }
 
     public Command home() {
-        return Commands.run(() -> turret.set(-0.10), this)
+        return Commands.run(() -> turret.set(0.10), this)
                 .until(this::isTourelleAtHome)
                 .finallyDo(interrupted -> {
                     turret.stopMotor();
@@ -80,13 +92,28 @@ public final class TurretSubsystem extends SubsystemBase {
     }
 
     public double getTourelleAngle() {
+        double motorRot = turret.getPosition().getValueAsDouble();
+        double turretRotFromHome = motorRot / Constants.Turret.ratio;
+        double turretDegFromHome = turretRotFromHome * 360.0;
+
+        double maxDeg = Constants.Shooter.defaultParams().turretMaxDeg();
+        double angleDeg = maxDeg + turretDegFromHome;
+
         return MathUtils.clamp(
-                (turret.getPosition().getValueAsDouble() / Constants.Turret.ratio) * 360.0,
+                angleDeg,
                 Constants.Shooter.defaultParams().turretMinDeg(),
                 Constants.Shooter.defaultParams().turretMaxDeg());
     }
 
     public double getTourelleAngleRad() {
         return Math.toRadians(getTourelleAngle());
+    }
+
+    public boolean atTurretAngleDeg(double targetDeg) {
+        return atTurretAngleDeg(targetDeg, TURRET_DEG_TOLERANCE);
+    }
+
+    public boolean atTurretAngleDeg(double targetDeg, double toleranceDeg) {
+        return Math.abs(getTourelleAngle() - targetDeg) <= Math.abs(toleranceDeg);
     }
 }

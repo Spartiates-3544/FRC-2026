@@ -1,11 +1,12 @@
 package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
-
+import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
 
 public final class Constants {
@@ -43,7 +44,7 @@ public final class Constants {
                 0.127,
 
                 0.45,
-                true,
+                false,
 
                 0.50,
                 0.00,
@@ -90,14 +91,14 @@ public final class Constants {
                 true,
                 1e-6,
 
-                2,
+                1,
 
-                7,
-                6,
-                7,
-                6,
-                7,
-                6,
+                3,
+                1,
+                3,
+                1,
+                3,
+                1,
 
                 0.8,
                 10.0,
@@ -108,7 +109,7 @@ public final class Constants {
                 0.5,
                 8.0,
 
-                true,
+                false,
                 1,
                 1.8,
                 1.6,
@@ -142,7 +143,6 @@ public final class Constants {
 
         public static final Slot0Configs hoodConfigs = new Slot0Configs();
         static {
-            // kP était à 0, probablement pourquoi il bougeais pas
             hoodConfigs.kP = 25.0;
             hoodConfigs.kI = 0.0;
             hoodConfigs.kD = 0.4;
@@ -155,14 +155,50 @@ public final class Constants {
         private Turret() {
         }
 
+        public static final double ratio = 7.8125;
+
+        /**
+         * Motion Magic units are in mechanism sensor rotations and rotations/sec style units.
+         * Since we're commanding motor rotations directly in the subsystem, these are motor-side units.
+         */
+        public static final double motionMagicCruiseVelocityRps = 40.0;
+        public static final double motionMagicAccelerationRpsPerSec = 120.0;
+        public static final double motionMagicJerkRpsPerSecSq = 600.0;
+
         public static final TalonFXConfiguration turretConfig = new TalonFXConfiguration();
 
         static {
-            turretConfig.Slot0.kP = 12;
+            turretConfig.Slot0.kP = 12.0;
+            turretConfig.Slot0.kI = 0.0;
             turretConfig.Slot0.kD = 0.4;
-            turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        }
+            turretConfig.Slot0.kS = 0.0;
+            turretConfig.Slot0.kV = 0.0;
+            turretConfig.Slot0.kA = 0.0;
 
-        public static final double ratio = 7.8125;
+            turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+            MotionMagicConfigs mm = turretConfig.MotionMagic;
+            mm.MotionMagicCruiseVelocity = motionMagicCruiseVelocityRps;
+            mm.MotionMagicAcceleration = motionMagicAccelerationRpsPerSec;
+            mm.MotionMagicJerk = motionMagicJerkRpsPerSecSq;
+        }
+    }
+
+    private static final double FAST_FIXED_HOOD_DEG = 38.0;
+
+    private static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
+            new double[] {
+                    1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80
+            },
+            new double[] {
+                    2200, 2350, 2500, 2680, 2875, 3075, 3300, 3550, 3825, 4100
+            });
+
+    public static double fastFixedHoodDeg() {
+        return FAST_FIXED_HOOD_DEG;
+    }
+
+    public static FastShooterSolver.DistanceRpmTable fastRpmTable() {
+        return FAST_RPM_TABLE;
     }
 }

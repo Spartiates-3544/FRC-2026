@@ -2,20 +2,16 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.logging.ExtendedLogger;
-import frc.lib.logic.ShooterAim;
-import frc.lib.logic.ShooterAim.AimResult;
+import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
+import frc.robot.Constants;
 import frc.robot.RobotActStateBuilder;
 
 public class ShooterLoop extends SubsystemBase {
-    private final ShooterAim.Loop aimLoop = new ShooterAim.Loop();
     private final RobotActStateBuilder stateBuilder;
 
     private boolean enabled = false;
-    private AimResult lastResult = null;
-
-    @ExtendedLogger.LoggableField(path = "ShooterLoop/LastSolveDurationMs")
+    private Records.ShotSolution lastShot = null;
     private double lastSolveDurationMs = 0.0;
 
     public ShooterLoop(
@@ -26,18 +22,15 @@ public class ShooterLoop extends SubsystemBase {
         this.stateBuilder = new RobotActStateBuilder(
                 drivetrain::getPose,
                 drivetrain::getChassisSpeeds,
-                turret::getTourelleAngleRad,
+                () -> -turret.getTourelleAngleRad(),
                 shooter::getHoodAngleDeg,
                 shooter::getShooterRPM);
-
-        ExtendedLogger.registerInstance(this);
     }
 
     @Override
     public void periodic() {
-
         if (!enabled) {
-            lastResult = null;
+            lastShot = null;
             lastSolveDurationMs = 0.0;
             return;
         }
@@ -46,11 +39,13 @@ public class ShooterLoop extends SubsystemBase {
 
         double t0 = Timer.getFPGATimestamp();
 
-        lastResult = aimLoop.update(
+        lastShot = FastShooterSolver.solve(
+                Constants.Shooter.defaultParams(),
                 in.robotState(),
                 in.actuatorState(),
                 in.target(),
-                in.actuatorState().turretYawRelRad());
+                Constants.fastRpmTable(),
+                Constants.fastFixedHoodDeg());
 
         double t1 = Timer.getFPGATimestamp();
         lastSolveDurationMs = (t1 - t0) * 1000.0;
@@ -62,28 +57,23 @@ public class ShooterLoop extends SubsystemBase {
 
     public void disable() {
         enabled = false;
-        lastResult = null;
+        lastShot = null;
         lastSolveDurationMs = 0.0;
-        aimLoop.resetWarm();
     }
 
     public boolean isEnabled() {
         return enabled;
     }
 
-    public AimResult getShotSolution() {
-        return lastResult;
+    public Records.ShotSolution getShotSolution() {
+        return lastShot;
     }
 
     public Records.ShotSolution getCommandedShot() {
-        return lastResult != null ? lastResult.cmd() : null;
+        return lastShot;
     }
 
     public double getLastSolveDurationMs() {
         return lastSolveDurationMs;
-    }
-
-    public void resetWarmStart() {
-        aimLoop.resetWarm();
     }
 }

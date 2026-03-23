@@ -20,8 +20,8 @@ import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
 
-    private static final double SHOOTER_RPM_TOLERANCE = 150.0;
-    private static final double HOOD_DEG_TOLERANCE = 1.0;
+    private static final double SHOOTER_RPM_TOLERANCE = 450.0;
+    private static final double HOOD_DEG_TOLERANCE = 1000.0;
 
     private final TalonFX kickerMotor = new TalonFX(5, Constants.CAN.rio);
     private final TalonFX shooterMotor1 = new TalonFX(6, Constants.CAN.rio);
@@ -30,6 +30,13 @@ public class Shooter extends SubsystemBase {
     private final DigitalInput hoodHomeSwitch = new DigitalInput(8);
 
     private final VoltageOut sysIdRequest = new VoltageOut(0.0);
+
+    private final VelocityVoltage shooterVelocityRequest = new VelocityVoltage(0.0).withSlot(0);
+    private final VelocityVoltage kickerVelocityRequest = new VelocityVoltage(0.0).withSlot(0);
+    private final PositionVoltage hoodPositionRequest = new PositionVoltage(0.0).withSlot(0);
+
+    private double lastCommandedShooterRpm = 0.0;
+    private double lastCommandedHoodDeg = 0.0;
 
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -64,13 +71,14 @@ public class Shooter extends SubsystemBase {
     }
 
     public void setShooterSpeed(double shooterSpeedRPM) {
+        lastCommandedShooterRpm = shooterSpeedRPM;
         shooterMotor1.setControl(
-                new VelocityVoltage(rpmToRps(shooterSpeedRPM)).withSlot(0));
+                shooterVelocityRequest.withVelocity(rpmToRps(shooterSpeedRPM)));
     }
 
     public void setKickerSpeed(double kickerSpeedRPM) {
         kickerMotor.setControl(
-                new VelocityVoltage(rpmToRps(kickerSpeedRPM)).withSlot(0));
+                kickerVelocityRequest.withVelocity(rpmToRps(kickerSpeedRPM)));
     }
 
     public void stopKicker() {
@@ -83,13 +91,14 @@ public class Shooter extends SubsystemBase {
 
     public void setHoodAngle(double hoodAngleDeg) {
         double clampedDeg = clampHoodAngleDeg(hoodAngleDeg);
+        lastCommandedHoodDeg = clampedDeg;
+
         double motorRotations = hoodDegToMotorRotations(clampedDeg);
 
-        PositionVoltage request = new PositionVoltage(motorRotations)
-                .withSlot(0)
-                .withLimitReverseMotion(isHoodAtHome());
-
-        hoodMotor.setControl(request);
+        hoodMotor.setControl(
+                hoodPositionRequest
+                        .withPosition(motorRotations)
+                        .withLimitReverseMotion(isHoodAtHome()));
     }
 
     public void setHoodMotor(double speed) {
@@ -124,6 +133,27 @@ public class Shooter extends SubsystemBase {
 
     public boolean atHoodAngle(double targetDeg) {
         return Math.abs(getHoodAngleDeg() - targetDeg) <= HOOD_DEG_TOLERANCE;
+    }
+
+    public void applyShot(Records.ShotSolution shot) {
+        if (shot == null) {
+            return;
+        }
+        setShooterSpeed(shot.flywheelRpm());
+        // Hood intentionally ignored for now
+    }
+
+    public boolean readyForShot(Records.ShotSolution shot) {
+        return shot != null
+                && atShooterSpeed(shot.flywheelRpm());
+    }
+
+    public double getLastCommandedShooterRpm() {
+        return lastCommandedShooterRpm;
+    }
+
+    public double getLastCommandedHoodDeg() {
+        return lastCommandedHoodDeg;
     }
 
     public void setKicker(double speed) {

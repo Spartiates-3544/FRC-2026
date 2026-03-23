@@ -2,7 +2,7 @@ package frc.lib.logic;
 
 import edu.wpi.first.math.geometry.Translation3d;
 
-import frc.lib.logging.ExtendedLogger;
+//import frc.lib.logging.ExtendedLogger;
 import frc.lib.robot.Records;
 import frc.robot.Constants;
 
@@ -57,11 +57,11 @@ public final class ShooterAim {
      */
     public static final class Loop {
 
-        @ExtendedLogger.LoggableField(path = "ShooterAim/last", hz = 2)
-        private volatile AimResult lastLogged = null;
+        //@ExtendedLogger.LoggableField(path = "ShooterAim/last", hz = 2)
+        //private volatile AimResult lastLogged = null;
 
-        @ExtendedLogger.LoggableField(path = "ShooterAim/holdYawRelDeg", hz = 2)
-        private volatile double holdYawRelDegLogged = 0.0;
+        //@ExtendedLogger.LoggableField(path = "ShooterAim/holdYawRelDeg", hz = 2)
+       // private volatile double holdYawRelDegLogged = 0.0;
 
         private final Records.ShooterParams params;
         private Records.ShotSolution warm = null;
@@ -73,7 +73,7 @@ public final class ShooterAim {
 
         public Loop(Records.ShooterParams params) {
             this.params = params;
-            ExtendedLogger.registerInstance(this);
+           // ExtendedLogger.registerInstance(this);
         }
 
         public AimResult last() {
@@ -100,8 +100,8 @@ public final class ShooterAim {
 
             warm = last.nextWarm();
 
-            lastLogged = last;
-            holdYawRelDegLogged = Math.toDegrees(holdYawRelRad);
+           // lastLogged = last;
+           // holdYawRelDegLogged = Math.toDegrees(holdYawRelRad);
 
             return last;
         }

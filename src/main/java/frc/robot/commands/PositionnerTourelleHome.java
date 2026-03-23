@@ -14,7 +14,7 @@ public class PositionnerTourelleHome extends Command {
     
     @Override
     public void execute() {
-        turret.setTourelleMoteur(-0.2);
+        turret.setTourelleMoteur(-0.25);
     }
 
     @Override
