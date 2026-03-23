@@ -18,14 +18,12 @@ public class HoodReturnToHome extends Command {
     public void initialize() {
         // Start moving toward home
         if (homingSpeed>=0 && homingSpeed <=1.0) {
-            hood.setHoodMoteur(-Math.abs(homingSpeed)); // Negative = down
+            hood.setHoodMotor(-Math.abs(homingSpeed)); // Negative = down
         }
     }
 
     @Override
     public void execute() {
-        // Optional: update simulated encoder
-        hood.updatePosition(-0.01);
     }
 
     @Override

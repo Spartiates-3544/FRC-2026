@@ -194,12 +194,15 @@ public final class Records {
 
                         double turretMinDeg,
                         double turretMaxDeg,
+                        double turretBlindCenterDeg,
+                        double turretBlindHalfWidthDeg,
 
                         double fireLatencyS,
                         double hitRadiusM,
 
                         double rtDt,
                         double rtTmax,
+                        double controlLoopDtS,
 
                         String goalType,
                         double goalOpenRadiusM,
@@ -269,37 +272,41 @@ public final class Records {
                         Translation2d velXY,
                         double omegaRadS,
                         Translation2d accelXY) {
-        
-                
+
                 /**
                  * Construire un nouveau RobotState à partir de la position du robot.
+                 * 
                  * @param robotPose
-                 *                    position du robot sur le terrain.
+                 *                position du robot sur le terrain.
                  * @param speed
-                 *                    vitesse du robot sur le terrain.
+                 *                vitesse du robot sur le terrain.
                  * @param acceleration
-                 *                    accélération XY (m/s^2) du robot sur le terrain.
+                 *                accélération XY (m/s^2) du robot sur le terrain.
                  * @return
-                 *                    un objet RobotState représentant l'état actuel du robot.
+                 *         un objet RobotState représentant l'état actuel du robot.
                  */
-                public static RobotState fromRobotPose(Pose2d robotPose, ChassisSpeeds speed, Translation2d acceleration) {
+                public static RobotState fromRobotPose(Pose2d robotPose, ChassisSpeeds speed,
+                                Translation2d acceleration) {
                         Translation2d speed2d = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-                        return new RobotState(robotPose.getTranslation(), robotPose.getRotation(), speed2d, speed.omegaRadiansPerSecond, acceleration);  
+                        return new RobotState(robotPose.getTranslation(), robotPose.getRotation(), speed2d,
+                                        speed.omegaRadiansPerSecond, acceleration);
                 }
 
                 /**
                  * Construire un nouveau RobotState à partir de la position du robot,
                  * en considérant que son accélération est nulle.
+                 * 
                  * @param robotPose
-                 *                    position du robot sur le terrain.
+                 *                position du robot sur le terrain.
                  * @param speed
-                 *                    vitesse du robot sur le terrain.
-                 * @return 
-                 *                    un objet RobotState représentant l'état actuel du robot.
+                 *                vitesse du robot sur le terrain.
+                 * @return
+                 *         un objet RobotState représentant l'état actuel du robot.
                  */
                 public static RobotState fromRobotPose(Pose2d robotPose, ChassisSpeeds speed) {
                         Translation2d speed2d = new Translation2d(speed.vxMetersPerSecond, speed.vyMetersPerSecond);
-                        return new RobotState(robotPose.getTranslation(), robotPose.getRotation(), speed2d, speed.omegaRadiansPerSecond, Translation2d.kZero);  
+                        return new RobotState(robotPose.getTranslation(), robotPose.getRotation(), speed2d,
+                                        speed.omegaRadiansPerSecond, Translation2d.kZero);
                 }
         }
 
