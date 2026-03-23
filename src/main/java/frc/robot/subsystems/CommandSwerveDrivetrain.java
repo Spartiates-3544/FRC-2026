@@ -77,6 +77,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     this));
 
     private Field2d field = new Field2d();
+    private Vision vision = new Vision(this::addVisionMeasurement);
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
     @SuppressWarnings("unused")
@@ -267,6 +268,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         field.setRobotPose(getPose());
+        vision.update();
     }
 
     private void startSimThread() {
@@ -350,17 +352,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void configAutobuilder() {
         AutoBuilder.configure(
-                () -> getPose(),
-                (pose) -> resetPose(pose),
-                () -> getChassisSpeeds(),
-                (speed, feedforwards) -> driveRobotCentric(speed),
-                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(7.5, 0.0, 0), // Translation PID constants
-                        new PIDConstants(30.0, 0.0, 0.0) // Rotation PID constants
-                ),
-                Constants.Drive.config,
-                () -> false,
-                this);
+            () -> getPose(),
+            (pose) -> resetPose(pose),
+            () -> getChassisSpeeds(),
+            (speed, feedforwards) -> driveRobotCentric(speed),
+            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                new PIDConstants(7.5, 0.0, 0), // Translation PID constants
+                new PIDConstants(30.0, 0.0, 0.0) // Rotation PID constants
+            ),
+            Constants.Drive.config,
+            () -> false,
+            this
+        );
+
     }
 
     public RobotState getRobotState() {

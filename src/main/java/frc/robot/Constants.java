@@ -6,6 +6,10 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
 
@@ -200,5 +204,12 @@ public final class Constants {
 
     public static FastShooterSolver.DistanceRpmTable fastRpmTable() {
         return FAST_RPM_TABLE;
+    }
+
+    public static final class Vision {
+        public static Transform3d limelightV2Pos = new Transform3d(new Translation3d(-0.3, 0.113, 0.282), new Rotation3d(0, 0.349066, 2.79252681));
+        public static Transform3d limelightV3Pos = new Transform3d(new Translation3d(-0.3, -0.10671000, 0.291), new Rotation3d(0, 0.349066, -2.79252681));
+        public static Transform3d heliosRightPos = new Transform3d(new Translation3d(-0.133747, -0.338695, 0.508336), new Rotation3d(0,0.349066, -0.26179939));
+        public static Transform3d heliosLeftPos = new Transform3d(new Translation3d(-0.133747, 0.338695, 0.508336), new Rotation3d(0, 0.349066,0.26179939));
     }
 }
