@@ -44,7 +44,7 @@ public class Vision {
             PhotonCamera camera = cameras[i];
             PhotonPoseEstimator poseEstimator = poseEstimators[i];
 
-            List<PhotonPipelineResult> results = camera.getAllUnreadResults();
+            List<PhotonPipelineResult> results = camera.getLatestResult();
             
             for (PhotonPipelineResult result : results) {
                 Optional<EstimatedRobotPose> pose = poseEstimator.estimateCoprocMultiTagPose(result);
