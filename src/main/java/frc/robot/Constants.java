@@ -184,9 +184,9 @@ public final class Constants {
     }
 
     public static final class Vision {
-        public static Transform3d limelightV2Pos = new Transform3d(-0.3, 0.113440, 0.282, new Rotation3d(0, 0.349, 2.533));
-        public static Transform3d limelightV3Pos = new Transform3d(-0.306181, -0.106350, 0.291, new Rotation3d(0, 0.383976, -2.533));
-        public static Transform3d heliosRightPos = new Transform3d(-0.133747, -0.338695, 0.508336, new Rotation3d(0,0.349, -1.308997));
-        public static Transform3d heliosLeftPos = new Transform3d(-0.133747, 0.338695, 0.508336, new Rotation3d(0, 0.349,-4.45058965359));
+        public static Transform3d limelightV2Pos = new Transform3d(-0.3, 0.113, 0.282, new Rotation3d(0, -0.349, 2.533));
+        public static Transform3d limelightV3Pos = new Transform3d(-0.3, 0.83, 0.291, new Rotation3d(0, -0.349, -2.533));
+        public static Transform3d heliosRightPos = new Transform3d(-0.133747, -0.338695, 0.508336, new Rotation3d(0,-0.349, -1.308997));
+        public static Transform3d heliosLeftPos = new Transform3d(-0.133747, 0.338695, 0.508336, new Rotation3d(0, -0.349,-4.45058965359));
     }
 }
