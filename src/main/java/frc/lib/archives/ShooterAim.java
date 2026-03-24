@@ -1,7 +1,6 @@
-package frc.lib.logic;
+package frc.lib.archives;
 
 import edu.wpi.first.math.geometry.Translation3d;
-
 //import frc.lib.logging.ExtendedLogger;
 import frc.lib.robot.Records;
 import frc.robot.Constants;
@@ -68,7 +67,7 @@ public final class ShooterAim {
         private AimResult last = null;
 
         public Loop() {
-            this(Constants.Shooter.DEFAULT_PARAMS);
+            this(Constants.Shooter.PARAMS);
         }
 
         public Loop(Records.ShooterParams params) {

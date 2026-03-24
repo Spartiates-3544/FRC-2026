@@ -1,4 +1,4 @@
-package frc.lib.logic;
+package frc.lib.archives;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;

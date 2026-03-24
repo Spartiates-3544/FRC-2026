@@ -2,17 +2,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.robot.Records;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.ShooterLoop;
+import frc.robot.Constants;
+import frc.robot.subsystems.control.ShooterLoop;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
 public class ShootMoving extends Command {
-
-    private final Shooter shooter;
+    private final ShooterSubsystem shooter;
     private final TurretSubsystem turret;
     private final ShooterLoop shooterLoop;
 
-    public ShootMoving(Shooter shooter, TurretSubsystem turret, ShooterLoop shooterLoop) {
+    public ShootMoving(ShooterSubsystem shooter, TurretSubsystem turret, ShooterLoop shooterLoop) {
         this.shooter = shooter;
         this.turret = turret;
         this.shooterLoop = shooterLoop;
@@ -29,7 +29,7 @@ public class ShootMoving extends Command {
         Records.ShotSolution shot = shooterLoop.getCommandedShot();
 
         if (shot == null) {
-            shooter.setKickerSpeed(0.0);
+            shooter.setKickerRpm(0.0);
             return;
         }
 
@@ -37,24 +37,23 @@ public class ShootMoving extends Command {
 
         double turretTargetDeg = -Math.toDegrees(shot.turretYawRelRad());
 
-        // Reverse turret by 180 degrees
+        // Inverse la cible de 180° pour correspondre à la convention mécanique actuelle.
         if (turretTargetDeg > 0.0) {
             turretTargetDeg -= 180.0;
         } else {
             turretTargetDeg += 180.0;
         }
 
-        turret.setTurretDeg(turretTargetDeg);
-        shooter.setKickerSpeed(-6000.0);
+        turret.setTargetAngleDeg(turretTargetDeg);
+        shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
     }
 
     @Override
     public void end(boolean interrupted) {
         shooterLoop.disable();
-
-        shooter.setKickerSpeed(0.0);
+        shooter.setKickerRpm(0.0);
         shooter.stopShooter();
-        turret.stopTourelle();
+        turret.stop();
     }
 
     @Override
