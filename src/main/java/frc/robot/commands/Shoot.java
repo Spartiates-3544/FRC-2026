@@ -1,27 +1,27 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Shooter;
+import frc.robot.Constants;
+import frc.robot.subsystems.ShooterSubsystem;
 
-public class Shoot extends Command{
-    
-    private Shooter shooter;
+public class Shoot extends Command {
+    private final ShooterSubsystem shooter;
 
-    public Shoot (Shooter shoot1) {
-        shooter = shoot1;
+    public Shoot(ShooterSubsystem shooter) {
+        this.shooter = shooter;
         addRequirements(shooter);
     }
- 
+
     @Override
     public void execute() {
-        shooter.setKickerSpeed(-6000);
-        shooter.setShooterSpeed(3544);
+        shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
+        shooter.setShooterRpm(Constants.Commands.SHOOTER_RPM);
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooter.setKickerSpeed(0);
-        shooter.setShooterSpeed(0);
+        shooter.setKickerRpm(0.0);
+        shooter.setShooterRpm(0.0);
     }
 
     @Override
@@ -29,4 +29,3 @@ public class Shoot extends Command{
         return false;
     }
 }
-

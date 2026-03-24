@@ -16,29 +16,29 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.lib.robot.Records;
-import frc.robot.Constants.Drive;
-import frc.robot.commands.Ramasser;
+
+import frc.robot.commands.RunIndexer;
+import frc.robot.commands.RunIntake;
+import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootMoving;
-import frc.robot.commands.Spin;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Ramasseur;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.ShooterLoop;
-import frc.robot.subsystems.Spindexer;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.Unjammer;
+import frc.robot.subsystems.UnjammerSubsystem;
+import frc.robot.subsystems.control.ShooterLoop;
 
 public class RobotContainer {
         // =========================
-        // Manette
+        // Driver controller
         // =========================
         private final CommandXboxController joystick = new CommandXboxController(0);
 
         // =========================
-        // Drive constants
+        // Drive config
         // =========================
         private final double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         private final double maxAngularRate = RotationsPerSecond.of(2).in(RadiansPerSecond);
@@ -51,23 +51,18 @@ public class RobotContainer {
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
         // =========================
-        // Subsystems sont déclarés ici
+        // Subsystems
         // =========================
         public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-        public final Ramasseur ramasseur = new Ramasseur();
+        public final IntakeSubsystem intake = new IntakeSubsystem();
         public final TurretSubsystem turret = new TurretSubsystem();
-        public final Spindexer spindexer = new Spindexer();
-        public final Shooter shooter = new Shooter();
-        public final Unjammer unjammer = new Unjammer();
+        public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
+        public final ShooterSubsystem shooter = new ShooterSubsystem();
+        public final UnjammerSubsystem unjammer = new UnjammerSubsystem();
         public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
 
         // =========================
-        // Constantes partagées
-        // =========================
-        public static final Records.ShooterParams SHOOTER_DEFAULTS = Constants.Shooter.defaultParams();
-
-        // =========================
-        // Autonome
+        // Autonomous
         // =========================
         private final SendableChooser<Command> autoChooser;
 
@@ -102,7 +97,8 @@ public class RobotContainer {
                 configureIntakeBindings();
                 configureDisabledBindings();
 
-                joystick.back().onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3, 4, Rotation2d.kZero))));
+                joystick.back().onTrue(
+                                Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3, 4, Rotation2d.kZero))));
         }
 
         private void configureDashboard() {
@@ -110,53 +106,64 @@ public class RobotContainer {
         }
 
         // =========================
-        // Bindings par subsystem
+        // Drive bindings
         // =========================
         private void configureDriveBindings() {
                 joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         }
 
+        // =========================
+        // Turret bindings
+        // =========================
         private void configureTurretBindings() {
-                joystick.povUp().onTrue(turret.setTurretPosition(-150));
-                joystick.povLeft().onTrue(turret.setTurretPosition(-90));
-                joystick.povRight().onTrue(turret.setTurretPosition(90));
-                joystick.povDown().onTrue(turret.setTurretPosition(160));
+                joystick.povLeft().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_LEFT_DEG));
+                joystick.povRight().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_RIGHT_DEG));
+                joystick.povDown().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_DOWN_DEG));
                 joystick.y().toggleOnTrue(turret.home());
         }
 
+        // =========================
+        // Shooter bindings
+        // =========================
         private void configureShooterBindings() {
                 joystick.a().whileTrue(buildMovingShootCommand());
                 joystick.b().onTrue(shooter.homeHood());
         }
 
+        // =========================
+        // Intake bindings
+        // =========================
         private void configureIntakeBindings() {
-                joystick.x().toggleOnTrue(new Ramasser(ramasseur));
-        }
-
-        private void configureDisabledBindings() {
-                RobotModeTriggers.disabled().onTrue(
-                                Commands.runOnce(turret::stopTourelle, turret));
+                joystick.x().toggleOnTrue(new RunIntake(intake));
         }
 
         // =========================
-        // Commands (TODO: BOUGER VERS UN FICHIER COMMAND)
+        // Disabled bindings
+        // =========================
+        private void configureDisabledBindings() {
+                RobotModeTriggers.disabled().onTrue(
+                                Commands.runOnce(turret::stop, turret));
+        }
+
+        // =========================
+        // Command builders
         // =========================
         private Command buildMovingShootCommand() {
                 return Commands.sequence(
-                        new Shoot(shooter).withTimeout(1),
-                        Commands.parallel(
-                                        new ShootMoving(shooter, turret, shooterLoop),
-                                        new Spin(spindexer),
-                                        new Ramasser(ramasseur),
-                                        Commands.runEnd(
-                                                        () -> unjammer.set(0.5),
-                                                        () -> unjammer.set(0.0),
-                                                        unjammer))
-                );
+                                new Shoot(shooter).withTimeout(1.0),
+                                Commands.parallel(
+                                                new ShootMoving(shooter, turret, shooterLoop),
+                                                new RunIndexer(spindexer),
+                                                new RunIntake(intake),
+                                                Commands.runEnd(
+                                                                () -> unjammer.setSpeed(
+                                                                                Constants.Commands.UNJAMMER_SPEED),
+                                                                unjammer::stop,
+                                                                unjammer)));
         }
 
         // =========================
-        // Driver input
+        // Driver input shaping
         // =========================
         private double getDriveX() {
                 return -Math.copySign(Math.pow(joystick.getLeftY(), 2), joystick.getLeftY()) * maxSpeed;
@@ -165,18 +172,18 @@ public class RobotContainer {
         private double getDriveY() {
                 return -Math.copySign(Math.pow(joystick.getLeftX(), 2), joystick.getLeftX()) * maxSpeed;
         }
-
+ 
         private double getDriveOmega() {
                 return -(joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis()) * maxAngularRate;
         }
 
         // =========================
-        // Hook public
+        // Public hooks
         // =========================
         public Command getInitCommand() {
                 return Commands.sequence(
                                 turret.home(),
-                                turret.setTurretPosition(0));
+                                turret.setTargetAngleCommand(0.0));
         }
 
         public Command getAutonomousCommand() {

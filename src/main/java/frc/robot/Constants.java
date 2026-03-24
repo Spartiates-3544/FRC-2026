@@ -6,10 +6,11 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+
 import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
 
@@ -18,6 +19,9 @@ public final class Constants {
     }
 
     public static final class Drive {
+        private Drive() {
+        }
+
         public static RobotConfig config;
 
         static {
@@ -41,7 +45,36 @@ public final class Constants {
         private Shooter() {
         }
 
-        public static final Records.ShooterParams DEFAULT_PARAMS = new Records.ShooterParams(
+        // =========================
+        // Hardware
+        // =========================
+        public static final int KICKER_MOTOR_ID = 5;
+        public static final int SHOOTER_MOTOR_1_ID = 6;
+        public static final int SHOOTER_MOTOR_2_ID = 7;
+        public static final int HOOD_MOTOR_ID = 9;
+        public static final int HOOD_HOME_SWITCH_DIO = 8;
+
+        // =========================
+        // Geometry / conversion
+        // =========================
+        public static final double HOOD_RATIO = 113.944;
+        public static final double SECONDS_PER_MINUTE = 60.0;
+        public static final double DEGREES_PER_REVOLUTION = 360.0;
+
+        // =========================
+        // Behavior / tolerances
+        // =========================
+        public static final boolean LOOP_ENABLED_BY_DEFAULT = false;
+        public static final double SHOOTER_RPM_TOLERANCE = 450.0;
+        public static final double HOOD_ANGLE_TOLERANCE_DEG = 1000.0;
+        public static final double HOOD_HOME_OUTPUT = -0.10;
+        public static final double HOOD_HOME_POSITION_MOTOR_ROT = 0.0;
+        public static final double SYSID_STEP_VOLTS = 4.0;
+
+        // =========================
+        // Solver params
+        // =========================
+        public static final Records.ShooterParams PARAMS = new Records.ShooterParams(
                 9.80665,
                 1.225,
                 0.2267,
@@ -121,95 +154,135 @@ public final class Constants {
                 4,
                 0.02);
 
-        public static Records.ShooterParams defaultParams() {
-            return DEFAULT_PARAMS;
-        }
+        public static final double FAST_FIXED_HOOD_DEG = 38.0;
 
-        public static final TalonFXConfiguration kickerConfigs = new TalonFXConfiguration();
+        public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
+                new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80 },
+                new double[] { 2200, 2350, 2500, 2680, 2875, 3075, 3300, 3550, 3825, 4100 });
+
+        // =========================
+        // Configs
+        // =========================
+        public static final TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
         static {
-            kickerConfigs.Slot0.kP = 0.15948;
-            kickerConfigs.Slot0.kI = 0;
-            kickerConfigs.Slot0.kD = 0;
-            kickerConfigs.Slot0.kS = 0.47087;
-            kickerConfigs.Slot0.kV = 0.12977;
-            kickerConfigs.Slot0.kA = 0.0018328;
+            kickerConfig.Slot0.kP = 0.15948;
+            kickerConfig.Slot0.kI = 0;
+            kickerConfig.Slot0.kD = 0;
+            kickerConfig.Slot0.kS = 0.47087;
+            kickerConfig.Slot0.kV = 0.12977;
+            kickerConfig.Slot0.kA = 0.0018328;
         }
 
-        public static final TalonFXConfiguration shooterConfigs = new TalonFXConfiguration();
+        public static final TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
         static {
-            shooterConfigs.Slot0.kP = 0.18488;
-            shooterConfigs.Slot0.kI = 0;
-            shooterConfigs.Slot0.kD = 0;
-            shooterConfigs.Slot0.kS = 0.16649;
-            shooterConfigs.Slot0.kV = 0.12109;
-            shooterConfigs.Slot0.kA = 0.017213;
+            shooterConfig.Slot0.kP = 0.18488;
+            shooterConfig.Slot0.kI = 0;
+            shooterConfig.Slot0.kD = 0;
+            shooterConfig.Slot0.kS = 0.16649;
+            shooterConfig.Slot0.kV = 0.12109;
+            shooterConfig.Slot0.kA = 0.017213;
         }
 
-        public static final Slot0Configs hoodConfigs = new Slot0Configs();
+        public static final Slot0Configs hoodConfig = new Slot0Configs();
         static {
-            hoodConfigs.kP = 25.0;
-            hoodConfigs.kI = 0.0;
-            hoodConfigs.kD = 0.4;
+            hoodConfig.kP = 25.0;
+            hoodConfig.kI = 0.0;
+            hoodConfig.kD = 0.4;
         }
-
-        public static final double hoodRatio = 113.944;
     }
 
     public static final class Turret {
         private Turret() {
         }
 
-        public static final double ratio = 7.8125;
+        public static final int MOTOR_ID = 8;
+        public static final int HOME_SWITCH_DIO = 7;
 
-        /**
-         * Motion Magic units are in mechanism sensor rotations and rotations/sec style units.
-         * Since we're commanding motor rotations directly in the subsystem, these are motor-side units.
-         */
-        public static final double motionMagicCruiseVelocityRps = 40.0;
-        public static final double motionMagicAccelerationRpsPerSec = 120.0;
-        public static final double motionMagicJerkRpsPerSecSq = 600.0;
+        public static final double RATIO = 7.8125;
+        public static final double DEGREES_PER_REVOLUTION = 360.0;
 
-        public static final TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+        public static final double DEFAULT_ANGLE_TOLERANCE_DEG = 2.0;
+        public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
+        public static final double HOMING_OUTPUT = 0.10;
 
+        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 40.0;
+        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 120.0;
+        public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 600.0;
+
+        public static final TalonFXConfiguration CONFIG = new TalonFXConfiguration();
         static {
-            turretConfig.Slot0.kP = 12.0;
-            turretConfig.Slot0.kI = 0.0;
-            turretConfig.Slot0.kD = 0.4;
-            turretConfig.Slot0.kS = 0.0;
-            turretConfig.Slot0.kV = 0.0;
-            turretConfig.Slot0.kA = 0.0;
+            CONFIG.Slot0.kP = 12.0;
+            CONFIG.Slot0.kI = 0.0;
+            CONFIG.Slot0.kD = 0.4;
+            CONFIG.Slot0.kS = 0.0;
+            CONFIG.Slot0.kV = 0.0;
+            CONFIG.Slot0.kA = 0.0;
+            CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-            turretConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-            MotionMagicConfigs mm = turretConfig.MotionMagic;
-            mm.MotionMagicCruiseVelocity = motionMagicCruiseVelocityRps;
-            mm.MotionMagicAcceleration = motionMagicAccelerationRpsPerSec;
-            mm.MotionMagicJerk = motionMagicJerkRpsPerSecSq;
+            MotionMagicConfigs mm = CONFIG.MotionMagic;
+            mm.MotionMagicCruiseVelocity = MOTION_MAGIC_CRUISE_VELOCITY_RPS;
+            mm.MotionMagicAcceleration = MOTION_MAGIC_ACCELERATION_RPS_PER_SEC;
+            mm.MotionMagicJerk = MOTION_MAGIC_JERK_RPS_PER_SEC_SQ;
         }
     }
 
-    private static final double FAST_FIXED_HOOD_DEG = 38.0;
+    public static final class Intake {
+        private Intake() {
+        }
 
-    private static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
-            new double[] {
-                    1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80
-            },
-            new double[] {
-                    2200, 2350, 2500, 2680, 2875, 3075, 3300, 3550, 3825, 4100
-            });
-
-    public static double fastFixedHoodDeg() {
-        return FAST_FIXED_HOOD_DEG;
+        public static final int MOTOR_ID = 1;
+        public static final int PNEUMATIC_HUB_ID = 2;
+        public static final int SOLENOID_CHANNEL = 6;
+        public static final double MOTOR_SIGN = -1.0;
     }
 
-    public static FastShooterSolver.DistanceRpmTable fastRpmTable() {
-        return FAST_RPM_TABLE;
+    public static final class Spindexer {
+        private Spindexer() {
+        }
+
+        public static final int INDEXER_MOTOR_ID = 3;
+        public static final int FEED_MOTOR_ID = 13;
+    }
+
+    public static final class Unjammer {
+        private Unjammer() {
+        }
+
+        public static final int MOTOR_ID = 10;
+    }
+
+    public static final class Commands {
+        private Commands() {
+        }
+        public static final double TURRET_PRESET_LEFT_DEG = -90.0;
+        public static final double TURRET_PRESET_RIGHT_DEG = 90.0;
+        public static final double TURRET_PRESET_DOWN_DEG = 0.0;
+
+        public static final double INTAKE_SPEED = 1.0;
+        public static final double SPINDEXER_SPEED = 0.25;
+        public static final double FEED_SPEED = -0.8;
+        public static final double UNJAMMER_SPEED = 0.5;
+
+        public static final double SHOOTER_RPM = 3544.0;
+        public static final double KICKER_RPM = -6000.0;
     }
 
     public static final class Vision {
-        public static Transform3d limelightV2Pos = new Transform3d(new Translation3d(-0.3, 0.113, 0.282), new Rotation3d(0, 0.349066, 2.79252681));
-        public static Transform3d limelightV3Pos = new Transform3d(new Translation3d(-0.3, -0.10671000, 0.291), new Rotation3d(0, 0.349066, -2.79252681));
-        public static Transform3d heliosRightPos = new Transform3d(new Translation3d(-0.133747, -0.338695, 0.508336), new Rotation3d(0,0.349066, -0.26179939));
-        public static Transform3d heliosLeftPos = new Transform3d(new Translation3d(-0.133747, 0.338695, 0.508336), new Rotation3d(0, 0.349066,0.26179939));
+        private Vision() {
+        }
+
+        public static final Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.3, 0.113, 0.282),
+                new Rotation3d(0, 0.349066, 2.79252681));
+
+        public static final Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.3, -0.10671000, 0.291),
+                new Rotation3d(0, 0.349066, -2.79252681));
+
+        public static final Transform3d HELIOS_RIGHT_POS = new Transform3d(
+                new Translation3d(-0.133747, -0.338695, 0.508336),
+                new Rotation3d(0, 0.349066, -0.26179939));
+
+        public static final Transform3d HELIOS_LEFT_POS = new Transform3d(
+                new Translation3d(-0.133747, 0.338695, 0.508336),
+                new Rotation3d(0, 0.349066, 0.26179939));
     }
 }
