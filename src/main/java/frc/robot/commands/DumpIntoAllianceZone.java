@@ -91,28 +91,27 @@ public final class DumpIntoAllianceZone extends Command {
         boolean ready = turretErrDeg <= TURRET_TOL_DEG
                 && flywheelErrRpm <= FLYWHEEL_TOL_RPM;
 
-        // Intake/indexer/unjammer roulent tout le temps pour monter la note
+        // Intake/unjammer roulent tout le temps
         intake.setSpeed(Constants.Commands.INTAKE_SPEED);
-        spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
         unjammer.setSpeed(Constants.Commands.UNJAMMER_SPEED);
 
-        // Feed seulement quand prêt
+        // Feed et indexe seulement quand prêt
         if (ready) {
             spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
+            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
         } else {
             spindexer.setFeedSpeed(0.0);
+            spindexer.setIndexerSpeed(0.0);
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         drivetrain.setDriveMode(DriveMode.NORMAL);
-
         intake.stop();
         intake.close();
         spindexer.stopAll();
         unjammer.stop();
-
         shooter.stopKicker();
         shooter.stopShooter();
         turret.stop();

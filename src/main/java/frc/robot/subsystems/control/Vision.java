@@ -29,7 +29,6 @@ public class Vision {
     private static final double MAX_SINGLE_TAG_TRANSLATION_JUMP_M = 1.50;
     private static final double MAX_SINGLE_TAG_ROTATION_JUMP_DEG = 25.0;
 
-    // Starting points only. Tune on the real robot.
     // WPILib guidance: trust gyro heading much more than vision heading for AprilTag poses.
     private static final Matrix<N3, N1> SINGLE_TAG_BASE_STD_DEVS = VecBuilder.fill(0.90, 0.90, 1_000_000.0);
     private static final Matrix<N3, N1> MULTI_TAG_BASE_STD_DEVS = VecBuilder.fill(0.35, 0.35, 1_000_000.0);
