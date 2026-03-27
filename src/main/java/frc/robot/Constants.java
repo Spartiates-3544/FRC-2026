@@ -4,6 +4,7 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.RobotConfig;
 
@@ -233,7 +234,11 @@ public final class Constants {
         public static final int MOTOR_ID = 1;
         public static final int PNEUMATIC_HUB_ID = 2;
         public static final int SOLENOID_CHANNEL = 6;
-        public static final double MOTOR_SIGN = -1.0;
+
+        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
+        public static final NeutralModeValue NEUTRAL_MODE = NeutralModeValue.Coast;
+        public static final double SPINUP_INTAKE_SMOOTH_TIME_S = 0.25;
+        public static final double SUPPLY_CURRENT_LIMIT_A = 35.0;
     }
 
     public static final class Spindexer {
@@ -242,6 +247,24 @@ public final class Constants {
 
         public static final int INDEXER_MOTOR_ID = 3;
         public static final int FEED_MOTOR_ID = 13;
+
+        public static final InvertedValue INDEXER_INVERTED = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue FEED_INVERTED = InvertedValue.Clockwise_Positive;
+
+        public static final NeutralModeValue INDEXER_NEUTRAL_MODE = NeutralModeValue.Coast;
+        public static final NeutralModeValue FEED_NEUTRAL_MODE = NeutralModeValue.Coast;
+
+        public static final double SPINUP_INDEXER_SMOOTH_TIME_S = 0.30;
+        public static final double SPINUP_FEED_SMOOTH_TIME_S = 0.10;
+
+        public static final double INDEXER_SUPPLY_CURRENT_LIMIT_A = 30.0;
+        public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 40.0;
+
+        public static final double JAM_CURRENT_THRESHOLD_A = 55.0;
+        public static final double JAM_DEBOUNCE_S = 0.06;
+        public static final double JAM_CLEAR_TIME_S = 0.20;
+        public static final double JAM_REVERSE_INDEXER_SPEED = -0.35;
+        public static final double JAM_REVERSE_FEED_SPEED = 0.35;
     }
 
     public static final class Unjammer {
@@ -249,11 +272,15 @@ public final class Constants {
         }
 
         public static final int MOTOR_ID = 10;
+
+        public static final double SPINUP_SMOOTH_TIME_S = 0.10;
+        public static final InvertedValue FEED_INVERTED = InvertedValue.CounterClockwise_Positive;
     }
 
     public static final class Commands {
         private Commands() {
         }
+
         public static final double TURRET_PRESET_LEFT_DEG = -90.0;
         public static final double TURRET_PRESET_RIGHT_DEG = 90.0;
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
@@ -265,6 +292,23 @@ public final class Constants {
 
         public static final double SHOOTER_RPM = 3544.0;
         public static final double KICKER_RPM = -6000.0;
+
+        public static final double SHOOT_READY_RPM_TOLERANCE = 125.0;
+        public static final double SHOOT_READY_YAW_TOLERANCE_DEG = 4.0;
+        public static final double AUTO_SHOOT_MAX_DISTANCE_M = 6.0;
+
+        public static final double DUMP_HOOD_DEG = 50.0;
+        public static final double DUMP_RPM_AT_WALL = 1800.0;
+        public static final double DUMP_RPM_PER_METER = 220.0;
+        public static final double DUMP_RPM_MIN = 1600.0;
+        public static final double DUMP_RPM_MAX = 4200.0;
+
+        public static final double DUMP_TURRET_TOL_DEG = 2.0;
+        public static final double DUMP_HOOD_TOL_DEG = 1.5;
+        public static final double DUMP_FLYWHEEL_TOL_RPM = 150.0;
+
+        public static final double SHOOT_NOW_TRANSLATION_SCALE = 0.25;
+        public static final double SHOOT_NOW_ROTATION_SCALE = 0.35;
     }
 
     public static final class Vision {

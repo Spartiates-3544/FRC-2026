@@ -50,6 +50,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    public static enum DriveMode {
+        NORMAL, FACE_TRANSLATION
+    }
+
+    private volatile DriveMode driveMode = DriveMode.NORMAL;
+
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
     /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -78,7 +84,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     this));
 
     private Field2d field = new Field2d();
-    private Vision vision = new Vision(this::addVisionMeasurement);
+    private final Vision vision = new Vision(this::addVisionMeasurement, this::getPose);
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
     @SuppressWarnings("unused")
@@ -212,6 +218,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private void init() {
         SmartDashboard.putData(field);
         configAutobuilder();
+    }
+
+    public void setDriveMode(DriveMode mode) {
+        driveMode = (mode == null) ? DriveMode.NORMAL : mode;
+    }
+
+    public DriveMode getDriveMode() {
+        return driveMode;
     }
 
     /**
@@ -353,19 +367,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void configAutobuilder() {
         AutoBuilder.configure(
-            () -> getPose(),
-            (pose) -> resetPose(pose),
-            () -> getChassisSpeeds(),
-            (speed, feedforwards) -> driveRobotCentric(speed),
-            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                new PIDConstants(7.5, 0.0, 0), // Translation PID constants
-                new PIDConstants(30.0, 0.0, 0.0) // Rotation PID constants
-            ),
-            Constants.Drive.config,
-            () -> false,
-            this
-        );
-
+                this::getPose,
+                this::resetPose,
+                this::getChassisSpeeds,
+                (speeds, feedforwards) -> driveRobotCentric(speeds),
+                new PPHolonomicDriveController(
+                        new PIDConstants(7.5, 0.0, 0.0),
+                        new PIDConstants(30.0, 0.0, 0.0)),
+                Constants.Drive.config,
+                () -> DriverStation.getAlliance()
+                        .map(alliance -> alliance == DriverStation.Alliance.Red)
+                        .orElse(false),
+                this);
     }
 
     public RobotState getRobotState() {
