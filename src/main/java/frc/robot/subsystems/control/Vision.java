@@ -44,7 +44,7 @@ public class Vision {
     // =========================
     // Field layout
     // =========================
-    private final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+    private final AprilTagFieldLayout layout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
     // =========================
     // Pose estimators

@@ -9,7 +9,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-
+//import frc.lib.logging.ExtendedLogger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -40,7 +40,9 @@ public class ShooterSubsystem extends SubsystemBase {
     // =========================
     // State
     // =========================
-    private double lastCommandedShooterRpm = 0.0;
+    //@ExtendedLogger.LoggableField(path="Shooter/ShooterRPM")
+    private volatile double lastCommandedShooterRpm = 0.0;
+
     private double lastCommandedHoodDeg = 0.0;
 
     // =========================
@@ -58,6 +60,7 @@ public class ShooterSubsystem extends SubsystemBase {
                     this));
 
     public ShooterSubsystem() {
+        //ExtendedLogger.registerInstance(this);
         setName("Shooter");
         applyConfigs();
     }
