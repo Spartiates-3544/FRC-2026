@@ -65,7 +65,7 @@ public final class Constants {
         // Behavior / tolerances
         // =========================
         public static final boolean LOOP_ENABLED_BY_DEFAULT = false;
-        public static final double SHOOTER_RPM_TOLERANCE = 450.0;
+        public static final double SHOOTER_RPM_TOLERANCE = 150.0;
         public static final double HOOD_ANGLE_TOLERANCE_DEG = 1000.0;
         public static final double HOOD_HOME_OUTPUT = -0.10;
         public static final double HOOD_HOME_POSITION_MOTOR_ROT = 0.0;
@@ -158,8 +158,8 @@ public final class Constants {
 
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80 },
-                new double[] { 2200, 2350, 2500, 2680, 2875, 3075, 3300, 3550, 3825, 4100 });
-
+                new double[] { 2200, 2300, 2450, 2200, 2400, 2700, 3300, 3550, 3825, 4100 });
+//2m a refaire
         // =========================
         // Configs
         // =========================
@@ -179,7 +179,7 @@ public final class Constants {
             shooterConfig.Slot0.kI = 0;
             shooterConfig.Slot0.kD = 0;
             shooterConfig.Slot0.kS = 0.16649;
-            shooterConfig.Slot0.kV = 0.12109;
+            shooterConfig.Slot0.kV = 0.1;
             shooterConfig.Slot0.kA = 0.017213;
         }
 
@@ -271,18 +271,9 @@ public final class Constants {
         private Vision() {
         }
 
-        public static final Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.3, 0.113, 0.282),
-                new Rotation3d(0, 0.349066, 2.79252681));
-
-        public static final Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.3, -0.10671000, 0.291),
-                new Rotation3d(0, 0.349066, -2.79252681));
-
-        public static final Transform3d HELIOS_RIGHT_POS = new Transform3d(
-                new Translation3d(-0.133747, -0.338695, 0.508336),
-                new Rotation3d(0, 0.349066, -0.26179939));
-
-        public static final Transform3d HELIOS_LEFT_POS = new Transform3d(
-                new Translation3d(-0.133747, 0.338695, 0.508336),
-                new Rotation3d(0, 0.349066, 0.26179939));
+        public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.3, 0.113, 0.282), new Rotation3d(0,-Math.toRadians(20),  -Math.toRadians(160)));
+        public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.3, -0.10671000, 0.291), new Rotation3d(0,-Math.toRadians(20), Math.toRadians(160)));
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.133747, -0.338695, 0.508336), new Rotation3d(0,-Math.toRadians(20),-Math.toRadians(75)));
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.133747, 0.338695, 0.508336), new Rotation3d(0,-Math.toRadians(20),Math.toRadians(75)));
     }
 }

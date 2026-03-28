@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Background logging thread (off main)
-        // ExtendedLogger.startBackground(10.0);
+        //ExtendedLogger.startBackground(10.0);
 
     }
     
