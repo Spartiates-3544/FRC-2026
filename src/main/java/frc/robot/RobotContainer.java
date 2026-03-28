@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +23,7 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootMoving;
+import frc.robot.commands.SpinUpShooter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -73,6 +75,9 @@ public class RobotContainer {
 
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
+
+                NamedCommands.registerCommand("ramasser", new RunIntake(intake).withTimeout(3));
+                NamedCommands.registerCommand("Readyshoot", buildMovingShootCommand().withTimeout(3));
         }
 
         // =========================
@@ -150,7 +155,7 @@ public class RobotContainer {
         // =========================
         private Command buildMovingShootCommand() {
                 return Commands.sequence(
-                                new Shoot(shooter).withTimeout(1.0),
+                                new SpinUpShooter(shooter, shooterLoop),
                                 Commands.parallel(
                                                 new ShootMoving(shooter, turret, shooterLoop),
                                                 new RunIndexer(spindexer),
@@ -161,6 +166,8 @@ public class RobotContainer {
                                                                 unjammer::stop,
                                                                 unjammer)));
         }
+
+       
 
         // =========================
         // Driver input shaping
