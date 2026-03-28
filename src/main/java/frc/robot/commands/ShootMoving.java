@@ -3,9 +3,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.robot.Records;
 import frc.robot.Constants;
-import frc.robot.subsystems.control.ShooterLoop;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.control.ShooterLoop;
 
 public class ShootMoving extends Command {
     private final ShooterSubsystem shooter;
@@ -26,18 +26,25 @@ public class ShootMoving extends Command {
 
     @Override
     public void execute() {
+        if (!shooterLoop.isInZone()) {
+            shooter.setKickerRpm(0.0);
+            shooter.stopShooter();
+            return;
+        }
+
         Records.ShotSolution shot = shooterLoop.getCommandedShot();
 
-        if (shot == null) {
+        if (shot == null || !shot.ok()) {
             shooter.setKickerRpm(0.0);
+            shooter.stopShooter();
             return;
         }
 
         shooter.applyShot(shot);
+        shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
 
         double turretTargetDeg = -Math.toDegrees(shot.turretYawRelRad());
 
-        // Inverse la cible de 180° pour correspondre à la convention mécanique actuelle.
         if (turretTargetDeg > 0.0) {
             turretTargetDeg -= 180.0;
         } else {
@@ -45,7 +52,6 @@ public class ShootMoving extends Command {
         }
 
         turret.setTargetAngleDeg(turretTargetDeg);
-        shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
     }
 
     @Override
