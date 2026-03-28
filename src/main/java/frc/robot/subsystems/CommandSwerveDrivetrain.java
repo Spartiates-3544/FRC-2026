@@ -84,7 +84,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     this));
 
     private Field2d field = new Field2d();
-    private final Vision vision = new Vision(this::addVisionMeasurement, this::getPose);
+    private final Vision vision = new Vision(this::addVisionMeasurement);
 
     /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
     @SuppressWarnings("unused")
@@ -265,9 +265,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
-        double periodicStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-
-        double perspectiveStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
@@ -277,22 +274,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
-        double perspectiveEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-
-        double fieldStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+    
         field.setRobotPose(getPose());
-        double fieldEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-
-        double visionStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         vision.update();
-        double visionEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-
-        double periodicEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-
-        SmartDashboard.putNumber("Timing/DrivePerspectiveMs", (perspectiveEnd - perspectiveStart) * 1000.0);
-        SmartDashboard.putNumber("Timing/DriveFieldPoseMs", (fieldEnd - fieldStart) * 1000.0);
-        SmartDashboard.putNumber("Timing/DriveVisionUpdateMs", (visionEnd - visionStart) * 1000.0);
-        SmartDashboard.putNumber("Timing/DrivePeriodicMs", (periodicEnd - periodicStart) * 1000.0);
     }
 
     private void startSimThread() {

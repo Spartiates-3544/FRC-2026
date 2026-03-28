@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
@@ -258,7 +259,8 @@ public class RobotContainer {
         public Command getInitCommand() {
                 return Commands.sequence(
                                 turret.home(),
-                                turret.setTargetAngleCommand(0.0));
+                                turret.setTargetAngleCommand(0.0))
+                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         }
 
         public Command getAutonomousCommand() {

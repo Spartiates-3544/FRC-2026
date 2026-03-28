@@ -102,7 +102,7 @@ public final class Constants {
                 -180,
                 180,
                 0.0,
-                25.0,
+                20.0,
 
                 0.080,
                 0.5,
@@ -321,7 +321,7 @@ public final class Constants {
 
         public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.3, 0.113, 0.282), new Rotation3d(0,-Math.toRadians(20),  -Math.toRadians(160)));
         public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.3, -0.10671000, 0.291), new Rotation3d(0,-Math.toRadians(20), Math.toRadians(160)));
-        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.133747, -0.338695, 0.508336), new Rotation3d(0,-Math.toRadians(20),-Math.toRadians(75)));
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.133747, 0.338695, 0.508336), new Rotation3d(0,-Math.toRadians(20),Math.toRadians(75)));
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.133747, -0.338695, 0.508336), new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(75)));
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.133747, 0.338695, 0.508336), new Rotation3d(0, -Math.toRadians(20), Math.toRadians(75)));
     }
 }
