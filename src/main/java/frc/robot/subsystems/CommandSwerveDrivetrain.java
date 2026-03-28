@@ -265,13 +265,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
-        /*
-         * Periodically try to apply the operator perspective.
-         * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
-         * This allows us to correct the perspective in case the robot code restarts mid-match.
-         * Otherwise, only check and apply the operator perspective if the DS is disabled.
-         * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
-         */
+        double periodicStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+
+        double perspectiveStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
                 setOperatorPerspectiveForward(
@@ -281,9 +277,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+        double perspectiveEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
 
+        double fieldStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         field.setRobotPose(getPose());
+        double fieldEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+
+        double visionStart = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         vision.update();
+        double visionEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+
+        double periodicEnd = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+
+        SmartDashboard.putNumber("Timing/DrivePerspectiveMs", (perspectiveEnd - perspectiveStart) * 1000.0);
+        SmartDashboard.putNumber("Timing/DriveFieldPoseMs", (fieldEnd - fieldStart) * 1000.0);
+        SmartDashboard.putNumber("Timing/DriveVisionUpdateMs", (visionEnd - visionStart) * 1000.0);
+        SmartDashboard.putNumber("Timing/DrivePeriodicMs", (periodicEnd - periodicStart) * 1000.0);
     }
 
     private void startSimThread() {

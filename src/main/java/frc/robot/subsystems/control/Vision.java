@@ -18,6 +18,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Vision {
@@ -29,7 +31,6 @@ public class Vision {
     private static final double MAX_SINGLE_TAG_TRANSLATION_JUMP_M = 1.50;
     private static final double MAX_SINGLE_TAG_ROTATION_JUMP_DEG = 25.0;
 
-    // WPILib guidance: trust gyro heading much more than vision heading for AprilTag poses.
     private static final Matrix<N3, N1> SINGLE_TAG_BASE_STD_DEVS = VecBuilder.fill(0.90, 0.90, 1_000_000.0);
     private static final Matrix<N3, N1> MULTI_TAG_BASE_STD_DEVS = VecBuilder.fill(0.35, 0.35, 1_000_000.0);
 
@@ -49,13 +50,17 @@ public class Vision {
     // =========================
     // Pose estimators
     // =========================
-    private final PhotonPoseEstimator limelightV2Estimator = new PhotonPoseEstimator(layout,
+    private final PhotonPoseEstimator limelightV2Estimator = new PhotonPoseEstimator(
+            layout,
             Constants.Vision.LIMELIGHT_V2_POS);
-    private final PhotonPoseEstimator limelightV3Estimator = new PhotonPoseEstimator(layout,
+    private final PhotonPoseEstimator limelightV3Estimator = new PhotonPoseEstimator(
+            layout,
             Constants.Vision.LIMELIGHT_V3_POS);
-    private final PhotonPoseEstimator heliosLeftEstimator = new PhotonPoseEstimator(layout,
+    private final PhotonPoseEstimator heliosLeftEstimator = new PhotonPoseEstimator(
+            layout,
             Constants.Vision.HELIOS_LEFT_POS);
-    private final PhotonPoseEstimator heliosRightEstimator = new PhotonPoseEstimator(layout,
+    private final PhotonPoseEstimator heliosRightEstimator = new PhotonPoseEstimator(
+            layout,
             Constants.Vision.HELIOS_RIGHT_POS);
 
     private final CameraConfig[] cameras = {
@@ -74,43 +79,65 @@ public class Vision {
     }
 
     public void update() {
+        double startTime = Timer.getFPGATimestamp();
+
         Pose2d currentPose = currentPoseSupplier.get();
 
+        int totalBacklog = 0;
+        int acceptedMeasurements = 0;
+
         for (CameraConfig cam : cameras) {
+            // Drain the full buffer every cycle so frames never accumulate.
+            // If the buffer holds N frames, we still spent N × NT-deserialization
+            // time, but we only run pose estimation on the single freshest frame.
+            // Older frames are stale: their backdated timestamps force expensive
+            // Kalman replay and their pose estimates are superseded by the newest one.
             List<PhotonPipelineResult> unreadResults = cam.camera.getAllUnreadResults();
+
+            int backlog = unreadResults.size();
+            totalBacklog += backlog;
+            SmartDashboard.putNumber("Vision/" + cam.name + "/Backlog", backlog);
+
             if (unreadResults.isEmpty()) {
                 continue;
             }
 
-            for (PhotonPipelineResult result : unreadResults) {
-                if (!result.hasTargets()) {
-                    continue;
-                }
+            // Only process the most recent result.
+            PhotonPipelineResult result = unreadResults.get(unreadResults.size() - 1);
 
-                Optional<EstimatedRobotPose> estimate = cam.estimator.estimateCoprocMultiTagPose(result);
-
-                boolean usedMultiTag = estimate.isPresent() && result.getTargets().size() >= 2;
-
-                if (estimate.isEmpty()) {
-                    estimate = cam.estimator.estimateLowestAmbiguityPose(result);
-                    usedMultiTag = false;
-                }
-
-                if (estimate.isEmpty()) {
-                    continue;
-                }
-
-                EstimatedRobotPose est = estimate.get();
-
-                if (!isMeasurementUsable(est, result, currentPose, usedMultiTag)) {
-                    continue;
-                }
-
-                Matrix<N3, N1> stdDevs = getEstimationStdDevs(result, usedMultiTag);
-
-                consumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stdDevs);
+            if (!result.hasTargets()) {
+                continue;
             }
+
+            Optional<EstimatedRobotPose> estimate = cam.estimator.estimateCoprocMultiTagPose(result);
+
+            boolean usedMultiTag = estimate.isPresent() && result.getTargets().size() >= 2;
+
+            if (estimate.isEmpty()) {
+                estimate = cam.estimator.estimateLowestAmbiguityPose(result);
+                usedMultiTag = false;
+            }
+
+            if (estimate.isEmpty()) {
+                continue;
+            }
+
+            EstimatedRobotPose est = estimate.get();
+
+            if (!isMeasurementUsable(est, result, currentPose, usedMultiTag)) {
+                continue;
+            }
+
+            Matrix<N3, N1> stdDevs = getEstimationStdDevs(result, usedMultiTag);
+
+            consumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stdDevs);
+            acceptedMeasurements++;
         }
+
+        double updateMs = (Timer.getFPGATimestamp() - startTime) * 1000.0;
+        SmartDashboard.putNumber("Timing/VisionUpdateMs", updateMs);
+        SmartDashboard.putNumber("Vision/TotalBacklog", totalBacklog);
+        SmartDashboard.putNumber("Vision/AcceptedMeasurements", acceptedMeasurements);
     }
 
     private boolean isMeasurementUsable(
@@ -180,10 +207,8 @@ public class Vision {
 
         Matrix<N3, N1> base = usedMultiTag ? MULTI_TAG_BASE_STD_DEVS : SINGLE_TAG_BASE_STD_DEVS;
 
-        // Distance-based trust scaling, matching WPILib guidance directionally.
         double scale = 1.0 + (avgDist * avgDist / 20.0);
 
-        // Multi-tag gets relatively more trust than single-tag.
         if (usedMultiTag && numTargets > 1) {
             scale /= Math.min(numTargets, 4);
         }

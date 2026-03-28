@@ -7,11 +7,11 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +24,6 @@ import frc.robot.commands.RunIntake;
 import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
-import frc.robot.commands.SpinUpShooter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
@@ -59,6 +58,7 @@ public class RobotContainer {
 
         private Rotation2d faceTranslationHeading = Rotation2d.kZero;
         private DriveMode lastDriveMode = DriveMode.NORMAL;
+        private double lastDriveCommandBuildMs = 0.0;
 
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
@@ -103,6 +103,8 @@ public class RobotContainer {
 
                 drivetrain.setDefaultCommand(
                                 drivetrain.applyRequest(() -> {
+                                        double startTime = Timer.getFPGATimestamp();
+
                                         double vx = getDriveX();
                                         double vy = getDriveY();
                                         double omega = getDriveOmega();
@@ -123,6 +125,7 @@ public class RobotContainer {
                                                 lastDriveMode = mode;
                                         }
 
+                                        SwerveRequest request;
                                         if (mode == DriveMode.FACE_TRANSLATION) {
                                                 double translationMag = Math.hypot(vx, vy);
 
@@ -131,16 +134,22 @@ public class RobotContainer {
                                                                         .fromRadians(Math.atan2(vy, vx));
                                                 }
 
-                                                return driveFaceTranslation
+                                                request = driveFaceTranslation
                                                                 .withVelocityX(vx)
                                                                 .withVelocityY(vy)
                                                                 .withTargetDirection(faceTranslationHeading);
+                                        } else {
+                                                request = driveRequest
+                                                                .withVelocityX(vx)
+                                                                .withVelocityY(vy)
+                                                                .withRotationalRate(omega);
                                         }
 
-                                        return driveRequest
-                                                        .withVelocityX(vx)
-                                                        .withVelocityY(vy)
-                                                        .withRotationalRate(omega);
+                                        double endTime = Timer.getFPGATimestamp();
+                                        lastDriveCommandBuildMs = (endTime - startTime) * 1000.0;
+                                        SmartDashboard.putNumber("Timing/DriveCommandBuildMs", lastDriveCommandBuildMs);
+
+                                        return request;
                                 }));
 
                 final var idle = new SwerveRequest.Idle();
@@ -227,8 +236,6 @@ public class RobotContainer {
                                         unjammer.stop();
                                 }, drivetrain, turret, shooter, intake, spindexer, unjammer));
         }
-
-       
 
         // =========================
         // Driver input shaping
