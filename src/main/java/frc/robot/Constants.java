@@ -99,10 +99,10 @@ public final class Constants {
                 36.14,
                 56.30,
 
-                -150,
-                160,
-                180.0,
-                19.9,
+                -180,
+                180,
+                0.0,
+                25.0,
 
                 0.080,
                 0.5,
@@ -198,6 +198,10 @@ public final class Constants {
 
         public static final int MOTOR_ID = 8;
         public static final int HOME_SWITCH_DIO = 7;
+
+        /** Physical angle limits (deg). 0° = backward, CW positive, +160° = home/limit switch. */
+        public static final double ANGLE_MIN_DEG = -150.0;
+        public static final double ANGLE_MAX_DEG = 160.0;
 
         public static final double RATIO = 7.8125;
         public static final double DEGREES_PER_REVOLUTION = 360.0;

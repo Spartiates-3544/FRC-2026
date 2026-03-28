@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
+import frc.lib.utils.MathUtils;
 import frc.robot.Constants;
 import frc.robot.RobotActStateBuilder;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -27,7 +28,7 @@ public class ShooterLoop extends SubsystemBase {
         stateBuilder = new RobotActStateBuilder(
                 () -> drivetrain.getState().Pose,
                 () -> drivetrain.getState().Speeds,
-                () -> -turret.getAngleRad(),
+                () -> MathUtils.wrapRad(turret.getAngleRad() + Math.PI),
                 shooter::getHoodAngleDeg,
                 shooter::getShooterRpm);
     }

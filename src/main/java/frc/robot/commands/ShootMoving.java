@@ -43,14 +43,8 @@ public class ShootMoving extends Command {
         shooter.applyShot(shot);
         shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
 
-        double turretTargetDeg = -Math.toDegrees(shot.turretYawRelRad());
-
-        if (turretTargetDeg > 0.0) {
-            turretTargetDeg -= 180.0;
-        } else {
-            turretTargetDeg += 180.0;
-        }
-
+        double turretTargetDeg = Math.toDegrees(shot.turretYawRelRad()) - 180.0;
+        if (turretTargetDeg < -180.0) turretTargetDeg += 360.0;
         turret.setTargetAngleDeg(turretTargetDeg);
     }
 
