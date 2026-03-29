@@ -21,10 +21,12 @@ public final class TurretSubsystem extends SubsystemBase {
     // Requests
     // =========================
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
+    
 
     public TurretSubsystem() {
         applyConfigs();
     }
+    
 
     // =========================
     // Setup

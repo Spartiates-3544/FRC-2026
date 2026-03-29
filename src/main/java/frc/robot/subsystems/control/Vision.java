@@ -31,7 +31,6 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 import java.util.List;
@@ -44,8 +43,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision {
     private final PhotonCamera heliosLeft;
     private final PhotonCamera heliosRight;
+    private final PhotonCamera limelight3;
     private final PhotonPoseEstimator photonEstimatorHeliosRight;
     private final PhotonPoseEstimator photonEstimatorHeliosLeft;
+    private final PhotonPoseEstimator photonEstimatorLimelight3;
     private Matrix<N3, N1> curStdDevs;
     private final EstimateConsumer estConsumer;
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
@@ -60,10 +61,13 @@ public class Vision {
         this.estConsumer = estConsumer;
         heliosLeft = new PhotonCamera("heliosLeft");
         heliosRight = new PhotonCamera("heliosRight");
+        limelight3 = new PhotonCamera("limelightV3");
         photonEstimatorHeliosRight = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_RIGHT_POS);
         photonEstimatorHeliosLeft = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_LEFT_POS);
+        photonEstimatorLimelight3 = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
+                Constants.Vision.LIMELIGHT_V3_POS);
     }
 
     public void update() {
@@ -86,6 +90,20 @@ public class Vision {
             visionEst = photonEstimatorHeliosRight.estimateCoprocMultiTagPose(result);
             if (visionEst.isEmpty()) {
                 visionEst = photonEstimatorHeliosRight.estimateLowestAmbiguityPose(result);
+            }
+            updateEstimationStdDevs(visionEst, result.getTargets());
+
+            visionEst.ifPresent(
+                    est -> {
+                        // Change our trust in the measurement based on the tags we can see
+                        var estStdDevs = getEstimationStdDevs();
+                        estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                    });
+        }
+        for (var result : limelight3.getAllUnreadResults()) {
+            visionEst = photonEstimatorLimelight3.estimateCoprocMultiTagPose(result);
+            if (visionEst.isEmpty()) {
+                visionEst = photonEstimatorLimelight3.estimateLowestAmbiguityPose(result);
             }
             updateEstimationStdDevs(visionEst, result.getTargets());
 

@@ -64,7 +64,8 @@ public class RobotContainer {
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
         private boolean shouldSlowForShootNow() {
-                return CommandScheduler.getInstance().isScheduled(shootNowCommand);
+                return CommandScheduler.getInstance().isScheduled(shootNowCommand)
+                        || CommandScheduler.getInstance().isScheduled(shootMovingCommand);
         }
 
         // =========================
@@ -85,14 +86,16 @@ public class RobotContainer {
 
         public RobotContainer() {
                 shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop);
+                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
+                intake.open();
 
                 // Shooter YAW + RPM automatique lorsque dans la zone
-                shooter.setDefaultCommand(buildMovingShootCommand());
+                // shooter.setDefaultCommand(buildMovingShootCommand());
         }
 
         // =========================
@@ -160,7 +163,6 @@ public class RobotContainer {
 
         private void configureBindings() {
                 configureDriveBindings();
-                configureTurretBindings();
                 configureShooterBindings();
                 configureIntakeBindings();
                 configureDisabledBindings();
@@ -175,31 +177,17 @@ public class RobotContainer {
         // =========================
         private void configureDriveBindings() {
                 joystick.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-                // TODO: COMMENT OUT AVANT COMPÉ
-                joystick.back().onTrue(
-                                Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3, 4, Rotation2d.kZero))));
-        }
-
-        // =========================
-        // Turret bindings
-        // =========================
-        private void configureTurretBindings() {
-                joystick.y().toggleOnTrue(turret.home());
-
-                // TODO: COMMENT OUT AVANT COMPÉ
-                joystick.povLeft().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_LEFT_DEG));
-                joystick.povRight().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_RIGHT_DEG));
-                joystick.povDown().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_DOWN_DEG));
         }
 
         // =========================
         // Shooter bindings
         // =========================
         private final Command shootNowCommand;
+        private final Command shootMovingCommand;
 
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
+                joystick.y().toggleOnTrue(shootMovingCommand);
                 joystick.b().whileTrue(
                                 new DumpIntoAllianceZone(
                                                 shooter,
@@ -210,9 +198,9 @@ public class RobotContainer {
                                                 unjammer));
         }
 
-        private Command buildMovingShootCommand() {
-                return new ShootMoving(shooter, turret, shooterLoop);
-        }
+        // private Command buildMovingShootCommand() {
+        // return new ShootMoving(shooter, turret, shooterLoop);
+        // }
 
         // =========================
         // Intake bindings
@@ -260,7 +248,7 @@ public class RobotContainer {
                 return Commands.sequence(
                                 turret.home(),
                                 turret.setTargetAngleCommand(0.0))
-                        .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         }
 
         public Command getAutonomousCommand() {

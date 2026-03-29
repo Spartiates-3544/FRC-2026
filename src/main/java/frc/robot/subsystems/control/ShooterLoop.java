@@ -28,7 +28,7 @@ public class ShooterLoop extends SubsystemBase {
         stateBuilder = new RobotActStateBuilder(
                 () -> drivetrain.getState().Pose,
                 () -> drivetrain.getState().Speeds,
-                () -> MathUtils.wrapRad(turret.getAngleRad() + Math.PI),
+                () -> MathUtils.wrapRad(Math.PI - turret.getAngleRad()),
                 shooter::getHoodAngleDeg,
                 shooter::getShooterRpm);
     }
@@ -60,7 +60,7 @@ public class ShooterLoop extends SubsystemBase {
 
         double endTime = Timer.getFPGATimestamp();
         lastSolveDurationMs = (endTime - startTime) * 1000.0;
-
+        SmartDashboard.putNumber("Shooter/RPM", solverInputs.actuatorState().flywheelRpm());
         SmartDashboard.putNumber("Timing/ShooterLoopSolveMs", lastSolveDurationMs);
     }
 
@@ -95,7 +95,7 @@ public class ShooterLoop extends SubsystemBase {
     }
 
     public boolean hasValidShot() {
-        return enabled && lastShotSolution != null && lastShotSolution.ok();
+        return enabled && lastShotSolution != null;
     }
 
     public boolean isReadyToShoot() {
@@ -103,8 +103,7 @@ public class ShooterLoop extends SubsystemBase {
             return false;
         }
 
-        double rpmError = Math.abs(lastShotSolution.flywheelRpm() - lastActuatorState.flywheelRpm());
-        return rpmError <= Constants.Shooter.SHOOTER_RPM_TOLERANCE;
+        return true;
     }
 
     public boolean isInZone() {

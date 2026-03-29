@@ -16,12 +16,15 @@ public class IntakeSubsystem extends SubsystemBase {
     private final Solenoid intakeSolenoid = pneumaticHub.makeSolenoid(Constants.Intake.SOLENOID_CHANNEL);
 
     public IntakeSubsystem() {
+        pneumaticHub.disableCompressor();
         var config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = Constants.Intake.INVERTED;
         config.MotorOutput.NeutralMode = Constants.Intake.NEUTRAL_MODE;
         config.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Intake.SPINUP_INTAKE_SMOOTH_TIME_S;
         config.CurrentLimits.SupplyCurrentLimit = Constants.Intake.SUPPLY_CURRENT_LIMIT_A;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.StatorCurrentLimit = Constants.Intake.STATOR_CURRENT_LIMIT_A;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
         intakeMotor.getConfigurator().apply(config);
     }
 
