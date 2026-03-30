@@ -66,7 +66,7 @@ public final class DumpIntoAllianceZone extends Command {
         boolean isRed = isRedAlliance();
 
         // On pointe vers notre propre mur alliance
-        double desiredYawFieldRad = isRed ? 0.0 : Math.PI;
+        double desiredYawFieldRad = isRed ? Math.PI : 0.0;
         double desiredYawRelRad = MathUtils.wrapRad(
                 desiredYawFieldRad - pose.getRotation().getRadians());
 

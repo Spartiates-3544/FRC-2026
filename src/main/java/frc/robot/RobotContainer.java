@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
-import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
 import frc.robot.generated.TunerConstants;
@@ -65,7 +64,7 @@ public class RobotContainer {
 
         private boolean shouldSlowForShootNow() {
                 return CommandScheduler.getInstance().isScheduled(shootNowCommand)
-                        || CommandScheduler.getInstance().isScheduled(shootMovingCommand);
+                                || CommandScheduler.getInstance().isScheduled(shootMovingCommand);
         }
 
         // =========================
@@ -206,7 +205,7 @@ public class RobotContainer {
         // Intake bindings
         // =========================
         private void configureIntakeBindings() {
-                joystick.x().toggleOnTrue(new RunIntake(intake));
+                joystick.x().onTrue(new RunIntake(intake));
         }
 
         // =========================

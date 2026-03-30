@@ -34,6 +34,7 @@ import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -71,48 +72,25 @@ public class Vision {
     }
 
     public void update() {
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var result : heliosLeft.getAllUnreadResults()) {
-            visionEst = photonEstimatorHeliosLeft.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = photonEstimatorHeliosLeft.estimateLowestAmbiguityPose(result);
-            }
-            updateEstimationStdDevs(visionEst, result.getTargets());
+        var cameras = List.of(
+            Map.entry(heliosLeft, photonEstimatorHeliosLeft),
+            Map.entry(heliosRight, photonEstimatorHeliosRight),
+            Map.entry(limelight3, photonEstimatorLimelight3)
+        );
+        for (var camera : cameras) {
+            for (var result : camera.getKey().getAllUnreadResults()) {
+                var visionEst = camera.getValue().estimateCoprocMultiTagPose(result);
+                if (visionEst.isEmpty()) {
+                    visionEst = camera.getValue().estimateLowestAmbiguityPose(result);
+                }
+                updateEstimationStdDevs(visionEst, result.getTargets());
 
-            visionEst.ifPresent(
-                    est -> {
-                        // Change our trust in the measurement based on the tags we can see
-                        var estStdDevs = getEstimationStdDevs();
-                        estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                    });
-        }
-        for (var result : heliosRight.getAllUnreadResults()) {
-            visionEst = photonEstimatorHeliosRight.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = photonEstimatorHeliosRight.estimateLowestAmbiguityPose(result);
+                visionEst.ifPresent(
+                        est -> {
+                            var estStdDevs = getEstimationStdDevs();
+                            estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+                        });
             }
-            updateEstimationStdDevs(visionEst, result.getTargets());
-
-            visionEst.ifPresent(
-                    est -> {
-                        // Change our trust in the measurement based on the tags we can see
-                        var estStdDevs = getEstimationStdDevs();
-                        estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                    });
-        }
-        for (var result : limelight3.getAllUnreadResults()) {
-            visionEst = photonEstimatorLimelight3.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = photonEstimatorLimelight3.estimateLowestAmbiguityPose(result);
-            }
-            updateEstimationStdDevs(visionEst, result.getTargets());
-
-            visionEst.ifPresent(
-                    est -> {
-                        // Change our trust in the measurement based on the tags we can see
-                        var estStdDevs = getEstimationStdDevs();
-                        estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-                    });
         }
     }
 
