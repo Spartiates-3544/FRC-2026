@@ -40,6 +40,8 @@ public class SpindexerSubsystem extends SubsystemBase {
         feedConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Spindexer.SPINUP_FEED_SMOOTH_TIME_S;
         feedConfig.CurrentLimits.SupplyCurrentLimit = Constants.Spindexer.FEED_SUPPLY_CURRENT_LIMIT_A;
         feedConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        feedConfig.CurrentLimits.StatorCurrentLimit = Constants.Spindexer.FEED_STATOR_CURRENT_LIMIT_A;
+        feedConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         feedMotor.getConfigurator().apply(feedConfig);
     }
 
@@ -94,13 +96,11 @@ public class SpindexerSubsystem extends SubsystemBase {
         // Track a decaying "recent peak" for debugging
         currentPeakA = Math.max(indexerCurrentA, currentPeakA - currentPeakDecayPerSecond * 0.02);
 
-        boolean shouldBeRunningForward = commandedIndexerSpeed > 0.05 || commandedFeedSpeed < -0.05
-                || commandedFeedSpeed > 0.05;
+        boolean shouldBeRunningForward = commandedIndexerSpeed > 0.05;
 
         if (jamClearingActive) {
             if (nowS < jamClearUntilS) {
                 indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
-                feedMotor.set(Constants.Spindexer.JAM_REVERSE_FEED_SPEED);
                 return;
             }
 
@@ -117,7 +117,6 @@ public class SpindexerSubsystem extends SubsystemBase {
                     jamClearUntilS = nowS + Constants.Spindexer.JAM_CLEAR_TIME_S;
 
                     indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
-                    feedMotor.set(Constants.Spindexer.JAM_REVERSE_FEED_SPEED);
                     return;
                 }
             } else {

@@ -70,11 +70,12 @@ public final class DumpIntoAllianceZone extends Command {
         boolean isRed = isRedAlliance();
 
         // On pointe vers notre propre mur alliance
-        double desiredYawFieldRad = isRed ? 0.0 : Math.PI;
+        double desiredYawFieldRad = isRed ? Math.PI : 0.0;
         double desiredYawRelRad = MathUtils.wrapRad(
                 desiredYawFieldRad - pose.getRotation().getRadians());
 
-        double turretTargetDeg = Math.toDegrees(desiredYawRelRad);
+        double turretTargetDeg = Math.toDegrees(desiredYawRelRad) - 180.0;
+        if (turretTargetDeg < -180.0) turretTargetDeg += 360.0;
         turret.setTargetAngleDeg(turretTargetDeg);
 
         // RPM selon distance au mur alliance

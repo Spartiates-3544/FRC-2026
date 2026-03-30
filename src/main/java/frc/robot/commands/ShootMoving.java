@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.robot.Records;
 import frc.robot.Constants;
@@ -38,7 +39,7 @@ public class ShootMoving extends Command {
 
         Records.ShotSolution shot = shooterLoop.getCommandedShot();
 
-        if (shot == null || !shot.ok()) {
+        if (shot == null) {
             shooter.setKickerRpm(0.0);
             shooter.stopShooter();
             leds.requestShootMoving(false);
@@ -47,15 +48,12 @@ public class ShootMoving extends Command {
 
         shooter.applyShot(shot);
         shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
+        SmartDashboard.putNumber("turretYawRelRad/TurretDeg", Math.toDegrees(shot.turretYawRelRad()));
 
-        double turretTargetDeg = -Math.toDegrees(shot.turretYawRelRad());
+        double turretTargetDeg = 180.0 - Math.toDegrees(shot.turretYawRelRad());
+        if (turretTargetDeg > 180.0) turretTargetDeg -= 360.0;
 
-        if (turretTargetDeg > 0.0) {
-            turretTargetDeg -= 180.0;
-        } else {
-            turretTargetDeg += 180.0;
-        }
-
+        SmartDashboard.putNumber("ShootMoving/TurretDeg", turretTargetDeg);
         turret.setTargetAngleDeg(turretTargetDeg);
 
         leds.requestShootMoving(shooterLoop.isReadyToShoot());

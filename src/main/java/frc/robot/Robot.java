@@ -1,22 +1,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import frc.lib.logging.ExtendedLogger;
 import frc.lib.robot.LedStrips;
 
-/**
- * Robot.java
- *
- * "Main loop" du robot (WPILib).
- *
- * À retenir :
- * - robotPeriodic() roule à ~50Hz (toutes les 20ms)
- * - CommandScheduler = exécute les Commands et appelle periodic() des Subsystems
- * - Tunables.run() = met à jour les valeurs live depuis NetworkTables
- * - ExtendedLogger.run() = log automatiquement les @LoggableField
- */
 public class Robot extends TimedRobot {
 
     private Command m_autonomousCommand;
@@ -24,7 +14,6 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         m_robotContainer = new RobotContainer();
-
         LedStrips.init(0, 60);
     }
 
@@ -37,12 +26,21 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotPeriodic() {
-        // m_timeAndJoystickReplay.update();
+        
+        double robotPeriodicStart = Timer.getFPGATimestamp();
+
         CommandScheduler.getInstance().run();
+
+        double robotPeriodicEnd = Timer.getFPGATimestamp();
+        double robotPeriodicMs = (robotPeriodicEnd - robotPeriodicStart) * 1000.0;
+        SmartDashboard.putNumber("Timing/RobotPeriodicMs", robotPeriodicMs);
     }
 
     @Override
     public void disabledInit() {
+        // Clear the cached goal so it is recomputed when the next alliance report
+        // arrives. Important during practice sessions where alliance may change.
+        FieldTargets.clearCache();
     }
 
     @Override

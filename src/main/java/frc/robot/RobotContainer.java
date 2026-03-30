@@ -7,16 +7,17 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
@@ -60,11 +61,13 @@ public class RobotContainer {
 
         private Rotation2d faceTranslationHeading = Rotation2d.kZero;
         private DriveMode lastDriveMode = DriveMode.NORMAL;
+        private double lastDriveCommandBuildMs = 0.0;
 
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
         private boolean shouldSlowForShootNow() {
-                return CommandScheduler.getInstance().isScheduled(shootNowCommand);
+                return CommandScheduler.getInstance().isScheduled(shootNowCommand)
+                                || CommandScheduler.getInstance().isScheduled(shootMovingCommand);
         }
 
         // =========================
@@ -100,16 +103,18 @@ public class RobotContainer {
         }
 
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop, leds);
+                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop);
+                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
                 configureNamedCommands();
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
+                intake.open();
 
                 // Shooter YAW + RPM automatique lorsque dans la zone
-                shooter.setDefaultCommand(buildMovingShootCommand());
+                // shooter.setDefaultCommand(buildMovingShootCommand());
         }
 
         // =========================
@@ -121,6 +126,8 @@ public class RobotContainer {
 
                 drivetrain.setDefaultCommand(
                                 drivetrain.applyRequest(() -> {
+                                        double startTime = Timer.getFPGATimestamp();
+
                                         double vx = getDriveX();
                                         double vy = getDriveY();
                                         double omega = getDriveOmega();
@@ -141,6 +148,7 @@ public class RobotContainer {
                                                 lastDriveMode = mode;
                                         }
 
+                                        SwerveRequest request;
                                         if (mode == DriveMode.FACE_TRANSLATION) {
                                                 double translationMag = Math.hypot(vx, vy);
 
@@ -149,16 +157,22 @@ public class RobotContainer {
                                                                         .fromRadians(Math.atan2(vy, vx));
                                                 }
 
-                                                return driveFaceTranslation
+                                                request = driveFaceTranslation
                                                                 .withVelocityX(vx)
                                                                 .withVelocityY(vy)
                                                                 .withTargetDirection(faceTranslationHeading);
+                                        } else {
+                                                request = driveRequest
+                                                                .withVelocityX(vx)
+                                                                .withVelocityY(vy)
+                                                                .withRotationalRate(omega);
                                         }
 
-                                        return driveRequest
-                                                        .withVelocityX(vx)
-                                                        .withVelocityY(vy)
-                                                        .withRotationalRate(omega);
+                                        double endTime = Timer.getFPGATimestamp();
+                                        lastDriveCommandBuildMs = (endTime - startTime) * 1000.0;
+                                        SmartDashboard.putNumber("Timing/DriveCommandBuildMs", lastDriveCommandBuildMs);
+
+                                        return request;
                                 }));
 
                 final var idle = new SwerveRequest.Idle();
@@ -168,7 +182,6 @@ public class RobotContainer {
 
         private void configureBindings() {
                 configureDriveBindings();
-                configureTurretBindings();
                 configureShooterBindings();
                 configureIntakeBindings();
                 configureDisabledBindings();
@@ -183,31 +196,17 @@ public class RobotContainer {
         // =========================
         private void configureDriveBindings() {
                 joystick.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-                // TODO: COMMENT OUT AVANT COMPÉ
-                joystick.back().onTrue(
-                                Commands.runOnce(() -> drivetrain.resetPose(new Pose2d(3, 4, Rotation2d.kZero))));
-        }
-
-        // =========================
-        // Turret bindings
-        // =========================
-        private void configureTurretBindings() {
-                joystick.y().toggleOnTrue(turret.home());
-
-                // TODO: COMMENT OUT AVANT COMPÉ
-                joystick.povLeft().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_LEFT_DEG));
-                joystick.povRight().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_RIGHT_DEG));
-                joystick.povDown().onTrue(new SetTurretAngle(turret, Constants.Commands.TURRET_PRESET_DOWN_DEG));
         }
 
         // =========================
         // Shooter bindings
         // =========================
         private final Command shootNowCommand;
+        private final Command shootMovingCommand;
 
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
+                joystick.y().toggleOnTrue(shootMovingCommand);
                 joystick.b().whileTrue(
                                 new DumpIntoAllianceZone(
                                                 shooter,
@@ -227,7 +226,7 @@ public class RobotContainer {
         // Intake bindings
         // =========================
         private void configureIntakeBindings() {
-                joystick.x().toggleOnTrue(new RunIntake(intake, leds));
+                joystick.x().onTrue(new RunIntake(intake));
         }
 
         // =========================
@@ -268,7 +267,8 @@ public class RobotContainer {
         public Command getInitCommand() {
                 return Commands.sequence(
                                 turret.home(),
-                                turret.setTargetAngleCommand(0.0));
+                                turret.setTargetAngleCommand(0.0))
+                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
         }
 
         public Command getAutonomousCommand() {

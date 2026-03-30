@@ -18,24 +18,52 @@ public final class FieldTargets {
     private static final double GOAL_Y_M = Units.inchesToMeters(FIELD_WIDTH_IN / 2.0);
     private static final double GOAL_Z_M = Units.inchesToMeters(GOAL_HEIGHT_IN);
 
-    public static Translation3d goalCenter() {
-        boolean isRed = isRedAlliance();
+    // Cached after alliance is first known. Never changes mid-match.
+    private static Translation3d cachedGoalCenter = null;
 
-        double xInches;
-        if (isRed) {
-            xInches = FIELD_LENGTH_IN - GOAL_FROM_ALLIANCE_WALL_IN;
-        } else {
-            xInches = GOAL_FROM_ALLIANCE_WALL_IN;
+    /**
+     * Returns the goal center in field coordinates.
+     *
+     * The result is computed once after alliance is determined and cached for the
+     * rest of the match. This avoids allocating a new Translation3d and calling
+     * DriverStation.getAlliance() every 20 ms.
+     *
+     * Call {@link #clearCache()} from disabledInit() so the cache is refreshed
+     * if the robot is re-enabled on the other alliance during testing.
+     */
+    public static Translation3d goalCenter() {
+        if (cachedGoalCenter != null) {
+            return cachedGoalCenter;
         }
 
+        Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
+        if (alliance.isEmpty()) {
+            // Alliance not yet reported by the DS — compute but do not cache so
+            // we retry next cycle. Default to blue to avoid a null return.
+            return computeGoalCenter(false);
+        }
+
+        boolean isRed = alliance.get() == DriverStation.Alliance.Red;
+        cachedGoalCenter = computeGoalCenter(isRed);
+        return cachedGoalCenter;
+    }
+
+    private static Translation3d computeGoalCenter(boolean isRed) {
+        double xInches = isRed
+                ? FIELD_LENGTH_IN - GOAL_FROM_ALLIANCE_WALL_IN
+                : GOAL_FROM_ALLIANCE_WALL_IN;
         return new Translation3d(
                 Units.inchesToMeters(xInches),
                 GOAL_Y_M,
                 GOAL_Z_M);
     }
 
-    private static boolean isRedAlliance() {
-        Optional<DriverStation.Alliance> alliance = DriverStation.getAlliance();
-        return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+    /**
+     * Clears the cached goal position.
+     * Call this from Robot.disabledInit() so the cache is refreshed if the robot
+     * switches alliances between matches (common during testing).
+     */
+    public static void clearCache() {
+        cachedGoalCenter = null;
     }
 }
