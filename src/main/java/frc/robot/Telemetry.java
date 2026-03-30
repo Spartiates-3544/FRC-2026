@@ -82,8 +82,19 @@ public class Telemetry {
 
     private final double[] m_poseArray = new double[3];
 
+    // The CTRE odometry thread calls telemeterize() at 250 Hz on CANivore.
+    // Publishing 7 NT structs at that rate hammers the NT internal lock and causes
+    // non-deterministic jitter on the main robot thread. We publish at 50 Hz instead
+    // (every 5th call) which is more than enough for AdvantageScope / SmartDashboard.
+    private static final int PUBLISH_DIVIDER = 5; // 250 Hz / 5 = 50 Hz
+    private int telemeterizeCallCount = 0;
+
     /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
     public void telemeterize(SwerveDriveState state) {
+        telemeterizeCallCount++;
+        if (telemeterizeCallCount % PUBLISH_DIVIDER != 0) {
+            return;
+        }
         /* Telemeterize the swerve drive state */
         drivePose.set(state.Pose);
         driveSpeeds.set(state.Speeds);

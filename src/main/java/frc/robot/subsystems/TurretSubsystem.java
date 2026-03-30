@@ -7,16 +7,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.robot.Records;
 import frc.lib.utils.MathUtils;
 import frc.robot.Constants;
 
 public final class TurretSubsystem extends SubsystemBase {
-    // =========================
-    // Shooter params
-    // =========================
-    private final Records.ShooterParams shooterParams = Constants.Shooter.PARAMS;
-
     // =========================
     // Hardware
     // =========================
@@ -27,10 +21,12 @@ public final class TurretSubsystem extends SubsystemBase {
     // Requests
     // =========================
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
+    
 
     public TurretSubsystem() {
         applyConfigs();
     }
+    
 
     // =========================
     // Setup
@@ -56,10 +52,10 @@ public final class TurretSubsystem extends SubsystemBase {
     public void setTargetAngleDeg(double targetDeg) {
         double clampedDeg = MathUtils.clamp(
                 targetDeg,
-                shooterParams.turretMinDeg(),
-                shooterParams.turretMaxDeg());
+                Constants.Turret.ANGLE_MIN_DEG,
+                Constants.Turret.ANGLE_MAX_DEG);
 
-        double turretDegFromHome = clampedDeg - shooterParams.turretMaxDeg();
+        double turretDegFromHome = clampedDeg - Constants.Turret.ANGLE_MAX_DEG;
         double turretRotationsFromHome = turretDegFromHome / Constants.Turret.DEGREES_PER_REVOLUTION;
         double motorRotations = turretRotationsFromHome * Constants.Turret.RATIO;
 
@@ -75,12 +71,12 @@ public final class TurretSubsystem extends SubsystemBase {
         double motorRotations = turretMotor.getPosition().getValueAsDouble();
         double turretRotationsFromHome = motorRotations / Constants.Turret.RATIO;
         double turretDegFromHome = turretRotationsFromHome * Constants.Turret.DEGREES_PER_REVOLUTION;
-        double angleDeg = shooterParams.turretMaxDeg() + turretDegFromHome;
+        double angleDeg = Constants.Turret.ANGLE_MAX_DEG + turretDegFromHome;
 
         return MathUtils.clamp(
                 angleDeg,
-                shooterParams.turretMinDeg(),
-                shooterParams.turretMaxDeg());
+                Constants.Turret.ANGLE_MIN_DEG,
+                Constants.Turret.ANGLE_MAX_DEG);
     }
 
     public double getAngleRad() {

@@ -1,7 +1,7 @@
 package frc.robot.subsystems.control;
 
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
@@ -18,7 +18,6 @@ public class ShooterLoop extends SubsystemBase {
     private boolean enabled = Constants.Shooter.LOOP_ENABLED_BY_DEFAULT;
     private Records.ShotSolution lastShotSolution = null;
     private Records.ActuatorState lastActuatorState = null;
-    private Records.RobotState lastRobotState = null;
     private double lastSolveDurationMs = 0.0;
 
     public ShooterLoop(
@@ -29,7 +28,7 @@ public class ShooterLoop extends SubsystemBase {
         stateBuilder = new RobotActStateBuilder(
                 () -> drivetrain.getState().Pose,
                 () -> drivetrain.getState().Speeds,
-                () -> -turret.getAngleRad(),
+                () -> MathUtils.wrapRad(Math.PI - turret.getAngleRad()),
                 shooter::getHoodAngleDeg,
                 shooter::getShooterRpm);
     }
@@ -42,7 +41,6 @@ public class ShooterLoop extends SubsystemBase {
         }
 
         RobotActStateBuilder.SolverInputs solverInputs = stateBuilder.buildAll();
-        lastRobotState = solverInputs.robotState();
         lastActuatorState = solverInputs.actuatorState();
 
         if (!isInZone()) {
@@ -62,6 +60,8 @@ public class ShooterLoop extends SubsystemBase {
 
         double endTime = Timer.getFPGATimestamp();
         lastSolveDurationMs = (endTime - startTime) * 1000.0;
+        SmartDashboard.putNumber("Shooter/RPM", solverInputs.actuatorState().flywheelRpm());
+        SmartDashboard.putNumber("Timing/ShooterLoopSolveMs", lastSolveDurationMs);
     }
 
     private void clearOutputs() {
@@ -95,9 +95,7 @@ public class ShooterLoop extends SubsystemBase {
     }
 
     public boolean hasValidShot() {
-        return enabled
-                && lastShotSolution != null
-                && lastShotSolution.ok();
+        return enabled && lastShotSolution != null;
     }
 
     public boolean isReadyToShoot() {
@@ -105,26 +103,10 @@ public class ShooterLoop extends SubsystemBase {
             return false;
         }
 
-        double rpmError = Math.abs(lastShotSolution.flywheelRpm() - lastActuatorState.flywheelRpm());
-
-        double yawErrorDeg = Math.abs(Math.toDegrees(
-                MathUtils.wrapRad(lastShotSolution.turretYawRelRad() - lastActuatorState.turretYawRelRad())));
-
-        return rpmError <= Constants.Commands.SHOOT_READY_RPM_TOLERANCE
-                && yawErrorDeg <= Constants.Commands.SHOOT_READY_YAW_TOLERANCE_DEG;
+        return true;
     }
 
     public boolean isInZone() {
-        if (lastRobotState == null) {
-            return false;
-        }
-
-        Translation3d target = stateBuilder.buildTarget();
-
-        double dx = target.getX() - lastRobotState.posXY().getX();
-        double dy = target.getY() - lastRobotState.posXY().getY();
-        double dist = Math.hypot(dx, dy);
-
-        return dist <= Constants.Commands.AUTO_SHOOT_MAX_DISTANCE_M;
+        return true; // keep your real logic here
     }
 }

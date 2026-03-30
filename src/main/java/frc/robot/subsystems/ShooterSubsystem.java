@@ -40,7 +40,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // =========================
     // State
     // =========================
-    //@ExtendedLogger.LoggableField(path="Shooter/ShooterRPM")
+    // @ExtendedLogger.LoggableField(path="Shooter/ShooterRPM")
     private volatile double lastCommandedShooterRpm = 0.0;
 
     private double lastCommandedHoodDeg = 0.0;
@@ -60,7 +60,7 @@ public class ShooterSubsystem extends SubsystemBase {
                     this));
 
     public ShooterSubsystem() {
-        //ExtendedLogger.registerInstance(this);
+        // ExtendedLogger.registerInstance(this);
         setName("Shooter");
         applyConfigs();
     }
@@ -97,6 +97,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         shooterMotor1.setControl(
                 shooterVelocityRequest.withVelocity(rpmToRps(shooterRpm)));
+        shooterMotor2.setControl(
+                shooterVelocityRequest.withVelocity(rpmToRps(shooterRpm)));
     }
 
     public double getShooterRpm() {
@@ -109,6 +111,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public void setShooterPercentOutput(double output) {
         shooterMotor1.set(output);
+        shooterMotor2.set(output);
     }
 
     public void stopShooter() {
