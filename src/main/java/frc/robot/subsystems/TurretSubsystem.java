@@ -130,6 +130,21 @@ public final class TurretSubsystem extends SubsystemBase {
     }
 
     // =========================
+    // State queries
+    // =========================
+
+    /**
+     * Returns true when the turret is within 3° of either mechanical limit,
+     * indicating it has entered its physical deadzone (blind spot).
+     */
+    public boolean isInDeadzone() {
+        double angle = getAngleDeg();
+        double margin = 3.0;
+        return Math.abs(angle - shooterParams.turretMinDeg()) <= margin
+                || Math.abs(angle - shooterParams.turretMaxDeg()) <= margin;
+    }
+
+    // =========================
     // Convenience commands
     // =========================
     public Command setTargetAngleCommand(double angleDegrees) {

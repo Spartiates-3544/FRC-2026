@@ -19,6 +19,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        // Background logging thread (off main)
+        // ExtendedLogger.startBackground(10.0);
+
     }
 
     @Override
@@ -54,6 +57,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
+        CommandScheduler.getInstance().schedule(m_robotContainer.getInitCommand());
     }
 
     @Override
