@@ -31,44 +31,45 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Background logging thread (off main)
-        //ExtendedLogger.startBackground(10.0);
+        // ExtendedLogger.startBackground(10.0);
 
     }
-    
+
     @Override
     public void robotPeriodic() {
         // m_timeAndJoystickReplay.update();
         CommandScheduler.getInstance().run();
     }
-    
+
     @Override
     public void disabledInit() {
     }
-    
+
     @Override
-    public void disabledPeriodic() { 
+    public void disabledPeriodic() {
     }
-    
+
     @Override
     public void disabledExit() {
     }
-    
+
     @Override
     public void autonomousInit() {
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
+        CommandScheduler.getInstance().schedule(m_robotContainer.getInitCommand());
     }
-    
+
     @Override
     public void autonomousPeriodic() {
     }
-    
+
     @Override
     public void autonomousExit() {
     }
-    
+
     @Override
     public void teleopInit() {
         if (m_autonomousCommand != null) {

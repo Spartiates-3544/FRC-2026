@@ -22,13 +22,14 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.SetTurretAngle;
+import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
-import frc.robot.commands.SpinUpShooter;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -76,17 +77,34 @@ public class RobotContainer {
         public final ShooterSubsystem shooter = new ShooterSubsystem();
         public final UnjammerSubsystem unjammer = new UnjammerSubsystem();
         public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
+        public final LedSubsystem leds = new LedSubsystem(turret);
 
         // =========================
         // Autonomous
         // =========================
         private final SendableChooser<Command> autoChooser;
 
+        private void configureNamedCommands() {
+                // Ramasser: ouvre et roule l'intake + l'indexeur pendant max 3s
+                NamedCommands.registerCommand("run-intake",
+                                (new RunIntake(intake, leds)));
+
+                NamedCommands.registerCommand("deploy-intake",
+                                (new DeployIntake(intake)));
+
+                NamedCommands.registerCommand("prepare-for-shot",
+                                new ShootMoving(shooter, turret, shooterLoop, leds));
+
+                NamedCommands.registerCommand("shoot-now",
+                                new ShootNow(intake, spindexer, unjammer, shooterLoop, leds));
+        }
+
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop);
+                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
+                configureNamedCommands();
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -197,18 +215,19 @@ public class RobotContainer {
                                                 turret,
                                                 spindexer,
                                                 intake,
-                                                unjammer));
+                                                unjammer,
+                                                leds));
         }
 
         private Command buildMovingShootCommand() {
-                return new ShootMoving(shooter, turret, shooterLoop);
+                return new ShootMoving(shooter, turret, shooterLoop, leds);
         }
 
         // =========================
         // Intake bindings
         // =========================
         private void configureIntakeBindings() {
-                joystick.x().toggleOnTrue(new RunIntake(intake));
+                joystick.x().toggleOnTrue(new RunIntake(intake, leds));
         }
 
         // =========================
@@ -227,8 +246,6 @@ public class RobotContainer {
                                         unjammer.stop();
                                 }, drivetrain, turret, shooter, intake, spindexer, unjammer));
         }
-
-       
 
         // =========================
         // Driver input shaping

@@ -10,6 +10,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -22,6 +23,7 @@ public final class DumpIntoAllianceZone extends Command {
     private final SpindexerSubsystem spindexer;
     private final IntakeSubsystem intake;
     private final UnjammerSubsystem unjammer;
+    private final LedSubsystem leds;
 
     // Position approximative du mur alliance sur le terrain (m)
     private static final double BLUE_ALLIANCE_WALL_X_M = 0.25;
@@ -37,13 +39,15 @@ public final class DumpIntoAllianceZone extends Command {
             TurretSubsystem turret,
             SpindexerSubsystem spindexer,
             IntakeSubsystem intake,
-            UnjammerSubsystem unjammer) {
+            UnjammerSubsystem unjammer,
+            LedSubsystem leds) {
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.turret = turret;
         this.spindexer = spindexer;
         this.intake = intake;
         this.unjammer = unjammer;
+        this.leds = leds;
 
         addRequirements(shooter, turret, spindexer, intake, unjammer);
     }
@@ -103,6 +107,8 @@ public final class DumpIntoAllianceZone extends Command {
             spindexer.setFeedSpeed(0.0);
             spindexer.setIndexerSpeed(0.0);
         }
+
+        leds.requestDump(ready);
     }
 
     @Override

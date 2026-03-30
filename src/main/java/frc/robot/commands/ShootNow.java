@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.UnjammerSubsystem;
 import frc.robot.subsystems.control.ShooterLoop;
@@ -12,16 +13,19 @@ public class ShootNow extends Command {
     private final SpindexerSubsystem spindexer;
     private final UnjammerSubsystem unjammer;
     private final ShooterLoop shooterLoop;
+    private final LedSubsystem leds;
 
     public ShootNow(
             IntakeSubsystem intake,
             SpindexerSubsystem spindexer,
             UnjammerSubsystem unjammer,
-            ShooterLoop shooterLoop) {
+            ShooterLoop shooterLoop,
+            LedSubsystem leds) {
         this.intake = intake;
         this.spindexer = spindexer;
         this.unjammer = unjammer;
         this.shooterLoop = shooterLoop;
+        this.leds = leds;
 
         addRequirements(intake, spindexer, unjammer);
     }
@@ -43,6 +47,8 @@ public class ShootNow extends Command {
             spindexer.setFeedSpeed(0.0);
             spindexer.setIndexerSpeed(0.0);
         }
+
+        leds.requestShootNow();
     }
 
     @Override
