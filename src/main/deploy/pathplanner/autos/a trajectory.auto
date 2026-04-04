@@ -1,0 +1,88 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "a1"
+                }
+              },
+              {
+                "type": "race",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "a2"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "run-intake"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "prepare-for-shot"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shoot-now"
+                      }
+                    },
+                    {
+                      "type": "race",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "path",
+                            "data": {
+                              "pathName": "a3"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "run-intake"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "prepare-for-shot"
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "shoot-now"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
