@@ -42,7 +42,7 @@ public class ShootNow extends Command {
 
         if (shooterLoop.isReadyToShoot()) {
             spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
-            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
+            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED_RPM);
         } else {
             spindexer.setFeedSpeed(0.0);
             spindexer.setIndexerSpeed(0.0);

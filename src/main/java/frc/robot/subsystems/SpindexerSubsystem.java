@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -9,11 +9,12 @@ import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
     private final TalonFX indexerMotor = new TalonFX(Constants.Spindexer.INDEXER_MOTOR_ID, Constants.CAN.rio);
-
     private final TalonFX feedMotor = new TalonFX(Constants.Spindexer.FEED_MOTOR_ID, Constants.CAN.canivore);
 
+    private final MotionMagicVelocityVoltage motionMagicRequest = new MotionMagicVelocityVoltage(0).withSlot(0);
+
     // Commanded outputs from the rest of the robot code
-    private double commandedIndexerSpeed = 0.0;
+    private double commandedIndexerSpeedRPM = 0.0;
     private double commandedFeedSpeed = 0.0;
 
     // Jam state
@@ -26,27 +27,16 @@ public class SpindexerSubsystem extends SubsystemBase {
     private double currentPeakDecayPerSecond = 25.0;
 
     public SpindexerSubsystem() {
-        var indexerConfig = new TalonFXConfiguration();
-        indexerConfig.MotorOutput.Inverted = Constants.Spindexer.INDEXER_INVERTED;
-        indexerConfig.MotorOutput.NeutralMode = Constants.Spindexer.INDEXER_NEUTRAL_MODE;
-        indexerConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Spindexer.SPINUP_INDEXER_SMOOTH_TIME_S;
-        indexerConfig.CurrentLimits.SupplyCurrentLimit = Constants.Spindexer.INDEXER_SUPPLY_CURRENT_LIMIT_A;
-        indexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        indexerMotor.getConfigurator().apply(indexerConfig);
-
-        var feedConfig = new TalonFXConfiguration();
-        feedConfig.MotorOutput.Inverted = Constants.Spindexer.FEED_INVERTED;
-        feedConfig.MotorOutput.NeutralMode = Constants.Spindexer.FEED_NEUTRAL_MODE;
-        feedConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Spindexer.SPINUP_FEED_SMOOTH_TIME_S;
-        feedConfig.CurrentLimits.SupplyCurrentLimit = Constants.Spindexer.FEED_SUPPLY_CURRENT_LIMIT_A;
-        feedConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        feedConfig.CurrentLimits.StatorCurrentLimit = Constants.Spindexer.FEED_STATOR_CURRENT_LIMIT_A;
-        feedConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        feedMotor.getConfigurator().apply(feedConfig);
+        indexerMotor.getConfigurator().apply(Constants.Spindexer.indexeurConfig);
+        feedMotor.getConfigurator().apply(Constants.Spindexer.feederConfig);
     }
 
-    public void setIndexerSpeed(double speed) {
-        commandedIndexerSpeed = clamp(speed);
+    // public void setIndexerSpeed(double speed) {
+    //     commandedIndexerSpeed = clamp(speed);
+    // }
+
+    public void setIndexerSpeed(double speedRPM) {
+        commandedIndexerSpeedRPM = speedRPM;
     }
 
     public void setFeedSpeed(double speed) {
@@ -54,7 +44,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void stopIndexer() {
-        commandedIndexerSpeed = 0.0;
+        commandedIndexerSpeedRPM = 0.0;
         if (!jamClearingActive) {
             indexerMotor.stopMotor();
         }
@@ -68,7 +58,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
 
     public void stopAll() {
-        commandedIndexerSpeed = 0.0;
+        commandedIndexerSpeedRPM = 0.0;
         commandedFeedSpeed = 0.0;
         jamClearingActive = false;
         jamAboveThresholdSinceS = -1.0;
@@ -96,7 +86,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         // Track a decaying "recent peak" for debugging
         currentPeakA = Math.max(indexerCurrentA, currentPeakA - currentPeakDecayPerSecond * 0.02);
 
-        boolean shouldBeRunningForward = commandedIndexerSpeed > 0.05;
+        boolean shouldBeRunningForward = commandedIndexerSpeedRPM > 10;
 
         // Si on recule pour débloquer les balles:
         if (jamClearingActive) {
@@ -135,7 +125,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         }
 
         // Si on ne doit pas reculer, on met les moteurs à la vitesse désirée.
-        indexerMotor.set(commandedIndexerSpeed);
+        indexerMotor.setControl(motionMagicRequest.withVelocity(commandedIndexerSpeedRPM / 60.0));
         feedMotor.set(commandedFeedSpeed);
     }
 

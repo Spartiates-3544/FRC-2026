@@ -103,7 +103,7 @@ public final class DumpIntoAllianceZone extends Command {
         // Feed et indexe seulement quand prêt
         if (ready) {
             spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
-            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
+            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED_RPM);
         } else {
             spindexer.setFeedSpeed(0.0);
             spindexer.setIndexerSpeed(0.0);

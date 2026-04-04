@@ -8,27 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.76720810017256,
-        "y": 2.3591563501636554
+        "x": 7.591996234232981,
+        "y": 1.9834132911008329
       },
       "isLocked": true,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.25,
-        "y": 4.0
+        "x": 7.791951566951566,
+        "y": 3.078903133903135
       },
       "prevControl": {
-        "x": 8.14171979483392,
-        "y": 3.4344248282239977
+        "x": 8.022720797720797,
+        "y": 2.982749287749291
       },
       "nextControl": null,
-      "isLocked": true,
-      "linkedName": null
+      "isLocked": false,
+      "linkedName": "fin ram"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 81.93797212509975
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0.2,
-    "rotation": 65.0
+    "rotation": 91.33221985386945
   },
   "reversed": false,
   "folder": null,

@@ -11,7 +11,6 @@ import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-
 import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
 
@@ -254,30 +253,46 @@ public final class Constants {
     }
 
     public static final class Spindexer {
-        private Spindexer() {
-        }
-
         public static final int INDEXER_MOTOR_ID = 3;
         public static final int FEED_MOTOR_ID = 13;
-
-        public static final InvertedValue INDEXER_INVERTED = InvertedValue.CounterClockwise_Positive;
-        public static final InvertedValue FEED_INVERTED = InvertedValue.CounterClockwise_Positive;
-
-        public static final NeutralModeValue INDEXER_NEUTRAL_MODE = NeutralModeValue.Coast;
-        public static final NeutralModeValue FEED_NEUTRAL_MODE = NeutralModeValue.Coast;
-
+                        
         public static final double SPINUP_INDEXER_SMOOTH_TIME_S = 0.50;
         public static final double SPINUP_FEED_SMOOTH_TIME_S = 0.50;
-
+        
         public static final double INDEXER_SUPPLY_CURRENT_LIMIT_A = 40.0;
         public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 30.0;
         public static final double FEED_STATOR_CURRENT_LIMIT_A = 50.0;
-
+        
         public static final double JAM_CURRENT_THRESHOLD_A = 55.0;
         public static final double JAM_DEBOUNCE_S = 0.08;
         public static final double JAM_CLEAR_TIME_S = 0.25;
         public static final double JAM_REVERSE_INDEXER_SPEED = -0.25;
         public static final double JAM_REVERSE_FEED_SPEED = -0.35;
+
+
+        public static final TalonFXConfiguration indexeurConfig = new TalonFXConfiguration();
+        static {
+            indexeurConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            indexeurConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+            indexeurConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = SPINUP_INDEXER_SMOOTH_TIME_S;
+            indexeurConfig.CurrentLimits.SupplyCurrentLimit = INDEXER_SUPPLY_CURRENT_LIMIT_A;
+            indexeurConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            indexeurConfig.Slot0.kP = 25;
+            indexeurConfig.Slot0.kI = 0.8;
+            indexeurConfig.Slot0.kD = 0;
+            indexeurConfig.MotionMagic.MotionMagicAcceleration = 2.5;
+        }
+
+        public static final TalonFXConfiguration feederConfig = new TalonFXConfiguration();
+        static {
+            feederConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            feederConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+            feederConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Spindexer.SPINUP_FEED_SMOOTH_TIME_S;
+            feederConfig.CurrentLimits.SupplyCurrentLimit = Constants.Spindexer.FEED_SUPPLY_CURRENT_LIMIT_A;
+            feederConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+            feederConfig.CurrentLimits.StatorCurrentLimit = Constants.Spindexer.FEED_STATOR_CURRENT_LIMIT_A;
+            feederConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        }
     }
 
     public static final class Unjammer {
@@ -299,7 +314,7 @@ public final class Constants {
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
         public static final double INTAKE_SPEED = 1.0;
-        public static final double SPINDEXER_SPEED = 0.18;
+        public static final double SPINDEXER_SPEED_RPM = 20;
         public static final double FEED_SPEED = -1.0;
         public static final double UNJAMMER_SPEED = 0.5;
 
