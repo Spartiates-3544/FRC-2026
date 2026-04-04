@@ -98,21 +98,29 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         boolean shouldBeRunningForward = commandedIndexerSpeed > 0.05;
 
+        // Si on recule pour débloquer les balles:
         if (jamClearingActive) {
+            // Débloquer pendant un certain nombre de secondes
             if (nowS < jamClearUntilS) {
                 indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
                 return;
             }
 
+            // Après, désactiver le mode de débloquage.
             jamClearingActive = false;
             jamAboveThresholdSinceS = -1.0;
         }
 
         if (shouldBeRunningForward) {
+            // Si le moteur de l'indexeur "force":
             if (indexerCurrentA >= Constants.Spindexer.JAM_CURRENT_THRESHOLD_A) {
+                // Si jamAboveThresholdSinceS est négatif (ce qui arrive seulement quand on est mode "avancer")
+                // Donc si on était en mode "avancer"...
                 if (jamAboveThresholdSinceS < 0.0) {
+                    // On dit qu'on "jam" depuis le moment présent.
                     jamAboveThresholdSinceS = nowS;
                 } else if ((nowS - jamAboveThresholdSinceS) >= Constants.Spindexer.JAM_DEBOUNCE_S) {
+                    // Si on jam depuis un certain temps...
                     jamClearingActive = true;
                     jamClearUntilS = nowS + Constants.Spindexer.JAM_CLEAR_TIME_S;
 
@@ -126,6 +134,7 @@ public class SpindexerSubsystem extends SubsystemBase {
             jamAboveThresholdSinceS = -1.0;
         }
 
+        // Si on ne doit pas reculer, on met les moteurs à la vitesse désirée.
         indexerMotor.set(commandedIndexerSpeed);
         feedMotor.set(commandedFeedSpeed);
     }

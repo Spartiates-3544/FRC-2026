@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
-import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
@@ -103,8 +103,8 @@ public class RobotContainer {
         }
 
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop);
-                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop);
+                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop, leds);
+                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
@@ -226,7 +226,7 @@ public class RobotContainer {
         // Intake bindings
         // =========================
         private void configureIntakeBindings() {
-                joystick.x().onTrue(new RunIntake(intake));
+                joystick.x().onTrue(new RunIntake(intake, leds));
         }
 
         // =========================

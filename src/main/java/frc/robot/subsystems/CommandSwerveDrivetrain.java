@@ -217,7 +217,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void init() {
         SmartDashboard.putData(field);
-        configAutobuilder();
+        configAutoBuilder();
     }
 
     public void setDriveMode(DriveMode mode) {
@@ -358,7 +358,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 .withRotationalRate(speeds.omegaRadiansPerSecond));
     }
 
-    public void configAutobuilder() {
+    public void configAutoBuilder() {
         AutoBuilder.configure(
                 this::getPose,
                 this::resetPose,

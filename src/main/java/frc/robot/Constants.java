@@ -229,6 +229,7 @@ public final class Constants {
             CONFIG.CurrentLimits.SupplyCurrentLimitEnable = true;
             CONFIG.CurrentLimits.StatorCurrentLimit = 60;
             CONFIG.CurrentLimits.StatorCurrentLimitEnable = true;
+            CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
             MotionMagicConfigs mm = CONFIG.MotionMagic;
             mm.MotionMagicCruiseVelocity = MOTION_MAGIC_CRUISE_VELOCITY_RPS;
@@ -245,7 +246,7 @@ public final class Constants {
         public static final int PNEUMATIC_HUB_ID = 2;
         public static final int SOLENOID_CHANNEL = 6;
 
-        public static final InvertedValue INVERTED = InvertedValue.Clockwise_Positive;
+        public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
         public static final NeutralModeValue NEUTRAL_MODE = NeutralModeValue.Coast;
         public static final double SPINUP_INTAKE_SMOOTH_TIME_S = 0.50;
         public static final double SUPPLY_CURRENT_LIMIT_A = 25.0;
@@ -298,7 +299,7 @@ public final class Constants {
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
         public static final double INTAKE_SPEED = 1.0;
-        public static final double SPINDEXER_SPEED = 0.25;
+        public static final double SPINDEXER_SPEED = 0.18;
         public static final double FEED_SPEED = -1.0;
         public static final double UNJAMMER_SPEED = 0.5;
 
@@ -331,9 +332,9 @@ public final class Constants {
                 new Rotation3d(0, -Math.toRadians(20), Math.toRadians(160)));
         public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.286, 0.114, 0.304),
                 new Rotation3d(0, -Math.toRadians(20),-Math.toRadians(160)));
-        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.133747, -0.338695, 0.508336),
-                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(75)));
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.133747, 0.338695, 0.508336),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(75)));
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.133747, -0.285195, 0.508336),
+                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(98)));
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.133747, 0.285195, 0.508336),
+                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(104)));
     }
 }
