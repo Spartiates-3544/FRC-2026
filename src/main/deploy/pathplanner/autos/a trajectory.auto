@@ -27,50 +27,13 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "run-intake"
+                        "name": "aim-and-spinup"
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "prepare-for-shot"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "shoot-now"
-                      }
-                    },
-                    {
-                      "type": "race",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "path",
-                            "data": {
-                              "pathName": "a3"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "run-intake"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "prepare-for-shot"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "shoot-now"
-                            }
-                          }
-                        ]
+                        "name": "intake-and-feed"
                       }
                     }
                   ]

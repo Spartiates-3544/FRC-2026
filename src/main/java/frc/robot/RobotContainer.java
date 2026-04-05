@@ -95,10 +95,10 @@ public class RobotContainer {
                 NamedCommands.registerCommand("deploy-intake",
                                 (new DeployIntake(intake)));
 
-                NamedCommands.registerCommand("prepare-for-shot",
+                NamedCommands.registerCommand("aim-and-spinup",
                                 new ShootMoving(shooter, turret, shooterLoop, leds));
 
-                NamedCommands.registerCommand("shoot-now",
+                NamedCommands.registerCommand("intake-and-feed",
                                 new ShootNow(intake, spindexer, unjammer, shooterLoop, leds));
         }
 
