@@ -14,7 +14,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         m_robotContainer = new RobotContainer();
-        LedStrips.init(0, 60);
+        LedStrips.init(9, 56);
     }
 
     @Override
@@ -34,6 +34,7 @@ public class Robot extends TimedRobot {
         double robotPeriodicEnd = Timer.getFPGATimestamp();
         double robotPeriodicMs = (robotPeriodicEnd - robotPeriodicStart) * 1000.0;
         SmartDashboard.putNumber("Timing/RobotPeriodicMs", robotPeriodicMs);
+        Telemetry.robotTimer();
     }
 
     @Override
@@ -57,7 +58,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().schedule(m_autonomousCommand);
         }
-        CommandScheduler.getInstance().schedule(m_robotContainer.getInitCommand());
+      //  CommandScheduler.getInstance().schedule(m_robotContainer.getInitCommand());
     }
 
     @Override
@@ -73,7 +74,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             CommandScheduler.getInstance().cancel(m_autonomousCommand);
         }
-        CommandScheduler.getInstance().schedule(m_robotContainer.getInitCommand());
+      //  CommandScheduler.getInstance().schedule(m_robotContainer.getIntCommand());
     }
 
     @Override

@@ -1,0 +1,63 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "home"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "ramasser_mid_from_right"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "run-intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim-and-spinup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake-and-feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 14.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

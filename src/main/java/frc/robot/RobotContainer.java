@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
@@ -34,9 +33,9 @@ import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.UnjammerSubsystem;
 import frc.robot.subsystems.control.ShooterLoop;
 import frc.robot.commands.DumpIntoAllianceZone;
+import frc.robot.commands.HomeTurret;
 
 public class RobotContainer {
         // =========================
@@ -78,7 +77,6 @@ public class RobotContainer {
         public final TurretSubsystem turret = new TurretSubsystem();
         public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
         public final ShooterSubsystem shooter = new ShooterSubsystem();
-        public final UnjammerSubsystem unjammer = new UnjammerSubsystem();
         public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
         public final LedSubsystem leds = new LedSubsystem(turret);
 
@@ -99,11 +97,14 @@ public class RobotContainer {
                                 new ShootMoving(shooter, turret, shooterLoop, leds));
 
                 NamedCommands.registerCommand("intake-and-feed",
-                                new ShootNow(intake, spindexer, unjammer, shooterLoop, leds));
+                                new ShootNow(intake, spindexer, shooterLoop, leds));
+
+                NamedCommands.registerCommand("home",
+                                new HomeTurret(turret));
         }
 
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop, leds);
+                shootNowCommand = new ShootNow(intake, spindexer, shooterLoop, leds);
                 shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
@@ -185,6 +186,7 @@ public class RobotContainer {
                 configureShooterBindings();
                 configureIntakeBindings();
                 configureDisabledBindings();
+                configureTurretBindings();
         }
 
         private void configureDashboard() {
@@ -196,6 +198,10 @@ public class RobotContainer {
         // =========================
         private void configureDriveBindings() {
                 joystick.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        }
+
+        private void configureTurretBindings() {
+                joystick.leftBumper().onTrue(new HomeTurret(turret));
         }
 
         // =========================
@@ -214,12 +220,7 @@ public class RobotContainer {
                                                 turret,
                                                 spindexer,
                                                 intake,
-                                                unjammer,
                                                 leds));
-        }
-
-        private Command buildMovingShootCommand() {
-                return new ShootMoving(shooter, turret, shooterLoop, leds);
         }
 
         // =========================
@@ -242,8 +243,7 @@ public class RobotContainer {
                                         shooter.stopHood();
                                         intake.stop();
                                         spindexer.stopAll();
-                                        unjammer.stop();
-                                }, drivetrain, turret, shooter, intake, spindexer, unjammer));
+                                }, drivetrain, turret, shooter, intake, spindexer));
         }
 
         // =========================
@@ -264,13 +264,6 @@ public class RobotContainer {
         // =========================
         // Public hooks
         // =========================
-        public Command getInitCommand() {
-                return Commands.sequence(
-                                turret.home(),
-                                turret.setTargetAngleCommand(0.0))
-                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-        }
-
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
@@ -284,4 +277,5 @@ public class RobotContainer {
                                 pose.getY(),
                                 pose.getRotation().plus(Rotation2d.fromDegrees(180.0)));
         }
+
 }

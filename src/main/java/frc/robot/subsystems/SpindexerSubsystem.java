@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -11,7 +12,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private final TalonFX indexerMotor = new TalonFX(Constants.Spindexer.INDEXER_MOTOR_ID, Constants.CAN.rio);
     private final TalonFX feedMotor = new TalonFX(Constants.Spindexer.FEED_MOTOR_ID, Constants.CAN.canivore);
 
-    private final MotionMagicVelocityVoltage motionMagicRequest = new MotionMagicVelocityVoltage(0).withSlot(0);
+private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
 
     // Commanded outputs from the rest of the robot code
     private double commandedIndexerSpeedRPM = 0.0;

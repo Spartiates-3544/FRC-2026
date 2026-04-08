@@ -14,7 +14,7 @@ public class RunIndexer extends Command {
 
     @Override
     public void execute() {
-        spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED_RPM);
+        spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
         spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
     }
 

@@ -101,7 +101,7 @@ public final class Constants {
                 -180,
                 180,
                 0.0,
-                30.0,
+                37.0,
 
                 0.080,
                 0.5,
@@ -201,26 +201,26 @@ public final class Constants {
         public static final int HOME_SWITCH_DIO = 7;
 
         /** Physical angle limits (deg). 0° = backward, CW positive, +160° = home/limit switch. */
-        public static final double ANGLE_MIN_DEG = -150.0;
-        public static final double ANGLE_MAX_DEG = 150.0;
+        public static final double ANGLE_MIN_DEG = -143.0;
+        public static final double ANGLE_MAX_DEG = 143.0;
 
-        public static final double RATIO = 7.8125;
+        public static final double RATIO = 39.0625;
         public static final double DEGREES_PER_REVOLUTION = 360.0;
 
-        public static final double DEFAULT_ANGLE_TOLERANCE_DEG = 2.0;
+        public static final double DEFAULT_ANGLE_TOLERANCE_DEG = 1.0;
         public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
         public static final double HOMING_OUTPUT = 0.15;
 
-        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 40.0;
-        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 120.0;
-        public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 400.0;
+        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 200.0;
+        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 640.0;
+        public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 2000.0;
 
         public static final TalonFXConfiguration CONFIG = new TalonFXConfiguration();
         static {
-            CONFIG.Slot0.kP = 12.0;
-            CONFIG.Slot0.kI = 0.0;
-            CONFIG.Slot0.kD = 0.4;
-            CONFIG.Slot0.kS = 0.0;
+            CONFIG.Slot0.kP = 10.0;
+            CONFIG.Slot0.kI = 0.02;
+            CONFIG.Slot0.kD = 0.2;
+            CONFIG.Slot0.kS = 0.4;
             CONFIG.Slot0.kV = 0.0;
             CONFIG.Slot0.kA = 0.0;
             CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
@@ -247,27 +247,27 @@ public final class Constants {
 
         public static final InvertedValue INVERTED = InvertedValue.CounterClockwise_Positive;
         public static final NeutralModeValue NEUTRAL_MODE = NeutralModeValue.Coast;
-        public static final double SPINUP_INTAKE_SMOOTH_TIME_S = 0.50;
-        public static final double SUPPLY_CURRENT_LIMIT_A = 25.0;
-        public static final double STATOR_CURRENT_LIMIT_A = 40.0;
+        public static final double SPINUP_INTAKE_SMOOTH_TIME_S = 0.25;
+        public static final double SUPPLY_CURRENT_LIMIT_A = 35.0;
+        public static final double STATOR_CURRENT_LIMIT_A = 50.0;
     }
 
     public static final class Spindexer {
         public static final int INDEXER_MOTOR_ID = 3;
         public static final int FEED_MOTOR_ID = 13;
                         
-        public static final double SPINUP_INDEXER_SMOOTH_TIME_S = 0.50;
-        public static final double SPINUP_FEED_SMOOTH_TIME_S = 0.50;
+        public static final double SPINUP_INDEXER_SMOOTH_TIME_S = 0.25;
+        public static final double SPINUP_FEED_SMOOTH_TIME_S = 0.25;
         
-        public static final double INDEXER_SUPPLY_CURRENT_LIMIT_A = 40.0;
-        public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 30.0;
-        public static final double FEED_STATOR_CURRENT_LIMIT_A = 50.0;
+        public static final double INDEXER_SUPPLY_CURRENT_LIMIT_A = 50.0;
+        public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 25.0;
+        public static final double FEED_STATOR_CURRENT_LIMIT_A = 30.0;
         
-        public static final double JAM_CURRENT_THRESHOLD_A = 55.0;
+        public static final double JAM_CURRENT_THRESHOLD_A = 10.0;
         public static final double JAM_DEBOUNCE_S = 0.08;
         public static final double JAM_CLEAR_TIME_S = 0.25;
-        public static final double JAM_REVERSE_INDEXER_SPEED = -0.25;
-        public static final double JAM_REVERSE_FEED_SPEED = -0.35;
+        public static final double JAM_REVERSE_INDEXER_SPEED = -0.60;
+        public static final double JAM_REVERSE_FEED_SPEED = -1.0;
 
 
         public static final TalonFXConfiguration indexeurConfig = new TalonFXConfiguration();
@@ -277,10 +277,11 @@ public final class Constants {
             indexeurConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = SPINUP_INDEXER_SMOOTH_TIME_S;
             indexeurConfig.CurrentLimits.SupplyCurrentLimit = INDEXER_SUPPLY_CURRENT_LIMIT_A;
             indexeurConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-            indexeurConfig.Slot0.kP = 25;
-            indexeurConfig.Slot0.kI = 0.8;
+            indexeurConfig.Slot0.kP = 1.0;
+            indexeurConfig.Slot0.kI = 0;
             indexeurConfig.Slot0.kD = 0;
-            indexeurConfig.MotionMagic.MotionMagicAcceleration = 2.5;
+            indexeurConfig.Slot0.kV = 0.1;
+
         }
 
         public static final TalonFXConfiguration feederConfig = new TalonFXConfiguration();
@@ -295,16 +296,6 @@ public final class Constants {
         }
     }
 
-    public static final class Unjammer {
-        private Unjammer() {
-        }
-
-        public static final int MOTOR_ID = 10;
-
-        public static final double SPINUP_SMOOTH_TIME_S = 1.0;
-        public static final InvertedValue FEED_INVERTED = InvertedValue.CounterClockwise_Positive;
-    }
-
     public static final class Commands {
         private Commands() {
         }
@@ -313,14 +304,13 @@ public final class Constants {
         public static final double TURRET_PRESET_RIGHT_DEG = 90.0;
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
-        public static final double INTAKE_SPEED = 1.0;
-        public static final double SPINDEXER_SPEED_RPM = 20;
+        public static final double INTAKE_SPEED = -0.8;
+        public static final double SPINDEXER_SPEED = 0.6;
         public static final double FEED_SPEED = -1.0;
-        public static final double UNJAMMER_SPEED = 0.5;
 
         public static final double SHOOTER_RPM = 3544.0;
         public static final double KICKER_RPM = -6000.0;
-
+ 
         public static final double SHOOT_READY_RPM_TOLERANCE = 125.0;
         public static final double SHOOT_READY_YAW_TOLERANCE_DEG = 3.0;
         public static final double AUTO_SHOOT_MAX_DISTANCE_M = 10.0;
@@ -343,13 +333,14 @@ public final class Constants {
         private Vision() {
         }
 
-        public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.286, -0.108, 0.304),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(160)));
-        public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.286, 0.114, 0.304),
-                new Rotation3d(0, -Math.toRadians(20),-Math.toRadians(160)));
-        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.133747, -0.285195, 0.508336),
-                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(98)));
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.133747, 0.285195, 0.508336),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(104)));
+        public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.28575, -0.1143, 0.3048),
+                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(160)));
+        public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.28575, 0.10795, 0.3048),
+                new Rotation3d(0, -Math.toRadians(20),Math.toRadians(160)));
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.136525, -0.2921, 0.37465),
+                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(73)));
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.136525, 0.2921, 0.37465),
+                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(73)));
     }
+
 }

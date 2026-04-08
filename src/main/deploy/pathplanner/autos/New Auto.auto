@@ -5,56 +5,19 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "aller_ramasser_1"
-          }
-        },
-        {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "home"
+                }
+              },
               {
                 "type": "path",
                 "data": {
-                  "pathName": "ramasser_1"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "run-intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "retour_to_shoot"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "aim-and-spinup"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake-and-feed"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
+                  "pathName": "New Path"
                 }
               }
             ]
