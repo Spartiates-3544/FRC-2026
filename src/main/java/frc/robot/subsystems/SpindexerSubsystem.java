@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -10,12 +9,11 @@ import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
     private final TalonFX indexerMotor = new TalonFX(Constants.Spindexer.INDEXER_MOTOR_ID, Constants.CAN.rio);
+
     private final TalonFX feedMotor = new TalonFX(Constants.Spindexer.FEED_MOTOR_ID, Constants.CAN.canivore);
 
-private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
-
     // Commanded outputs from the rest of the robot code
-    private double commandedIndexerSpeedRPM = 0.0;
+    private double commandedIndexerSpeed = 0.0;
     private double commandedFeedSpeed = 0.0;
 
     // Jam state
@@ -28,16 +26,15 @@ private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
     private double currentPeakDecayPerSecond = 25.0;
 
     public SpindexerSubsystem() {
-        indexerMotor.getConfigurator().apply(Constants.Spindexer.indexeurConfig);
-        feedMotor.getConfigurator().apply(Constants.Spindexer.feederConfig);
+        var indexerConfig = new TalonFXConfiguration();
+        indexerMotor.getConfigurator().apply(indexerConfig);
+
+        var feedConfig = new TalonFXConfiguration();
+        feedMotor.getConfigurator().apply(feedConfig);
     }
 
-    // public void setIndexerSpeed(double speed) {
-    //     commandedIndexerSpeed = clamp(speed);
-    // }
-
-    public void setIndexerSpeed(double speedRPM) {
-        commandedIndexerSpeedRPM = speedRPM;
+    public void setIndexerSpeed(double speed) {
+        commandedIndexerSpeed = clamp(speed);
     }
 
     public void setFeedSpeed(double speed) {
@@ -45,7 +42,7 @@ private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
     }
 
     public void stopIndexer() {
-        commandedIndexerSpeedRPM = 0.0;
+        commandedIndexerSpeed = 0.0;
         if (!jamClearingActive) {
             indexerMotor.stopMotor();
         }
@@ -59,7 +56,7 @@ private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
     }
 
     public void stopAll() {
-        commandedIndexerSpeedRPM = 0.0;
+        commandedIndexerSpeed = 0.0;
         commandedFeedSpeed = 0.0;
         jamClearingActive = false;
         jamAboveThresholdSinceS = -1.0;
@@ -87,35 +84,29 @@ private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
         // Track a decaying "recent peak" for debugging
         currentPeakA = Math.max(indexerCurrentA, currentPeakA - currentPeakDecayPerSecond * 0.02);
 
-        boolean shouldBeRunningForward = commandedIndexerSpeedRPM > 10;
+        boolean shouldBeRunningForward = commandedIndexerSpeed > 0.05;
 
-        // Si on recule pour débloquer les balles:
         if (jamClearingActive) {
-            // Débloquer pendant un certain nombre de secondes
             if (nowS < jamClearUntilS) {
                 indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
+                feedMotor.set(commandedFeedSpeed);
                 return;
             }
 
-            // Après, désactiver le mode de débloquage.
             jamClearingActive = false;
             jamAboveThresholdSinceS = -1.0;
         }
 
         if (shouldBeRunningForward) {
-            // Si le moteur de l'indexeur "force":
             if (indexerCurrentA >= Constants.Spindexer.JAM_CURRENT_THRESHOLD_A) {
-                // Si jamAboveThresholdSinceS est négatif (ce qui arrive seulement quand on est mode "avancer")
-                // Donc si on était en mode "avancer"...
                 if (jamAboveThresholdSinceS < 0.0) {
-                    // On dit qu'on "jam" depuis le moment présent.
                     jamAboveThresholdSinceS = nowS;
                 } else if ((nowS - jamAboveThresholdSinceS) >= Constants.Spindexer.JAM_DEBOUNCE_S) {
-                    // Si on jam depuis un certain temps...
                     jamClearingActive = true;
                     jamClearUntilS = nowS + Constants.Spindexer.JAM_CLEAR_TIME_S;
 
                     indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
+                    feedMotor.set(commandedFeedSpeed);
                     return;
                 }
             } else {
@@ -125,8 +116,7 @@ private final VelocityVoltage motionMagicRequest = new VelocityVoltage(0);
             jamAboveThresholdSinceS = -1.0;
         }
 
-        // Si on ne doit pas reculer, on met les moteurs à la vitesse désirée.
-        indexerMotor.setControl(motionMagicRequest.withVelocity(commandedIndexerSpeedRPM / 60.0));
+        indexerMotor.set(commandedIndexerSpeed);
         feedMotor.set(commandedFeedSpeed);
     }
 

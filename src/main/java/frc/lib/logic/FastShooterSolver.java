@@ -106,9 +106,14 @@ public final class FastShooterSolver {
         // ---------------------------------------------------------------------
         Translation3d muzzlePosition = ShooterLogic.muzzlePositionField(params, robotState);
 
-        // Vector from muzzle to target in field frame
-        double deltaX = targetPosition.getX() - muzzlePosition.getX();
-        double deltaY = targetPosition.getY() - muzzlePosition.getY();
+        // Predict muzzle position at fire time (latency compensation)
+        double fireLat = params.fireLatencyS();
+        double firedMuzzleX = muzzlePosition.getX() + robotState.velXY().getX() * fireLat;
+        double firedMuzzleY = muzzlePosition.getY() + robotState.velXY().getY() * fireLat;
+
+        // Vector from predicted fire position to target in field frame
+        double deltaX = targetPosition.getX() - firedMuzzleX;
+        double deltaY = targetPosition.getY() - firedMuzzleY;
         double deltaZ = targetPosition.getZ() - muzzlePosition.getZ();
 
         // Horizontal distance only (XY plane)
@@ -137,7 +142,6 @@ public final class FastShooterSolver {
 
         // Split exit speed into horizontal and vertical components
         double horizontalShotSpeed = exitSpeedMetersPerSec * Math.cos(hoodAngleRad);
-        double verticalShotSpeed = exitSpeedMetersPerSec * Math.sin(hoodAngleRad);
 
         // If horizontal speed is basically zero, there is no valid intercept
         if (horizontalShotSpeed <= 1e-6) {
@@ -205,9 +209,30 @@ public final class FastShooterSolver {
         }
 
         // ---------------------------------------------------------------------
-        // 8) Predict vertical travel and estimate miss distance
+        // 8) Adjust RPM for robot velocity (moving shots)
+        //
+        // Yaw and TOF are fully solved above. RPM correction is applied last so
+        // it cannot affect the aim direction. We shift the effective lookup
+        // distance by the robot's radial velocity × TOF: moving toward the goal
+        // is like shooting from closer (less RPM needed), moving away needs more.
+        // Static shots: radialVelocity ≈ 0 → no change.
         // ---------------------------------------------------------------------
-        double predictedVerticalTravel = verticalShotSpeed * timeOfFlightSec
+        double distUnitX = deltaX / Math.max(1e-9, horizontalDistanceMeters);
+        double distUnitY = deltaY / Math.max(1e-9, horizontalDistanceMeters);
+        double radialVelocity = robotVelX * distUnitX + robotVelY * distUnitY;
+        double effectiveDistance = MathUtil.clamp(
+                horizontalDistanceMeters - radialVelocity * timeOfFlightSec,
+                0.1, Double.MAX_VALUE);
+        double adjustedRpm = flywheelRpm + (rpmTable.lookupRpm(effectiveDistance) - rpmTable.lookupRpm(horizontalDistanceMeters));
+        adjustedRpm = MathUtil.clamp(adjustedRpm, params.flywheelRpmMin(), params.flywheelRpmMax());
+
+        double adjustedExitSpeed = ShooterLogic.rpmToExitSpeed(params, adjustedRpm);
+        double adjustedVerticalSpeed = adjustedExitSpeed * Math.sin(hoodAngleRad);
+
+        // ---------------------------------------------------------------------
+        // 9) Predict vertical travel and estimate miss distance
+        // ---------------------------------------------------------------------
+        double predictedVerticalTravel = adjustedVerticalSpeed * timeOfFlightSec
                 - 0.5 * params.g() * timeOfFlightSec * timeOfFlightSec;
 
         double verticalErrorMeters = deltaZ - predictedVerticalTravel;
@@ -216,12 +241,12 @@ public final class FastShooterSolver {
         boolean isHit = missDistanceMeters <= params.hitRadiusM();
 
         // ---------------------------------------------------------------------
-        // 9) Return final shot solution
+        // 10) Return final shot solution
         // ---------------------------------------------------------------------
         return new Records.ShotSolution(
                 isHit,
                 turretYawRelativeRad,
-                flywheelRpm,
+                adjustedRpm,
                 hoodAngleDeg,
                 0.0,
                 timeOfFlightSec,

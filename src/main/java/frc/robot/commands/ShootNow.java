@@ -10,7 +10,6 @@ import frc.robot.subsystems.control.ShooterLoop;
 public class ShootNow extends Command {
     private final IntakeSubsystem intake;
     private final SpindexerSubsystem spindexer;
-    private final ShooterLoop shooterLoop;
     private final LedSubsystem leds;
 
     public ShootNow(
@@ -20,7 +19,6 @@ public class ShootNow extends Command {
             LedSubsystem leds) {
         this.intake = intake;
         this.spindexer = spindexer;
-        this.shooterLoop = shooterLoop;
         this.leds = leds;
 
         addRequirements(intake, spindexer);
@@ -34,15 +32,8 @@ public class ShootNow extends Command {
     @Override
     public void execute() {
         intake.setSpeed(Constants.Commands.INTAKE_SPEED);
-
-        if (shooterLoop.isReadyToShoot()) {
-            spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
-            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
-        } else {
-            spindexer.setFeedSpeed(0.0);
-            spindexer.setIndexerSpeed(0.0);
-        }
-
+        spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
+        spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
         leds.requestShootNow();
     }
 

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
@@ -34,7 +35,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.control.ShooterLoop;
-import frc.robot.commands.DumpIntoAllianceZone;
+// import frc.robot.commands.DumpIntoAllianceZone;
 import frc.robot.commands.HomeTurret;
 
 public class RobotContainer {
@@ -65,8 +66,7 @@ public class RobotContainer {
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
         private boolean shouldSlowForShootNow() {
-                return CommandScheduler.getInstance().isScheduled(shootNowCommand)
-                                || CommandScheduler.getInstance().isScheduled(shootMovingCommand);
+                return CommandScheduler.getInstance().isScheduled(shootNowCommand);
         }
 
         // =========================
@@ -202,6 +202,7 @@ public class RobotContainer {
 
         private void configureTurretBindings() {
                 joystick.leftBumper().onTrue(new HomeTurret(turret));
+                joystick.povDown().onTrue(new SetTurretAngle(turret, 0));
         }
 
         // =========================
@@ -213,21 +214,26 @@ public class RobotContainer {
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
+                // joystick.b().whileTrue(
+                //                 new DumpIntoAllianceZone(
+                //                                 shooter,
+                //                                 drivetrain,
+                //                                 turret,
+                //                                 spindexer,
+                //                                 intake,
+                //                                 leds));
                 joystick.b().whileTrue(
-                                new DumpIntoAllianceZone(
-                                                shooter,
-                                                drivetrain,
-                                                turret,
-                                                spindexer,
-                                                intake,
-                                                leds));
+                                new edu.wpi.first.wpilibj2.command.StartEndCommand(
+                                                () -> intake.setSpeed(1.0),
+                                                () -> intake.stop(),
+                                                intake));
         }
 
         // =========================
         // Intake bindings
         // =========================
         private void configureIntakeBindings() {
-                joystick.x().onTrue(new RunIntake(intake, leds));
+                joystick.x().toggleOnTrue(new RunIntake(intake, leds));
         }
 
         // =========================

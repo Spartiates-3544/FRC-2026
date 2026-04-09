@@ -18,6 +18,7 @@ public class ShooterLoop extends SubsystemBase {
     private boolean enabled = Constants.Shooter.LOOP_ENABLED_BY_DEFAULT;
     private Records.ShotSolution lastShotSolution = null;
     private Records.ActuatorState lastActuatorState = null;
+    private Records.RobotState lastRobotState = null;
     private double lastSolveDurationMs = 0.0;
 
     public ShooterLoop(
@@ -50,6 +51,8 @@ public class ShooterLoop extends SubsystemBase {
 
         double startTime = Timer.getFPGATimestamp();
 
+        lastRobotState = solverInputs.robotState();
+
         lastShotSolution = FastShooterSolver.solve(
                 Constants.Shooter.PARAMS,
                 solverInputs.robotState(),
@@ -67,6 +70,11 @@ public class ShooterLoop extends SubsystemBase {
     private void clearOutputs() {
         lastShotSolution = null;
         lastSolveDurationMs = 0.0;
+    }
+
+    public double getHorizontalDistanceToGoalM() {
+        if (lastRobotState == null) return Double.NaN;
+        return lastRobotState.posXY().getDistance(stateBuilder.buildTarget().toTranslation2d());
     }
 
     public void enable() {
