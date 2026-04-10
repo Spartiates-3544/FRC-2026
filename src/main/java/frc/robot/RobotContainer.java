@@ -107,7 +107,7 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("reverse-intake-3s",
                                 Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake)
-                                                .withTimeout(3.0));
+                                                .withTimeout(2.5));
         }
 
         public RobotContainer() {

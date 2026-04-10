@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "reverse-intake-3s"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
