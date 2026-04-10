@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 6.777338882777835,
-        "y": 0.7813243156443542
+        "y": 0.7813243156443541
       },
       "nextControl": {
         "x": 8.345997686212712,
@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 8.145344215771853,
-        "y": 1.4782770683476112
+        "y": 1.4782770683476114
       },
       "nextControl": {
         "x": 8.259227034828879,
@@ -91,15 +91,15 @@
     },
     {
       "waypointRelativePos": 2.5267656434257137,
-      "rotationDegrees": -140.40041071509975
+      "rotationDegrees": 90.39257151207732
     },
     {
       "waypointRelativePos": 2.8849759851611645,
-      "rotationDegrees": -103.91535526417995
+      "rotationDegrees": 118.09340806882665
     },
     {
       "waypointRelativePos": 3.1478816578223228,
-      "rotationDegrees": 180.0
+      "rotationDegrees": 144.76495598203041
     }
   ],
   "constraintZones": [],
@@ -114,7 +114,7 @@
     {
       "name": "run-intake",
       "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": 3.250213896992819,
+      "endWaypointRelativePos": 3.7488183659689023,
       "command": null
     },
     {
@@ -130,7 +130,7 @@
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.5,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
     "velocity": 0,

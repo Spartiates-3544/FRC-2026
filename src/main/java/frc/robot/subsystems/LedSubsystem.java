@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.robot.LedStrips;
 import frc.lib.robot.LedStrips.LedColor;
@@ -81,12 +82,19 @@ public class LedSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (DriverStation.isDisabled()) {
+            LedStrips.setLED(LedColor.DEEP_BLUE_BREATHE);
+            pendingState    = LedState.IDLE;
+            pendingPriority = PRIORITY_IDLE;
+            return;
+        }
+
         if (turret.isInDeadzone()) {
             LedStrips.setLED(LedColor.RED_FLASH);
         } else {
             switch (pendingState) {
                 case SHOOT_NOW:
-                    LedStrips.setLED(LedColor.GREEN_FLASH);
+                    LedStrips.setLED(LedColor.YELLOW_SWEEP);
                     break;
                 case SHOOT_MOVING_READY:
                     LedStrips.setLED(LedColor.GREEN);

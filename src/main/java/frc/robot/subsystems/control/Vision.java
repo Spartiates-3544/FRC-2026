@@ -103,8 +103,6 @@ public class Vision {
     /**
      * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard
      * deviations based on number of tags, estimation strategy, and distance from the tags.
-     * 
-     * TODO: add other cams
      *
      * @param estimatedPose
      *            The estimated pose to guess standard deviations for.

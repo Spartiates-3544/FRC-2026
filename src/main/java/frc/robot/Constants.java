@@ -33,9 +33,9 @@ public final class Constants {
         }
 
         /** Fraction of max speed allowed during normal teleop (1.0 = full speed). */
-        public static final double TELEOP_SPEED_SCALE = 0.75;
+        public static final double TELEOP_SPEED_SCALE = 0.80;
         /** Fraction of max angular rate allowed during normal teleop (1.0 = full rate). */
-        public static final double TELEOP_ANGULAR_RATE_SCALE = 0.75;
+        public static final double TELEOP_ANGULAR_RATE_SCALE = 1.00;
     }
 
     public static final class CAN {
@@ -164,7 +164,7 @@ public final class Constants {
 
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2750, 2850, 2950, 3100, 3200, 3300, 3400, 3500, 3600 });
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3050, 3200, 3300, 3400, 3500, 3600, 3700 });
 
         // =========================
         // Configs
