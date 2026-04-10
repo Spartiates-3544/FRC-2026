@@ -12,7 +12,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,7 +60,6 @@ public class RobotContainer {
 
         private Rotation2d faceTranslationHeading = Rotation2d.kZero;
         private DriveMode lastDriveMode = DriveMode.NORMAL;
-        private double lastDriveCommandBuildMs = 0.0;
 
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
@@ -86,7 +84,6 @@ public class RobotContainer {
         private final SendableChooser<Command> autoChooser;
 
         private void configureNamedCommands() {
-                // Ramasser: ouvre et roule l'intake + l'indexeur pendant max 3s
                 NamedCommands.registerCommand("run-intake",
                                 (new RunIntake(intake, leds)));
 
@@ -101,6 +98,16 @@ public class RobotContainer {
 
                 NamedCommands.registerCommand("home",
                                 new HomeTurret(turret));
+
+                NamedCommands.registerCommand("deploy-and-home",
+                                Commands.runOnce(intake::open, intake).andThen(new HomeTurret(turret)));
+
+                NamedCommands.registerCommand("reverse-intake",
+                                Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake));
+
+                NamedCommands.registerCommand("reverse-intake-3s",
+                                Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake)
+                                                .withTimeout(3.0));
         }
 
         public RobotContainer() {
@@ -127,8 +134,6 @@ public class RobotContainer {
 
                 drivetrain.setDefaultCommand(
                                 drivetrain.applyRequest(() -> {
-                                        double startTime = Timer.getFPGATimestamp();
-
                                         double vx = getDriveX();
                                         double vy = getDriveY();
                                         double omega = getDriveOmega();
@@ -137,6 +142,10 @@ public class RobotContainer {
                                                 vx *= Constants.Commands.SHOOT_NOW_TRANSLATION_SCALE;
                                                 vy *= Constants.Commands.SHOOT_NOW_TRANSLATION_SCALE;
                                                 omega *= Constants.Commands.SHOOT_NOW_ROTATION_SCALE;
+                                        } else {
+                                                vx *= Constants.Drive.TELEOP_SPEED_SCALE;
+                                                vy *= Constants.Drive.TELEOP_SPEED_SCALE;
+                                                omega *= Constants.Drive.TELEOP_ANGULAR_RATE_SCALE;
                                         }
 
                                         DriveMode mode = drivetrain.getDriveMode();
@@ -168,10 +177,6 @@ public class RobotContainer {
                                                                 .withVelocityY(vy)
                                                                 .withRotationalRate(omega);
                                         }
-
-                                        double endTime = Timer.getFPGATimestamp();
-                                        lastDriveCommandBuildMs = (endTime - startTime) * 1000.0;
-                                        SmartDashboard.putNumber("Timing/DriveCommandBuildMs", lastDriveCommandBuildMs);
 
                                         return request;
                                 }));
@@ -215,16 +220,19 @@ public class RobotContainer {
                 joystick.a().whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
                 // joystick.b().whileTrue(
-                //                 new DumpIntoAllianceZone(
-                //                                 shooter,
-                //                                 drivetrain,
-                //                                 turret,
-                //                                 spindexer,
-                //                                 intake,
-                //                                 leds));
+                // new DumpIntoAllianceZone(
+                // shooter,
+                // drivetrain,
+                // turret,
+                // spindexer,
+                // intake,
+                // leds));
                 joystick.b().whileTrue(
                                 new edu.wpi.first.wpilibj2.command.StartEndCommand(
-                                                () -> intake.setSpeed(1.0),
+                                                () -> {
+                                                        intake.setSpeed(1.0);
+                                                        intake.open();
+                                                },
                                                 () -> intake.stop(),
                                                 intake));
         }

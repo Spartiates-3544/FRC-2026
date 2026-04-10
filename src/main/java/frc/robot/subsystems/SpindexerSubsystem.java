@@ -118,6 +118,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         indexerMotor.set(commandedIndexerSpeed);
         feedMotor.set(commandedFeedSpeed);
+
     }
 
     private static double clamp(double value) {

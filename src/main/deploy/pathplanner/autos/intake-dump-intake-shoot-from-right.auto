@@ -5,9 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "deploy-and-home"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "intake_mid_from_right_and_dump"
+                }
+              }
+            ]
           }
         },
         {
@@ -17,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "intake_mid_from_right_and_shoot"
+                  "pathName": "intake_mid_from_right_dump_and_shoot"
                 }
               },
               {
@@ -48,7 +55,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 14.0
+                  "waitTime": 60.0
                 }
               }
             ]

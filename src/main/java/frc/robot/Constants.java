@@ -31,6 +31,11 @@ public final class Constants {
                 e.printStackTrace();
             }
         }
+
+        /** Fraction of max speed allowed during normal teleop (1.0 = full speed). */
+        public static final double TELEOP_SPEED_SCALE = 0.75;
+        /** Fraction of max angular rate allowed during normal teleop (1.0 = full rate). */
+        public static final double TELEOP_ANGULAR_RATE_SCALE = 0.75;
     }
 
     public static final class CAN {
