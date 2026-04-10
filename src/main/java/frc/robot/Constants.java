@@ -267,9 +267,9 @@ public final class Constants {
         public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 35.0;
         public static final double FEED_STATOR_CURRENT_LIMIT_A = 50.0;
         
-        public static final double JAM_CURRENT_THRESHOLD_A = 16.0;
-        public static final double JAM_DEBOUNCE_S = 0.3;
-        public static final double JAM_CLEAR_TIME_S = 0.1;
+        public static final double JAM_CURRENT_THRESHOLD_A = 15.0;
+        public static final double JAM_DEBOUNCE_S = 0.4;
+        public static final double JAM_CLEAR_TIME_S = 0.2;
 
         public static final double JAM_REVERSE_INDEXER_SPEED = -0.30;
 
@@ -304,8 +304,8 @@ public final class Constants {
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
         public static final double INTAKE_SPEED = -0.6;
-        public static final double SPINDEXER_SPEED = 0.25;
-        public static final double FEED_SPEED = -0.8;
+        public static final double SPINDEXER_SPEED = 0.35;
+        public static final double FEED_SPEED = -1.0;
 
         public static final double SHOOTER_RPM = 3544.0;
         public static final double KICKER_RPM = -6000.0;

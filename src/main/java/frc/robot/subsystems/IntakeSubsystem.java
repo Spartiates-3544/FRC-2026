@@ -16,7 +16,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final Solenoid intakeSolenoid = pneumaticHub.makeSolenoid(Constants.Intake.SOLENOID_CHANNEL);
 
     public IntakeSubsystem() {
-        pneumaticHub.enableCompressorDigital();
+        pneumaticHub.disableCompressor();
         var config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = Constants.Intake.INVERTED;
         config.MotorOutput.NeutralMode = Constants.Intake.NEUTRAL_MODE;
