@@ -141,10 +141,15 @@
       }
     },
     {
-      "name": "",
+      "name": "run-intake",
       "waypointRelativePos": 0.8193946715103229,
       "endWaypointRelativePos": 4.25,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "run-intake"
+        }
+      }
     },
     {
       "name": "reverse-intake",
