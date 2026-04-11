@@ -13,20 +13,8 @@
                 "data": {
                   "pathName": "intake_mid_from_left_and_dump"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "run-intake"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "reverse-intake-3s"
           }
         },
         {
@@ -62,12 +50,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "intake_mid_from_left_dump_and_shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "run-intake"
                 }
               }
             ]
