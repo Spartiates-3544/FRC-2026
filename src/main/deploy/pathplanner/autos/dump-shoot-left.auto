@@ -11,7 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "intake_mid_from_left_and_dump"
+                  "pathName": "Copy of intake_mid_from_left_and_dump"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "run-intake"
                 }
               }
             ]
@@ -30,7 +36,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "intake_mid_from_left_dump_and_shoot"
+                  "pathName": "Copy of intake_mid_from_left_dump_and_shoot"
                 }
               },
               {

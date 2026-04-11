@@ -11,7 +11,13 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "intake_mid_from_right_and_dump"
+                  "pathName": "intake_mid_from_left_and_dump"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "run-intake"
                 }
               }
             ]
@@ -28,9 +34,34 @@
           "data": {
             "commands": [
               {
+                "type": "named",
+                "data": {
+                  "name": "aim-and-spinup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake-and-feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
                 "type": "path",
                 "data": {
-                  "pathName": "intake_mid_from_right_dump_and_shoot"
+                  "pathName": "intake_mid_from_left_dump_and_shoot"
                 }
               },
               {

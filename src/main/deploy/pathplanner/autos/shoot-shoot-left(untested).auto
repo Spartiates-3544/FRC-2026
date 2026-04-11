@@ -5,19 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "deploy-and-home"
-          }
-        },
-        {
           "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "intake_mid_from_left_and_shoot"
+                  "pathName": "shoot-first"
                 }
               },
               {
@@ -48,7 +42,45 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 14.0
+                  "waitTime": 4.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "shoot-second"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "run-intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim-and-spinup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake-and-feed"
                 }
               }
             ]

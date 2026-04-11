@@ -114,7 +114,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Go Middle From Left(old)",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
