@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "deploy-and-home"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -12,12 +18,6 @@
                 "type": "path",
                 "data": {
                   "pathName": "intake_mid_from_left_and_dump"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "aim-and-spinup"
                 }
               }
             ]

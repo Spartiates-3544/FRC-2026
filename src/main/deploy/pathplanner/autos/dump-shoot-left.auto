@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "deploy-and-home"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [

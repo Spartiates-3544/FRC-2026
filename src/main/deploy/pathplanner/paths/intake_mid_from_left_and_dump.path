@@ -130,17 +130,6 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "deploy-and-home",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "deploy-and-home"
-        }
-      }
-    },
-    {
       "name": "run-intake",
       "waypointRelativePos": 0.8193946715103229,
       "endWaypointRelativePos": 4.25,
@@ -150,6 +139,12 @@
           "name": "run-intake"
         }
       }
+    },
+    {
+      "name": "aim-and-spinup",
+      "waypointRelativePos": 4.0,
+      "endWaypointRelativePos": 6.0,
+      "command": null
     },
     {
       "name": "reverse-intake",
