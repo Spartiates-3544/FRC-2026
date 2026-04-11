@@ -374,6 +374,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this);
     }
 
+    public void setDriveCurrentLimit(double amps) {
+        var currentConfig = new com.ctre.phoenix6.configs.CurrentLimitsConfigs()
+                .withStatorCurrentLimit(amps)
+                .withStatorCurrentLimitEnable(true);
+        for (var module : getModules()) {
+            module.getDriveMotor().getConfigurator().apply(currentConfig);
+        }
+    }
+
     public RobotState getRobotState() {
         return RobotState.fromRobotPose(getPose(), getChassisSpeeds());
     }

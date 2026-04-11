@@ -282,6 +282,10 @@ public class RobotContainer {
                 return autoChooser.getSelected();
         }
 
+        public CommandSwerveDrivetrain getDrivetrain() {
+                return drivetrain;
+        }
+
         @SuppressWarnings("unused")
         private Pose2d allianceFlipPose(Pose2d pose) {
                 double FIELD_LENGTH_IN = 651.22;

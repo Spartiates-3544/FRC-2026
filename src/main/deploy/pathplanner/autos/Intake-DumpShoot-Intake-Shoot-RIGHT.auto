@@ -5,34 +5,47 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "deploy-and-home"
-          }
-        },
-        {
-          "type": "race",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Copy of intake_mid_from_left_and_dump"
+                  "name": "home"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "run-intake"
+                  "pathName": "intake_mid_from_right_and_dump"
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "race",
           "data": {
-            "name": "reverse-intake-3s"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim-and-spinup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake-and-feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              }
+            ]
           }
         },
         {
@@ -42,13 +55,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Copy of intake_mid_from_left_dump_and_shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "run-intake"
+                  "pathName": "intake_mid_from_right_dump_and_shoot"
                 }
               }
             ]
