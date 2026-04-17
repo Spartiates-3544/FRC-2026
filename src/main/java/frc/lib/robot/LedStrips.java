@@ -1,5 +1,7 @@
 package frc.lib.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -14,6 +16,7 @@ public final class LedStrips {
     public enum LedColor {
         RED, GREEN, BLUE, YELLOW, PURPLE, ERROR,
         RED_FLASH, GREEN_FLASH, BLUE_FLASH,
+        YELLOW_SWEEP, DEEP_BLUE_BREATHE,
     }
 
     // Pre-created patterns to avoid per-frame allocations
@@ -26,6 +29,10 @@ public final class LedStrips {
     private static final LEDPattern PATTERN_RED_FLASH   = PATTERN_RED.blink(Seconds.of(0.1), Seconds.of(0.1));
     private static final LEDPattern PATTERN_GREEN_FLASH = PATTERN_GREEN.blink(Seconds.of(0.15), Seconds.of(0.15));
     private static final LEDPattern PATTERN_BLUE_FLASH  = PATTERN_BLUE.blink(Seconds.of(0.15), Seconds.of(0.15));
+    private static final LEDPattern PATTERN_YELLOW_SWEEP =
+        LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, Color.kYellow, Color.kBlack)
+                  .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.5), Meters.of(0.02));
+    private static final LEDPattern PATTERN_DEEP_BLUE_BREATHE = LEDPattern.solid(new Color(0, 0, 180)).breathe(Seconds.of(2.0));
 
     private LedStrips() {
     }
@@ -54,9 +61,11 @@ public final class LedStrips {
             case PURPLE:      pattern = PATTERN_PURPLE;      break;
             case RED_FLASH:   pattern = PATTERN_RED_FLASH;   break;
             case GREEN_FLASH: pattern = PATTERN_GREEN_FLASH; break;
-            case BLUE_FLASH:  pattern = PATTERN_BLUE_FLASH;  break;
+            case BLUE_FLASH:        pattern = PATTERN_BLUE_FLASH;        break;
+            case YELLOW_SWEEP:      pattern = PATTERN_YELLOW_SWEEP;      break;
+            case DEEP_BLUE_BREATHE: pattern = PATTERN_DEEP_BLUE_BREATHE; break;
             case ERROR:
-            default:          pattern = PATTERN_OFF;         break;
+            default:                pattern = PATTERN_OFF;               break;
         }
 
         pattern.applyTo(buffer);

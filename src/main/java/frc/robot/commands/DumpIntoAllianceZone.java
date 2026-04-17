@@ -14,7 +14,6 @@ import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.UnjammerSubsystem;
 
 public final class DumpIntoAllianceZone extends Command {
     private final ShooterSubsystem shooter;
@@ -22,7 +21,6 @@ public final class DumpIntoAllianceZone extends Command {
     private final TurretSubsystem turret;
     private final SpindexerSubsystem spindexer;
     private final IntakeSubsystem intake;
-    private final UnjammerSubsystem unjammer;
     private final LedSubsystem leds;
 
     // Position approximative du mur alliance sur le terrain (m)
@@ -39,17 +37,15 @@ public final class DumpIntoAllianceZone extends Command {
             TurretSubsystem turret,
             SpindexerSubsystem spindexer,
             IntakeSubsystem intake,
-            UnjammerSubsystem unjammer,
             LedSubsystem leds) {
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.turret = turret;
         this.spindexer = spindexer;
         this.intake = intake;
-        this.unjammer = unjammer;
         this.leds = leds;
 
-        addRequirements(shooter, turret, spindexer, intake, unjammer);
+        addRequirements(shooter, turret, spindexer, intake);
     }
 
     @Override
@@ -59,7 +55,6 @@ public final class DumpIntoAllianceZone extends Command {
         intake.open();
         intake.stop();
         spindexer.stopAll();
-        unjammer.stop();
         shooter.stopShooter();
         shooter.stopKicker();
     }
@@ -98,7 +93,6 @@ public final class DumpIntoAllianceZone extends Command {
 
         // Intake/unjammer roulent tout le temps
         intake.setSpeed(Constants.Commands.INTAKE_SPEED);
-        unjammer.setSpeed(Constants.Commands.UNJAMMER_SPEED);
 
         // Feed et indexe seulement quand prêt
         if (ready) {
@@ -118,7 +112,6 @@ public final class DumpIntoAllianceZone extends Command {
         intake.stop();
         intake.close();
         spindexer.stopAll();
-        unjammer.stop();
         shooter.stopKicker();
         shooter.stopShooter();
         turret.stop();

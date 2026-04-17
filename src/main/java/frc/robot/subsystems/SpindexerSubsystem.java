@@ -27,21 +27,9 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     public SpindexerSubsystem() {
         var indexerConfig = new TalonFXConfiguration();
-        indexerConfig.MotorOutput.Inverted = Constants.Spindexer.INDEXER_INVERTED;
-        indexerConfig.MotorOutput.NeutralMode = Constants.Spindexer.INDEXER_NEUTRAL_MODE;
-        indexerConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Spindexer.SPINUP_INDEXER_SMOOTH_TIME_S;
-        indexerConfig.CurrentLimits.SupplyCurrentLimit = Constants.Spindexer.INDEXER_SUPPLY_CURRENT_LIMIT_A;
-        indexerConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         indexerMotor.getConfigurator().apply(indexerConfig);
 
         var feedConfig = new TalonFXConfiguration();
-        feedConfig.MotorOutput.Inverted = Constants.Spindexer.FEED_INVERTED;
-        feedConfig.MotorOutput.NeutralMode = Constants.Spindexer.FEED_NEUTRAL_MODE;
-        feedConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.Spindexer.SPINUP_FEED_SMOOTH_TIME_S;
-        feedConfig.CurrentLimits.SupplyCurrentLimit = Constants.Spindexer.FEED_SUPPLY_CURRENT_LIMIT_A;
-        feedConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        feedConfig.CurrentLimits.StatorCurrentLimit = Constants.Spindexer.FEED_STATOR_CURRENT_LIMIT_A;
-        feedConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         feedMotor.getConfigurator().apply(feedConfig);
     }
 
@@ -101,6 +89,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         if (jamClearingActive) {
             if (nowS < jamClearUntilS) {
                 indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
+                feedMotor.set(commandedFeedSpeed);
                 return;
             }
 
@@ -117,6 +106,7 @@ public class SpindexerSubsystem extends SubsystemBase {
                     jamClearUntilS = nowS + Constants.Spindexer.JAM_CLEAR_TIME_S;
 
                     indexerMotor.set(Constants.Spindexer.JAM_REVERSE_INDEXER_SPEED);
+                    feedMotor.set(commandedFeedSpeed);
                     return;
                 }
             } else {
@@ -128,6 +118,7 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         indexerMotor.set(commandedIndexerSpeed);
         feedMotor.set(commandedFeedSpeed);
+
     }
 
     private static double clamp(double value) {

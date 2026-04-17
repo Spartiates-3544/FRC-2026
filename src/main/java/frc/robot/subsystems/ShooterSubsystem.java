@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 //import frc.lib.logging.ExtendedLogger;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -76,6 +77,12 @@ public class ShooterSubsystem extends SubsystemBase {
 
         shooterMotor2.setControl(
                 new Follower(Constants.Shooter.SHOOTER_MOTOR_1_ID, MotorAlignmentValue.Aligned));
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Shooter/Current RPM", getShooterRpm());
+        SmartDashboard.putNumber("Shooter/Commanded RPM", lastCommandedShooterRpm);
     }
 
     // =========================

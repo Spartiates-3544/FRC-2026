@@ -1,0 +1,95 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "home"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "intake_mid_from_left_and_dump"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim-and-spinup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake-and-feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "intake_mid_from_left_dump_and_shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "aim-and-spinup"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake-and-feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 60.0
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

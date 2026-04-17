@@ -217,7 +217,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     private void init() {
         SmartDashboard.putData(field);
-        configAutobuilder();
+        configAutoBuilder();
     }
 
     public void setDriveMode(DriveMode mode) {
@@ -358,7 +358,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 .withRotationalRate(speeds.omegaRadiansPerSecond));
     }
 
-    public void configAutobuilder() {
+    public void configAutoBuilder() {
         AutoBuilder.configure(
                 this::getPose,
                 this::resetPose,
@@ -372,6 +372,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         .map(alliance -> alliance == DriverStation.Alliance.Red)
                         .orElse(false),
                 this);
+    }
+
+    public void setDriveCurrentLimit(double amps) {
+        var currentConfig = new com.ctre.phoenix6.configs.CurrentLimitsConfigs()
+                .withStatorCurrentLimit(amps)
+                .withStatorCurrentLimitEnable(true);
+        for (var module : getModules()) {
+            module.getDriveMotor().getConfigurator().apply(currentConfig);
+        }
     }
 
     public RobotState getRobotState() {

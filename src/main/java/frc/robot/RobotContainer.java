@@ -7,36 +7,37 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.SetHoodAngle;
 import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
-import frc.robot.subsystems.UnjammerSubsystem;
 import frc.robot.subsystems.control.ShooterLoop;
-import frc.robot.commands.DumpIntoAllianceZone;
+// import frc.robot.commands.DumpIntoAllianceZone;
+import frc.robot.commands.HomeTurret;
 
 public class RobotContainer {
         // =========================
@@ -61,13 +62,11 @@ public class RobotContainer {
 
         private Rotation2d faceTranslationHeading = Rotation2d.kZero;
         private DriveMode lastDriveMode = DriveMode.NORMAL;
-        private double lastDriveCommandBuildMs = 0.0;
 
         private final Telemetry telemetry = new Telemetry(maxSpeed);
 
         private boolean shouldSlowForShootNow() {
-                return CommandScheduler.getInstance().isScheduled(shootNowCommand)
-                                || CommandScheduler.getInstance().isScheduled(shootMovingCommand);
+                return CommandScheduler.getInstance().isScheduled(shootNowCommand);
         }
 
         // =========================
@@ -78,9 +77,9 @@ public class RobotContainer {
         public final TurretSubsystem turret = new TurretSubsystem();
         public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
         public final ShooterSubsystem shooter = new ShooterSubsystem();
-        public final UnjammerSubsystem unjammer = new UnjammerSubsystem();
         public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
         public final LedSubsystem leds = new LedSubsystem(turret);
+        public final HoodSubsystem hood = new HoodSubsystem();
 
         // =========================
         // Autonomous
@@ -88,23 +87,35 @@ public class RobotContainer {
         private final SendableChooser<Command> autoChooser;
 
         private void configureNamedCommands() {
-                // Ramasser: ouvre et roule l'intake + l'indexeur pendant max 3s
                 NamedCommands.registerCommand("run-intake",
                                 (new RunIntake(intake, leds)));
 
                 NamedCommands.registerCommand("deploy-intake",
                                 (new DeployIntake(intake)));
 
-                NamedCommands.registerCommand("prepare-for-shot",
+                NamedCommands.registerCommand("aim-and-spinup",
                                 new ShootMoving(shooter, turret, shooterLoop, leds));
 
-                NamedCommands.registerCommand("shoot-now",
-                                new ShootNow(intake, spindexer, unjammer, shooterLoop, leds));
+                NamedCommands.registerCommand("intake-and-feed",
+                                new ShootNow(intake, spindexer, shooterLoop, leds));
+
+                NamedCommands.registerCommand("home",
+                                new HomeTurret(turret));
+
+                NamedCommands.registerCommand("deploy-and-home",
+                                Commands.runOnce(intake::open, intake).andThen(new HomeTurret(turret)));
+
+                NamedCommands.registerCommand("reverse-intake",
+                                Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake));
+
+                NamedCommands.registerCommand("reverse-intake-3s",
+                                Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake)
+                                                .withTimeout(1.75));
         }
 
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, unjammer, shooterLoop);
-                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop);
+                shootNowCommand = new ShootNow(intake, spindexer, shooterLoop, leds);
+                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
@@ -112,6 +123,7 @@ public class RobotContainer {
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
                 intake.open();
+                hood.resetMotorPosition(0);
 
                 // Shooter YAW + RPM automatique lorsque dans la zone
                 // shooter.setDefaultCommand(buildMovingShootCommand());
@@ -126,8 +138,6 @@ public class RobotContainer {
 
                 drivetrain.setDefaultCommand(
                                 drivetrain.applyRequest(() -> {
-                                        double startTime = Timer.getFPGATimestamp();
-
                                         double vx = getDriveX();
                                         double vy = getDriveY();
                                         double omega = getDriveOmega();
@@ -136,6 +146,10 @@ public class RobotContainer {
                                                 vx *= Constants.Commands.SHOOT_NOW_TRANSLATION_SCALE;
                                                 vy *= Constants.Commands.SHOOT_NOW_TRANSLATION_SCALE;
                                                 omega *= Constants.Commands.SHOOT_NOW_ROTATION_SCALE;
+                                        } else {
+                                                vx *= Constants.Drive.TELEOP_SPEED_SCALE;
+                                                vy *= Constants.Drive.TELEOP_SPEED_SCALE;
+                                                omega *= Constants.Drive.TELEOP_ANGULAR_RATE_SCALE;
                                         }
 
                                         DriveMode mode = drivetrain.getDriveMode();
@@ -168,10 +182,6 @@ public class RobotContainer {
                                                                 .withRotationalRate(omega);
                                         }
 
-                                        double endTime = Timer.getFPGATimestamp();
-                                        lastDriveCommandBuildMs = (endTime - startTime) * 1000.0;
-                                        SmartDashboard.putNumber("Timing/DriveCommandBuildMs", lastDriveCommandBuildMs);
-
                                         return request;
                                 }));
 
@@ -185,6 +195,7 @@ public class RobotContainer {
                 configureShooterBindings();
                 configureIntakeBindings();
                 configureDisabledBindings();
+                configureTurretBindings();
         }
 
         private void configureDashboard() {
@@ -198,6 +209,11 @@ public class RobotContainer {
                 joystick.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         }
 
+        private void configureTurretBindings() {
+                joystick.leftBumper().onTrue(new HomeTurret(turret));
+                joystick.povDown().onTrue(new SetTurretAngle(turret, 0));
+        }
+
         // =========================
         // Shooter bindings
         // =========================
@@ -207,26 +223,30 @@ public class RobotContainer {
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
+                joystick.povRight().onTrue( new SetHoodAngle(hood, 15));
+                joystick.povLeft().onTrue( new SetHoodAngle(hood, 0));
+                // new DumpIntoAllianceZone(
+                // shooter,
+                // drivetrain,
+                // turret,
+                // spindexer,
+                // intake,
+                // leds));
                 joystick.b().whileTrue(
-                                new DumpIntoAllianceZone(
-                                                shooter,
-                                                drivetrain,
-                                                turret,
-                                                spindexer,
-                                                intake,
-                                                unjammer,
-                                                leds));
-        }
-
-        private Command buildMovingShootCommand() {
-                return new ShootMoving(shooter, turret, shooterLoop, leds);
+                                new edu.wpi.first.wpilibj2.command.StartEndCommand(
+                                                () -> {
+                                                        intake.setSpeed(1.0);
+                                                        intake.open();
+                                                },
+                                                () -> intake.stop(),
+                                                intake));
         }
 
         // =========================
         // Intake bindings
         // =========================
         private void configureIntakeBindings() {
-                joystick.x().onTrue(new RunIntake(intake));
+                joystick.x().toggleOnTrue(new RunIntake(intake, leds));
         }
 
         // =========================
@@ -242,8 +262,7 @@ public class RobotContainer {
                                         shooter.stopHood();
                                         intake.stop();
                                         spindexer.stopAll();
-                                        unjammer.stop();
-                                }, drivetrain, turret, shooter, intake, spindexer, unjammer));
+                                }, drivetrain, turret, shooter, intake, spindexer));
         }
 
         // =========================
@@ -264,15 +283,12 @@ public class RobotContainer {
         // =========================
         // Public hooks
         // =========================
-        public Command getInitCommand() {
-                return Commands.sequence(
-                                turret.home(),
-                                turret.setTargetAngleCommand(0.0))
-                                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
-        }
-
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
+        }
+
+        public CommandSwerveDrivetrain getDrivetrain() {
+                return drivetrain;
         }
 
         @SuppressWarnings("unused")
@@ -284,4 +300,5 @@ public class RobotContainer {
                                 pose.getY(),
                                 pose.getRotation().plus(Rotation2d.fromDegrees(180.0)));
         }
+
 }

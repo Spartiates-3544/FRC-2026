@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(jar xf:*)",
+      "Read(//tmp/com/pathplanner/lib/commands/**)"
+    ]
+  }
+}

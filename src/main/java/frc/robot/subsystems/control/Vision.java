@@ -45,9 +45,11 @@ public class Vision {
     private final PhotonCamera heliosLeft;
     private final PhotonCamera heliosRight;
     private final PhotonCamera limelight3;
+    private final PhotonCamera limelight2;
     private final PhotonPoseEstimator photonEstimatorHeliosRight;
     private final PhotonPoseEstimator photonEstimatorHeliosLeft;
     private final PhotonPoseEstimator photonEstimatorLimelight3;
+    private final PhotonPoseEstimator photonEstimatorLimelight2;
     private Matrix<N3, N1> curStdDevs;
     private final EstimateConsumer estConsumer;
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
@@ -63,19 +65,23 @@ public class Vision {
         heliosLeft = new PhotonCamera("heliosLeft");
         heliosRight = new PhotonCamera("heliosRight");
         limelight3 = new PhotonCamera("limelightV3");
+        limelight2 = new PhotonCamera("limelightV2");
         photonEstimatorHeliosRight = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_RIGHT_POS);
         photonEstimatorHeliosLeft = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_LEFT_POS);
         photonEstimatorLimelight3 = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.LIMELIGHT_V3_POS);
+        photonEstimatorLimelight2 = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
+                Constants.Vision.LIMELIGHT_V2_POS);
     }
 
     public void update() {
         var cameras = List.of(
-            Map.entry(heliosLeft, photonEstimatorHeliosLeft),
-            Map.entry(heliosRight, photonEstimatorHeliosRight),
-            Map.entry(limelight3, photonEstimatorLimelight3)
+                Map.entry(heliosLeft, photonEstimatorHeliosLeft),
+                Map.entry(heliosRight, photonEstimatorHeliosRight),
+                Map.entry(limelight2, photonEstimatorLimelight2),
+                Map.entry(limelight3, photonEstimatorLimelight3)
         );
         for (var camera : cameras) {
             for (var result : camera.getKey().getAllUnreadResults()) {

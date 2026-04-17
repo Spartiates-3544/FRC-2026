@@ -15,7 +15,7 @@ public class HomeTurret extends Command {
     @Override
     public void execute() {
         turret.setManualOutput(Constants.Turret.HOMING_OUTPUT);
-    }
+            }
 
     @Override
     public boolean isFinished() {

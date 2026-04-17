@@ -5,91 +5,85 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "aller_ramasser_1"
+                  "name": "home"
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "deploy-intake"
+                  "pathName": "intake_mid_from_right_and_dump"
                 }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "ramasser_1"
+                  "name": "aim-and-spinup"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "run-intake"
+                  "name": "intake-and-feed"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
                 }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "retour_to_shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "prepare-for-shot"
+                  "pathName": "intake_mid_from_right_dump_and_shoot"
                 }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "shoot_1"
+                  "name": "aim-and-spinup"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "prepare-for-shot"
+                  "name": "intake-and-feed"
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "shoot-now"
+                  "waitTime": 60.0
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "go_to_feeder"
           }
         }
       ]

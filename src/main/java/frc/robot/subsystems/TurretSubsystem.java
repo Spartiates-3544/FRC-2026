@@ -140,8 +140,8 @@ public final class TurretSubsystem extends SubsystemBase {
     public boolean isInDeadzone() {
         double angle = getAngleDeg();
         double margin = 3.0;
-        return Math.abs(angle - shooterParams.turretMinDeg()) <= margin
-                || Math.abs(angle - shooterParams.turretMaxDeg()) <= margin;
+        return Math.abs(angle - Constants.Shooter.PARAMS.turretMinDeg()) <= margin
+                || Math.abs(angle - Constants.Shooter.PARAMS.turretMaxDeg()) <= margin;
     }
 
     // =========================

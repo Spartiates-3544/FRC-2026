@@ -1,7 +1,6 @@
 package frc.robot.subsystems.control;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logic.FastShooterSolver;
 import frc.lib.robot.Records;
@@ -18,6 +17,7 @@ public class ShooterLoop extends SubsystemBase {
     private boolean enabled = Constants.Shooter.LOOP_ENABLED_BY_DEFAULT;
     private Records.ShotSolution lastShotSolution = null;
     private Records.ActuatorState lastActuatorState = null;
+    private Records.RobotState lastRobotState = null;
     private double lastSolveDurationMs = 0.0;
 
     public ShooterLoop(
@@ -50,6 +50,8 @@ public class ShooterLoop extends SubsystemBase {
 
         double startTime = Timer.getFPGATimestamp();
 
+        lastRobotState = solverInputs.robotState();
+
         lastShotSolution = FastShooterSolver.solve(
                 Constants.Shooter.PARAMS,
                 solverInputs.robotState(),
@@ -60,13 +62,16 @@ public class ShooterLoop extends SubsystemBase {
 
         double endTime = Timer.getFPGATimestamp();
         lastSolveDurationMs = (endTime - startTime) * 1000.0;
-        SmartDashboard.putNumber("Shooter/RPM", solverInputs.actuatorState().flywheelRpm());
-        SmartDashboard.putNumber("Timing/ShooterLoopSolveMs", lastSolveDurationMs);
     }
 
     private void clearOutputs() {
         lastShotSolution = null;
         lastSolveDurationMs = 0.0;
+    }
+
+    public double getHorizontalDistanceToGoalM() {
+        if (lastRobotState == null) return Double.NaN;
+        return lastRobotState.posXY().getDistance(stateBuilder.buildTarget().toTranslation2d());
     }
 
     public void enable() {
