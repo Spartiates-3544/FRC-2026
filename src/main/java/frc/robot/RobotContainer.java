@@ -21,12 +21,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.SetHoodAngle;
 import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedSubsystem;
@@ -77,6 +79,7 @@ public class RobotContainer {
         public final ShooterSubsystem shooter = new ShooterSubsystem();
         public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
         public final LedSubsystem leds = new LedSubsystem(turret);
+        public final HoodSubsystem hood = new HoodSubsystem();
 
         // =========================
         // Autonomous
@@ -120,6 +123,7 @@ public class RobotContainer {
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
                 intake.open();
+                hood.resetMotorPosition(0);
 
                 // Shooter YAW + RPM automatique lorsque dans la zone
                 // shooter.setDefaultCommand(buildMovingShootCommand());
@@ -219,7 +223,8 @@ public class RobotContainer {
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
-                // joystick.b().whileTrue(
+                joystick.povRight().onTrue( new SetHoodAngle(hood, 15));
+                joystick.povLeft().onTrue( new SetHoodAngle(hood, 0));
                 // new DumpIntoAllianceZone(
                 // shooter,
                 // drivetrain,

@@ -33,7 +33,7 @@ public final class Constants {
         }
 
         /** Fraction of max speed allowed during normal teleop (1.0 = full speed). */
-        public static final double TELEOP_SPEED_SCALE = 0.80;
+        public static final double TELEOP_SPEED_SCALE = 1.00;
         /** Fraction of max angular rate allowed during normal teleop (1.0 = full rate). */
         public static final double TELEOP_ANGULAR_RATE_SCALE = 1.00;
     }
@@ -65,7 +65,6 @@ public final class Constants {
         public static final double HOOD_RATIO = 113.944;
         public static final double SECONDS_PER_MINUTE = 60.0;
         public static final double DEGREES_PER_REVOLUTION = 360.0;
-
 
         // =========================
         // Behavior / tolerances
@@ -164,7 +163,7 @@ public final class Constants {
 
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3050, 3200, 3300, 3400, 3500, 3600, 3700 });
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700, 3800 });
 
         // =========================
         // Configs
@@ -202,7 +201,7 @@ public final class Constants {
         }
 
         public static final int MOTOR_ID = 8;
-        public static final int HOME_SWITCH_DIO = 7;
+        public static final int HOME_SWITCH_DIO = 9;
 
         /** Physical angle limits (deg). 0° = backward, CW positive, +160° = home/limit switch. */
         public static final double ANGLE_MIN_DEG = -146.0;
@@ -241,6 +240,46 @@ public final class Constants {
         }
     }
 
+    public static final class Hood {
+        private Hood() {
+        }
+
+        public static final int MOTOR_ID = 9;
+
+        public static final double ANGLE_MIN_DEG = 0.0;
+        public static final double ANGLE_MAX_DEG = 18.0;
+
+        public static final double RATIO = 124.8;
+        public static final double DEGREES_PER_REVOLUTION = 360.0;
+
+        public static final double DEFAULT_ANGLE_TOLERANCE_DEG = 0.25;
+        public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
+
+        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 200.0;
+        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 20.0;
+        public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 1200.0;
+
+        public static final TalonFXConfiguration CONFIG = new TalonFXConfiguration();
+        static {
+            CONFIG.Slot0.kP = 10.0;
+            CONFIG.Slot0.kI = 0.02;
+            CONFIG.Slot0.kD = 0.2;
+            CONFIG.Slot0.kS = 0.4;
+            CONFIG.Slot0.kV = 0.0;
+            CONFIG.Slot0.kA = 0.0;
+            CONFIG.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+            CONFIG.CurrentLimits.SupplyCurrentLimit = 30;
+            CONFIG.CurrentLimits.SupplyCurrentLimitEnable = true;
+            CONFIG.CurrentLimits.StatorCurrentLimit = 60;
+            CONFIG.CurrentLimits.StatorCurrentLimitEnable = true;
+            CONFIG.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            MotionMagicConfigs mm = CONFIG.MotionMagic;
+            mm.MotionMagicCruiseVelocity = MOTION_MAGIC_CRUISE_VELOCITY_RPS;
+            mm.MotionMagicAcceleration = MOTION_MAGIC_ACCELERATION_RPS_PER_SEC;
+            mm.MotionMagicJerk = MOTION_MAGIC_JERK_RPS_PER_SEC_SQ;
+        }
+    }
+
     public static final class Intake {
         private Intake() {
         }
@@ -259,15 +298,15 @@ public final class Constants {
     public static final class Spindexer {
         public static final int INDEXER_MOTOR_ID = 3;
         public static final int FEED_MOTOR_ID = 13;
-                        
+
         public static final double SPINUP_INDEXER_SMOOTH_TIME_S = 0.2;
         public static final double SPINUP_FEED_SMOOTH_TIME_S = 0.1;
-        
+
         public static final double INDEXER_SUPPLY_CURRENT_LIMIT_A = 30.0;
-        public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 35.0;
-        public static final double FEED_STATOR_CURRENT_LIMIT_A = 50.0;
-        
-        public static final double JAM_CURRENT_THRESHOLD_A = 15.0;
+        public static final double FEED_SUPPLY_CURRENT_LIMIT_A = 45.0;
+        public static final double FEED_STATOR_CURRENT_LIMIT_A = 90.0;
+
+        public static final double JAM_CURRENT_THRESHOLD_A = 14.0;
         public static final double JAM_DEBOUNCE_S = 0.4;
         public static final double JAM_CLEAR_TIME_S = 0.2;
 
@@ -304,12 +343,12 @@ public final class Constants {
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
         public static final double INTAKE_SPEED = -0.6;
-        public static final double SPINDEXER_SPEED = 0.35;
+        public static final double SPINDEXER_SPEED = 0.40;
         public static final double FEED_SPEED = -1.0;
 
         public static final double SHOOTER_RPM = 3544.0;
         public static final double KICKER_RPM = -6000.0;
- 
+
         public static final double SHOOT_READY_RPM_TOLERANCE = 100.0;
         public static final double SHOOT_READY_YAW_TOLERANCE_DEG = 2.0;
         public static final double AUTO_SHOOT_MAX_DISTANCE_M = 10.0;
@@ -335,7 +374,7 @@ public final class Constants {
         public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.28575, -0.1143, 0.3048),
                 new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(160)));
         public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.28575, 0.10795, 0.3048),
-                new Rotation3d(0, -Math.toRadians(20),Math.toRadians(160)));
+                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(160)));
         public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.136525, -0.2921, 0.37465),
                 new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(73)));
         public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.136525, 0.2921, 0.37465),
