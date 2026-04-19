@@ -368,17 +368,15 @@ public final class Constants {
     }
 
     public static final class Vision {
-        private Vision() {
-        }
-
-        public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.28575, -0.1143, 0.3048),
-                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(160)));
-        public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.28575, 0.10795, 0.3048),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(160)));
-        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.136525, -0.2921, 0.37465),
-                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(73)));
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.136525, 0.2921, 0.37465),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(73)));
+        // TODO: Translation des caméras
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(Inches.of(-7.25), Inches.of(0), Inches.of(0)),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(90)));
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(),
+                new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90)));
+        public static Transform3d HELIOS_FRONT_POS = new Transform3d(new Translation3d(),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(0)));
+        public static Transform3d HELIOS_BACK_POS = new Transform3d(new Translation3d(),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(180)));
     }
 
 }

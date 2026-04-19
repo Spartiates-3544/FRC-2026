@@ -44,12 +44,12 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision {
     private final PhotonCamera heliosLeft;
     private final PhotonCamera heliosRight;
-    private final PhotonCamera limelight3;
-    private final PhotonCamera limelight2;
+    private final PhotonCamera heliosFront;
+    private final PhotonCamera heliosBack;
     private final PhotonPoseEstimator photonEstimatorHeliosRight;
     private final PhotonPoseEstimator photonEstimatorHeliosLeft;
-    private final PhotonPoseEstimator photonEstimatorLimelight3;
-    private final PhotonPoseEstimator photonEstimatorLimelight2;
+    private final PhotonPoseEstimator photonEstimatorHeliosFront;
+    private final PhotonPoseEstimator photonEstimatorHeliosBack;
     private Matrix<N3, N1> curStdDevs;
     private final EstimateConsumer estConsumer;
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
@@ -64,24 +64,24 @@ public class Vision {
         this.estConsumer = estConsumer;
         heliosLeft = new PhotonCamera("heliosLeft");
         heliosRight = new PhotonCamera("heliosRight");
-        limelight3 = new PhotonCamera("limelightV3");
-        limelight2 = new PhotonCamera("limelightV2");
+        heliosFront = new PhotonCamera("heliosFront");
+        heliosBack = new PhotonCamera("heliosBack");
         photonEstimatorHeliosRight = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_RIGHT_POS);
         photonEstimatorHeliosLeft = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_LEFT_POS);
-        photonEstimatorLimelight3 = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
-                Constants.Vision.LIMELIGHT_V3_POS);
-        photonEstimatorLimelight2 = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
-                Constants.Vision.LIMELIGHT_V2_POS);
+        photonEstimatorHeliosFront = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
+                Constants.Vision.HELIOS_FRONT_POS);
+        photonEstimatorHeliosBack = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
+                Constants.Vision.HELIOS_BACK_POS);
     }
 
     public void update() {
         var cameras = List.of(
                 Map.entry(heliosLeft, photonEstimatorHeliosLeft),
                 Map.entry(heliosRight, photonEstimatorHeliosRight),
-                Map.entry(limelight2, photonEstimatorLimelight2),
-                Map.entry(limelight3, photonEstimatorLimelight3)
+                Map.entry(heliosBack, photonEstimatorHeliosBack),
+                Map.entry(heliosFront, photonEstimatorHeliosFront)
         );
         for (var camera : cameras) {
             for (var result : camera.getKey().getAllUnreadResults()) {
