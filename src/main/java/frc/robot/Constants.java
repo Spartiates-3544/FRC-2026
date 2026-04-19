@@ -1,8 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -99,9 +100,9 @@ public final class Constants {
                 1250,
                 5500,
 
-                56.30,
-                36.14,
-                56.30,
+                Hood.HOOD_FIXED_ANGLE_DEG,
+                Hood.ANGLE_MIN_DEG,
+                Hood.ANGLE_MAX_DEG,
 
                 -180,
                 180,
@@ -159,11 +160,10 @@ public final class Constants {
                 4,
                 0.02);
 
-        public static final double FAST_FIXED_HOOD_DEG = 38.0;
-
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700, 3800 });
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700, 3800 },
+                new double[] { 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0 });
 
         // =========================
         // Configs
@@ -186,13 +186,6 @@ public final class Constants {
             shooterConfig.Slot0.kS = 0.16649;
             shooterConfig.Slot0.kV = 0.12109;
             shooterConfig.Slot0.kA = 0.017213;
-        }
-
-        public static final Slot0Configs hoodConfig = new Slot0Configs();
-        static {
-            hoodConfig.kP = 25.0;
-            hoodConfig.kI = 0.0;
-            hoodConfig.kD = 0.4;
         }
     }
 
@@ -241,13 +234,11 @@ public final class Constants {
     }
 
     public static final class Hood {
-        private Hood() {
-        }
-
         public static final int MOTOR_ID = 9;
 
         public static final double ANGLE_MIN_DEG = 0.0;
         public static final double ANGLE_MAX_DEG = 18.0;
+        public static final double HOOD_FIXED_ANGLE_DEG = 0;
 
         public static final double RATIO = 124.8;
         public static final double DEGREES_PER_REVOLUTION = 360.0;

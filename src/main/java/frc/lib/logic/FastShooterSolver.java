@@ -26,19 +26,21 @@ public final class FastShooterSolver {
     public static final class DistanceRpmTable {
         private final double[] distancesMeters;
         private final double[] rpms;
+        private final double[] angles;
 
-        public DistanceRpmTable(double[] distancesMeters, double[] rpms) {
-            if (distancesMeters == null || rpms == null
-                    || distancesMeters.length == 0 || rpms.length == 0) {
+        public DistanceRpmTable(double[] distancesMeters, double[] rpms, double[] angles) {
+            if (distancesMeters == null || rpms == null || angles == null
+                    || distancesMeters.length == 0 || rpms.length == 0 || angles.length == 0) {
                 throw new IllegalArgumentException("Distance/RPM table cannot be empty");
             }
 
-            if (distancesMeters.length != rpms.length) {
+            if ((distancesMeters.length != rpms.length) && (distancesMeters.length != angles.length)) {
                 throw new IllegalArgumentException("Distance/RPM table sizes must match");
             }
 
             this.distancesMeters = distancesMeters.clone();
             this.rpms = rpms.clone();
+            this.angles = angles.clone();
         }
 
         /**
@@ -67,12 +69,46 @@ public final class FastShooterSolver {
                     double blend = (distanceMeters - x0) / Math.max(1e-9, x1 - x0);
 
                     // Interpolate RPM between the two points
-                    return rpms[i] + blend * (rpms[i + 1] - rpms[i]);
+                    return rpms[i] + (blend * (rpms[i + 1] - rpms[i]));
                 }
             }
 
             // Should never happen if the table is valid, but keep a safe fallback
             return rpms[lastIndex];
+        }
+
+        /**
+         * Returns the interpolated angle for a given horizontal distance.
+         */
+        public double lookupAngle(double distanceMeters) {
+            // Clamp below table range
+            if (distanceMeters <= distancesMeters[0]) {
+                return angles[0];
+            }
+
+            int lastIndex = distancesMeters.length - 1;
+
+            // Clamp above table range
+            if (distanceMeters >= distancesMeters[lastIndex]) {
+                return angles[lastIndex];
+            }
+
+            // Find the segment that contains the requested distance
+            for (int i = 0; i < lastIndex; i++) {
+                double x0 = distancesMeters[i];
+                double x1 = distancesMeters[i + 1];
+
+                if (distanceMeters >= x0 && distanceMeters <= x1) {
+                    // Linear interpolation factor from 0 to 1
+                    double blend = (distanceMeters - x0) / Math.max(1e-9, x1 - x0);
+
+                    // Interpolate RPM between the two points
+                    return angles[i] + (blend * (angles[i + 1] - angles[i]));
+                }
+            }
+
+            // Should never happen if the table is valid, but keep a safe fallback
+            return angles[lastIndex];
         }
     }
 
@@ -128,8 +164,9 @@ public final class FastShooterSolver {
                 params.flywheelRpmMin(),
                 params.flywheelRpmMax());
 
-        double hoodAngleDeg = MathUtil.clamp(
-                fixedHoodDeg,
+        double hoodAngleDeg = rpmTable.lookupAngle(horizontalDistanceMeters);
+        hoodAngleDeg = MathUtil.clamp(
+                hoodAngleDeg,
                 params.hoodMinDeg(),
                 params.hoodMaxDeg());
 

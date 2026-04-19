@@ -77,9 +77,9 @@ public class RobotContainer {
         public final TurretSubsystem turret = new TurretSubsystem();
         public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
         public final ShooterSubsystem shooter = new ShooterSubsystem();
-        public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, turret);
-        public final LedSubsystem leds = new LedSubsystem(turret);
         public final HoodSubsystem hood = new HoodSubsystem();
+        public final ShooterLoop shooterLoop = new ShooterLoop(drivetrain, shooter, hood, turret);
+        public final LedSubsystem leds = new LedSubsystem(turret);
 
         // =========================
         // Autonomous
@@ -94,7 +94,7 @@ public class RobotContainer {
                                 (new DeployIntake(intake)));
 
                 NamedCommands.registerCommand("aim-and-spinup",
-                                new ShootMoving(shooter, turret, shooterLoop, leds));
+                                new ShootMoving(shooter, hood, turret, shooterLoop, leds));
 
                 NamedCommands.registerCommand("intake-and-feed",
                                 new ShootNow(intake, spindexer, shooterLoop, leds));
@@ -115,7 +115,7 @@ public class RobotContainer {
 
         public RobotContainer() {
                 shootNowCommand = new ShootNow(intake, spindexer, shooterLoop, leds);
-                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
+                shootMovingCommand = new ShootMoving(shooter, hood, turret, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
@@ -259,7 +259,7 @@ public class RobotContainer {
                                         turret.stop();
                                         shooter.stopShooter();
                                         shooter.stopKicker();
-                                        shooter.stopHood();
+                                        hood.stop();
                                         intake.stop();
                                         spindexer.stopAll();
                                 }, drivetrain, turret, shooter, intake, spindexer));

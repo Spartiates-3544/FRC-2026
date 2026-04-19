@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.robot.Records;
 import frc.robot.Constants;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -11,16 +12,18 @@ import frc.robot.subsystems.control.ShooterLoop;
 
 public class ShootMoving extends Command {
     private final ShooterSubsystem shooter;
+    private final HoodSubsystem hood;
     private final TurretSubsystem turret;
     private final ShooterLoop shooterLoop;
     private final LedSubsystem leds;
 
-    public ShootMoving(ShooterSubsystem shooter, TurretSubsystem turret, ShooterLoop shooterLoop, LedSubsystem leds) {
+    public ShootMoving(ShooterSubsystem shooter, HoodSubsystem hood, TurretSubsystem turret, ShooterLoop shooterLoop, LedSubsystem leds) {
         this.shooter = shooter;
+        this.hood = hood;
         this.turret = turret;
         this.shooterLoop = shooterLoop;
         this.leds = leds;
-        addRequirements(shooter, turret);
+        addRequirements(shooter, hood, turret);
     }
 
     @Override
@@ -47,6 +50,7 @@ public class ShootMoving extends Command {
         }
 
         shooter.applyShot(shot);
+        hood.setTargetAngleDeg(shot.hoodDeg());
         shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
         SmartDashboard.putNumber("Shooter/Distance M", shooterLoop.getHorizontalDistanceToGoalM());
         SmartDashboard.putNumber("Shooter/Commanded RPM", shot.flywheelRpm());
