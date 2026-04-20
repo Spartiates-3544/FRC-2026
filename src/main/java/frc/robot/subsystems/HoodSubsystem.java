@@ -21,6 +21,11 @@ public final class HoodSubsystem extends SubsystemBase {
     // Requests
     // =========================
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
+
+    // =========================
+    // State
+    // =========================
+    private double lastCommandedAngleDeg = 0.0;
     
 
     public HoodSubsystem() {
@@ -55,6 +60,7 @@ public final class HoodSubsystem extends SubsystemBase {
                 targetDeg,
                 Constants.Hood.ANGLE_MIN_DEG,
                 Constants.Hood.ANGLE_MAX_DEG);
+        lastCommandedAngleDeg = clampedDeg;
 
         double hoodDegFromHome = clampedDeg;
         double hoodRotationsFromHome = hoodDegFromHome / Constants.Hood.DEGREES_PER_REVOLUTION;
@@ -82,6 +88,10 @@ public final class HoodSubsystem extends SubsystemBase {
 
     public double getAngleRad() {
         return Math.toRadians(getAngleDeg());
+    }
+
+    public double getLastCommandedAngleDeg() {
+        return lastCommandedAngleDeg;
     }
 
     public boolean isAtAngleDeg(double targetDeg) {

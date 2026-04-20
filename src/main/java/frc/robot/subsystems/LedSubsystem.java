@@ -33,8 +33,8 @@ public class LedSubsystem extends SubsystemBase {
     }
 
     private static final int PRIORITY_IDLE         = 99;
-    private static final int PRIORITY_SHOOT_MOVING = 40;
-    private static final int PRIORITY_INTAKE       = 30;
+    private static final int PRIORITY_INTAKE       = 40;
+    private static final int PRIORITY_SHOOT_MOVING = 30;
     private static final int PRIORITY_DUMP         = 20;
     private static final int PRIORITY_SHOOT_NOW    = 10;
 

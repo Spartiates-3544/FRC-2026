@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,9 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
-import frc.robot.commands.SetHoodAngle;
-import frc.robot.commands.SetTurretAngle;
-import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
 import frc.robot.generated.TunerConstants;
@@ -36,7 +34,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.control.ShooterLoop;
-// import frc.robot.commands.DumpIntoAllianceZone;
+import frc.robot.commands.CrossFieldDump;
 import frc.robot.commands.HomeTurret;
 
 public class RobotContainer {
@@ -90,14 +88,11 @@ public class RobotContainer {
                 NamedCommands.registerCommand("run-intake",
                                 (new RunIntake(intake, leds)));
 
-                NamedCommands.registerCommand("deploy-intake",
-                                (new DeployIntake(intake)));
-
                 NamedCommands.registerCommand("aim-and-spinup",
-                                new ShootMoving(shooter, hood, turret, shooterLoop, leds));
+                                new ShootMoving(shooter, turret, shooterLoop, leds));
 
                 NamedCommands.registerCommand("intake-and-feed",
-                                new ShootNow(intake, spindexer, shooterLoop, leds));
+                                new ShootNow(intake, spindexer, hood, shooterLoop, leds));
 
                 NamedCommands.registerCommand("home",
                                 new HomeTurret(turret));
@@ -114,8 +109,8 @@ public class RobotContainer {
         }
 
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, shooterLoop, leds);
-                shootMovingCommand = new ShootMoving(shooter, hood, turret, shooterLoop, leds);
+                shootNowCommand = new ShootNow(intake, spindexer, hood, shooterLoop, leds);
+                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
@@ -125,6 +120,10 @@ public class RobotContainer {
                 intake.open();
                 hood.resetMotorPosition(0);
 
+                if (RobotBase.isSimulation()) {
+                        new SimulationLog(drivetrain, turret, hood, shooter);
+                }
+
                 // Shooter YAW + RPM automatique lorsque dans la zone
                 // shooter.setDefaultCommand(buildMovingShootCommand());
         }
@@ -133,6 +132,9 @@ public class RobotContainer {
         // Setup
         // =========================
         private void configureDefaultCommands() {
+                hood.setDefaultCommand(Commands.run(
+                                () -> hood.setTargetAngleDeg(Constants.Hood.ANGLE_MIN_DEG), hood));
+
                 driveFaceTranslation.HeadingController.setPID(8.0, 0.0, 0.2);
                 driveFaceTranslation.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -210,8 +212,7 @@ public class RobotContainer {
         }
 
         private void configureTurretBindings() {
-                joystick.leftBumper().onTrue(new HomeTurret(turret));
-                joystick.povDown().onTrue(new SetTurretAngle(turret, 0));
+                joystick.povUp().onTrue(new HomeTurret(turret));
         }
 
         // =========================
@@ -221,18 +222,10 @@ public class RobotContainer {
         private final Command shootMovingCommand;
 
         private void configureShooterBindings() {
-                joystick.a().whileTrue(shootNowCommand);
+                joystick.a().and(() -> CommandScheduler.getInstance().isScheduled(shootMovingCommand)).whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
-                joystick.povRight().onTrue( new SetHoodAngle(hood, 15));
-                joystick.povLeft().onTrue( new SetHoodAngle(hood, 0));
-                // new DumpIntoAllianceZone(
-                // shooter,
-                // drivetrain,
-                // turret,
-                // spindexer,
-                // intake,
-                // leds));
-                joystick.b().whileTrue(
+                joystick.b().whileTrue(new CrossFieldDump(shooter, drivetrain, turret, spindexer, hood, leds));
+                joystick.rightBumper().whileTrue(
                                 new edu.wpi.first.wpilibj2.command.StartEndCommand(
                                                 () -> {
                                                         intake.setSpeed(1.0);
@@ -277,6 +270,10 @@ public class RobotContainer {
         }
 
         private double getDriveOmega() {
+                if (RobotBase.isSimulation()) {
+                        // In sim, trigger axes go -1..1. Axis 5 = right trigger, axis 2 = left trigger.
+                        return -(joystick.getRawAxis(5) - joystick.getRawAxis(2)) * maxAngularRate;
+                }
                 return -(joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis()) * maxAngularRate;
         }
 

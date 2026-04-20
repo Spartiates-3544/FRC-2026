@@ -160,10 +160,11 @@ public final class Constants {
                 4,
                 0.02);
 
+        // TODO: TUNER
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
-                new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700, 3800 },
-                new double[] { 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0 });
+                new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40 },
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700 },
+                new double[] { 0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 18.0, 18.0, 18.0, 18.0});
 
         // =========================
         // Configs
@@ -356,11 +357,24 @@ public final class Constants {
 
         public static final double SHOOT_NOW_TRANSLATION_SCALE = 0.25;
         public static final double SHOOT_NOW_ROTATION_SCALE = 0.35;
+
+        // Cross-field dump TODO: TUNER
+        public static final double CROSS_DUMP_RPM_AT_OWN_WALL = 1500.0;
+        public static final double CROSS_DUMP_RPM_AT_FAR_WALL = 6500.0;
+        public static final double CROSS_DUMP_OWN_WALL_X_BLUE_M = 0.25;
+        public static final double CROSS_DUMP_OWN_WALL_X_RED_M = 16.25;
+        public static final double CROSS_DUMP_FIELD_LENGTH_M = CROSS_DUMP_OWN_WALL_X_RED_M
+                - CROSS_DUMP_OWN_WALL_X_BLUE_M;
+        public static final double CROSS_DUMP_RPM_PER_METER = (CROSS_DUMP_RPM_AT_FAR_WALL - CROSS_DUMP_RPM_AT_OWN_WALL)
+                / CROSS_DUMP_FIELD_LENGTH_M;
+        public static final double CROSS_DUMP_TURRET_TOL_DEG = 5.0;
+        public static final double CROSS_DUMP_FLYWHEEL_TOL_RPM = 1000.0;
+        public static final double CROSS_DUMP_BALL_EXIT_SPEED_MPS = 12.0;
     }
 
     public static final class Vision {
-        // TODO: Translation des caméras
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(Inches.of(-7.25), Inches.of(0), Inches.of(0)),
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(
+                new Translation3d(Inches.of(-7.25), Inches.of(0), Inches.of(0)),
                 new Rotation3d(0, -Math.toRadians(15), Math.toRadians(90)));
         public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(),
                 new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90)));
