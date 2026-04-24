@@ -358,6 +358,19 @@ public final class Constants {
 
         public static final double SHOOT_NOW_TRANSLATION_SCALE = 0.25;
         public static final double SHOOT_NOW_ROTATION_SCALE = 0.35;
+
+        // Cross-field dump TODO: TUNER
+        public static final double CROSS_DUMP_RPM_AT_OWN_WALL = 1500.0;
+        public static final double CROSS_DUMP_RPM_AT_FAR_WALL = 6500.0;
+        public static final double CROSS_DUMP_OWN_WALL_X_BLUE_M = 0.25;
+        public static final double CROSS_DUMP_OWN_WALL_X_RED_M = 16.25;
+        public static final double CROSS_DUMP_FIELD_LENGTH_M = CROSS_DUMP_OWN_WALL_X_RED_M
+                - CROSS_DUMP_OWN_WALL_X_BLUE_M;
+        public static final double CROSS_DUMP_RPM_PER_METER = (CROSS_DUMP_RPM_AT_FAR_WALL - CROSS_DUMP_RPM_AT_OWN_WALL)
+                / CROSS_DUMP_FIELD_LENGTH_M;
+        public static final double CROSS_DUMP_TURRET_TOL_DEG = 5.0;
+        public static final double CROSS_DUMP_FLYWHEEL_TOL_RPM = 1000.0;
+        public static final double CROSS_DUMP_BALL_EXIT_SPEED_MPS = 12.0;
     }
 
     public static final class Vision {
