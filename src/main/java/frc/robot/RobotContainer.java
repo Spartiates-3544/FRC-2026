@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.SetHoodAngle;
-import frc.robot.commands.SetTurretAngle;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
@@ -36,8 +35,8 @@ import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.control.ShooterLoop;
-// import frc.robot.commands.DumpIntoAllianceZone;
 import frc.robot.commands.HomeTurret;
+import frc.robot.commands.HomeHood;
 
 public class RobotContainer {
         // =========================
@@ -94,10 +93,10 @@ public class RobotContainer {
                                 (new DeployIntake(intake)));
 
                 NamedCommands.registerCommand("aim-and-spinup",
-                                new ShootMoving(shooter, hood, turret, shooterLoop, leds));
+                                new ShootMoving(shooter, turret, shooterLoop, leds));
 
                 NamedCommands.registerCommand("intake-and-feed",
-                                new ShootNow(intake, spindexer, shooterLoop, leds));
+                                new ShootNow(intake, spindexer, hood, shooterLoop, leds));
 
                 NamedCommands.registerCommand("home",
                                 new HomeTurret(turret));
@@ -114,8 +113,8 @@ public class RobotContainer {
         }
 
         public RobotContainer() {
-                shootNowCommand = new ShootNow(intake, spindexer, shooterLoop, leds);
-                shootMovingCommand = new ShootMoving(shooter, hood, turret, shooterLoop, leds);
+                shootNowCommand = new ShootNow(intake, spindexer, hood, shooterLoop, leds);
+                shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
                 configureDefaultCommands();
                 configureBindings();
                 configureDashboard();
@@ -123,8 +122,6 @@ public class RobotContainer {
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
                 intake.open();
-                hood.resetMotorPosition(0);
-
                 // Shooter YAW + RPM automatique lorsque dans la zone
                 // shooter.setDefaultCommand(buildMovingShootCommand());
         }
@@ -185,6 +182,9 @@ public class RobotContainer {
                                         return request;
                                 }));
 
+                hood.setDefaultCommand(
+                                Commands.run(() -> hood.setTargetAngleDeg(Constants.Hood.ANGLE_MIN_DEG), hood));
+
                 final var idle = new SwerveRequest.Idle();
                 RobotModeTriggers.disabled().whileTrue(
                                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
@@ -207,11 +207,11 @@ public class RobotContainer {
         // =========================
         private void configureDriveBindings() {
                 joystick.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+                joystick.povDown().toggleOnTrue(Commands.runEnd(() -> drivetrain.setDriveMode(DriveMode.FACE_TRANSLATION), () -> drivetrain.setDriveMode(DriveMode.NORMAL)).alongWith(new RunIntake(intake, leds)));
         }
 
         private void configureTurretBindings() {
-                joystick.leftBumper().onTrue(new HomeTurret(turret));
-                joystick.povDown().onTrue(new SetTurretAngle(turret, 0));
+                joystick.leftBumper().onTrue(new HomeTurret(turret).andThen(new HomeHood(hood)));
         }
 
         // =========================
@@ -225,13 +225,6 @@ public class RobotContainer {
                 joystick.y().toggleOnTrue(shootMovingCommand);
                 joystick.povRight().onTrue( new SetHoodAngle(hood, 15));
                 joystick.povLeft().onTrue( new SetHoodAngle(hood, 0));
-                // new DumpIntoAllianceZone(
-                // shooter,
-                // drivetrain,
-                // turret,
-                // spindexer,
-                // intake,
-                // leds));
                 joystick.b().whileTrue(
                                 new edu.wpi.first.wpilibj2.command.StartEndCommand(
                                                 () -> {
@@ -286,6 +279,7 @@ public class RobotContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
+
 
         public CommandSwerveDrivetrain getDrivetrain() {
                 return drivetrain;

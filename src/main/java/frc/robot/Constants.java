@@ -125,7 +125,7 @@ public final class Constants {
                 180,
                 6500,
 
-                false,
+                true,
                 true,
 
                 0.7,
@@ -162,8 +162,8 @@ public final class Constants {
 
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700, 3800 },
-                new double[] { 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0, 38.0 });
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2750, 2900, 2950, 3050, 3100, 3200, 3300, 3400, 3500, 3600 },
+                new double[] { 0.0, 2.0, 4.0, 5.5, 7.0, 9.0, 12.0, 12.0, 12.0, 14.0, 16.0, 16.0, 16.0, 18.0, 18.0 });
 
         // =========================
         // Configs
@@ -240,14 +240,16 @@ public final class Constants {
         public static final double ANGLE_MAX_DEG = 18.0;
         public static final double HOOD_FIXED_ANGLE_DEG = 0;
 
-        public static final double RATIO = 124.8;
+        public static final double RATIO = 71.875;
         public static final double DEGREES_PER_REVOLUTION = 360.0;
 
         public static final double DEFAULT_ANGLE_TOLERANCE_DEG = 0.25;
-        public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
+        public static final double HOME_SENSOR_POSITION_MOTOR_ROT = -0.0;
+        public static final double HOMING_OUTPUT = -0.1;
+        public static final double HOMING_CURRENT_THRESHOLD_A = 5.0;
 
-        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 200.0;
-        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 20.0;
+        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 300.0;
+        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 600.0;
         public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 1200.0;
 
         public static final TalonFXConfiguration CONFIG = new TalonFXConfiguration();
@@ -333,8 +335,8 @@ public final class Constants {
         public static final double TURRET_PRESET_RIGHT_DEG = 90.0;
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
-        public static final double INTAKE_SPEED = -0.6;
-        public static final double SPINDEXER_SPEED = 0.40;
+        public static final double INTAKE_SPEED = -0.7;
+        public static final double SPINDEXER_SPEED = 0.35;
         public static final double FEED_SPEED = -1.0;
 
         public static final double SHOOTER_RPM = 3544.0;
@@ -359,15 +361,13 @@ public final class Constants {
     }
 
     public static final class Vision {
-        // TODO: Translation des caméras
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(Inches.of(-7.25), Inches.of(0), Inches.of(0)),
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(Inches.of(-7.25), Inches.of(14), Inches.of(14)),
                 new Rotation3d(0, -Math.toRadians(15), Math.toRadians(90)));
-        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(),
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(Inches.of(-6.25), Inches.of(-14), Inches.of(14)),
                 new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90)));
-        public static Transform3d HELIOS_FRONT_POS = new Transform3d(new Translation3d(),
-                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(0)));
-        public static Transform3d HELIOS_BACK_POS = new Transform3d(new Translation3d(),
+        public static Transform3d HELIOS_BACK_POS = new Transform3d(new Translation3d(Inches.of(-13), Inches.of(-2.75), Inches.of(14)),
                 new Rotation3d(0, -Math.toRadians(15), Math.toRadians(180)));
+        public static Transform3d HELIOS_FRONT_POS = new Transform3d(new Translation3d(Inches.of(2.75), Inches.of(0), Inches.of(0)),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(0)));
     }
-
 }

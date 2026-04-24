@@ -1,34 +1,31 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib.robot.Records;
 import frc.robot.Constants;
-import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
-import frc.robot.subsystems.control.ShooterLoop;
 
-public class ShootNow extends Command {
+public class ShootFixed extends Command {
+    private static final double FIXED_RPM = 6000.0;
+
     private final IntakeSubsystem intake;
     private final SpindexerSubsystem spindexer;
-    private final HoodSubsystem hood;
-    private final ShooterLoop shooterLoop;
+    private final ShooterSubsystem shooter;
     private final LedSubsystem leds;
 
-    public ShootNow(
+    public ShootFixed(
             IntakeSubsystem intake,
             SpindexerSubsystem spindexer,
-            HoodSubsystem hood,
-            ShooterLoop shooterLoop,
+            ShooterSubsystem shooter,
             LedSubsystem leds) {
         this.intake = intake;
         this.spindexer = spindexer;
-        this.hood = hood;
-        this.shooterLoop = shooterLoop;
+        this.shooter = shooter;
         this.leds = leds;
 
-        addRequirements(intake, spindexer, hood);
+        addRequirements(intake, spindexer, shooter);
     }
 
     @Override
@@ -38,10 +35,8 @@ public class ShootNow extends Command {
 
     @Override
     public void execute() {
-        Records.ShotSolution shot = shooterLoop.getCommandedShot();
-        if (shot != null) {
-            hood.setTargetAngleDeg(shot.hoodDeg());
-        }
+        shooter.setShooterRpm(FIXED_RPM);
+        shooter.setKickerRpm(Constants.Commands.KICKER_RPM);;
         intake.setSpeed(Constants.Commands.INTAKE_SPEED);
         spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
         spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
@@ -50,6 +45,8 @@ public class ShootNow extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        shooter.stopShooter();
+        shooter.stopKicker();
         intake.stop();
         intake.close();
         spindexer.stopAll();

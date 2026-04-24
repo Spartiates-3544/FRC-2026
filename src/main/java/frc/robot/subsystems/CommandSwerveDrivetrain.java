@@ -365,7 +365,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 this::getChassisSpeeds,
                 (speeds, feedforwards) -> driveRobotCentric(speeds),
                 new PPHolonomicDriveController(
-                        new PIDConstants(7.5, 0.0, 0.0),
+                        new PIDConstants(8.5, 0.0, 0.0),
                         new PIDConstants(30.0, 0.0, 0.0)),
                 Constants.Drive.config,
                 () -> DriverStation.getAlliance()
