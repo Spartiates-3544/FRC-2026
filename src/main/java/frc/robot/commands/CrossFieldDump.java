@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.utils.MathUtils;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -79,21 +80,6 @@ public final class CrossFieldDump extends Command {
         // Red : notre mur est à X ≈ 16.5 m, donc on tire vers +X (0 rad).
         double desiredYawFieldRad = isRed ? 0.0 : Math.PI;
 
-        // ── 2. Compensation de la vitesse du robot ───────────────────────────────────
-        // Si le robot se déplace latéralement pendant le tir, la balle dérive
-        // perpendiculairement à la direction souhaitée. On corrige le yaw cible
-        // pour annuler cette dérive (lead shot).
-        ChassisSpeeds speeds = drivetrain.getState().Speeds;
-        double cosYaw = pose.getRotation().getCos();
-        double sinYaw = pose.getRotation().getSin();
-
-        // Projection de la vitesse chassis sur l'axe perpendiculaire au tir (axe Y terrain)
-        double perpVelocity = speeds.vxMetersPerSecond * sinYaw + speeds.vyMetersPerSecond * cosYaw;
-
-        // Décalage angulaire nécessaire pour que la balle atteigne quand même le mur droit
-        double compensationRad = Math.atan2(-perpVelocity, Constants.Commands.CROSS_DUMP_BALL_EXIT_SPEED_MPS);
-        desiredYawFieldRad += compensationRad;
-
         // ── 3. Conversion en angle turret (repère mécanique) ─────────────────────────
         // Le turret est référencé par rapport à l'arrière du robot (0° = arrière, CW positif).
         // On soustrait d'abord le yaw du robot pour obtenir un angle relatif au robot, puis
@@ -112,7 +98,7 @@ public final class CrossFieldDump extends Command {
         boolean inBlindSpot = Math.abs(rawTurretTargetDeg) > Constants.Turret.ANGLE_MAX_DEG;
 
         // On envoie la consigne au turret ; le sous-système la clampera lui-même aux limites.
-        turret.setTargetAngleDeg(rawTurretTargetDeg);
+        turret.setTargetAngleDeg(-rawTurretTargetDeg);
 
         // ── 5. Calcul du RPM selon la distance au mur ────────────────────────────────
         // Plus on est loin de notre mur, plus la balle doit aller vite pour l'atteindre (ET PAS TROP VITE POUR PAS OVERSHOOT PAR DESSUS LE MUR).
@@ -123,6 +109,8 @@ public final class CrossFieldDump extends Command {
         double distToOwnWallM = isRed
                 ? Math.max(0.0, ownWallX - pose.getX())
                 : Math.max(0.0, pose.getX() - ownWallX);
+                
+        SmartDashboard.putNumber("Shooter/distToOwnWallM", distToOwnWallM);
 
         double rpmCmd = Constants.Commands.CROSS_DUMP_RPM_AT_OWN_WALL + Constants.Commands.CROSS_DUMP_RPM_PER_METER * distToOwnWallM;
         // Sécurité : on clamp pour éviter de sous-charger ou sur-charger le flywheel
@@ -145,7 +133,6 @@ public final class CrossFieldDump extends Command {
         double flywheelErrRpm = Math.abs(shooter.getShooterRpm() - rpmCmd);
 
         boolean ready = !inBlindSpot
-                && turretErrDeg <= Constants.Commands.CROSS_DUMP_TURRET_TOL_DEG
                 && flywheelErrRpm <= Constants.Commands.CROSS_DUMP_FLYWHEEL_TOL_RPM;
 
         if (ready) {

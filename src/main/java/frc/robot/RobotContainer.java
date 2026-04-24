@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
-import frc.robot.commands.SetHoodAngle;
+import frc.robot.commands.CrossFieldDump;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
@@ -207,11 +207,14 @@ public class RobotContainer {
         // =========================
         private void configureDriveBindings() {
                 joystick.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-                joystick.povDown().toggleOnTrue(Commands.runEnd(() -> drivetrain.setDriveMode(DriveMode.FACE_TRANSLATION), () -> drivetrain.setDriveMode(DriveMode.NORMAL)).alongWith(new RunIntake(intake, leds)));
+                joystick.povDown().toggleOnTrue(
+                                Commands.runEnd(() -> drivetrain.setDriveMode(DriveMode.FACE_TRANSLATION), () -> drivetrain.setDriveMode(DriveMode.NORMAL))
+                                                .alongWith(new RunIntake(intake, leds)));
         }
 
         private void configureTurretBindings() {
                 joystick.leftBumper().onTrue(new HomeTurret(turret).andThen(new HomeHood(hood)));
+                joystick.b().whileTrue(new CrossFieldDump(shooter, drivetrain, turret, spindexer, hood, leds));
         }
 
         // =========================
@@ -223,16 +226,6 @@ public class RobotContainer {
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
-                joystick.povRight().onTrue( new SetHoodAngle(hood, 15));
-                joystick.povLeft().onTrue( new SetHoodAngle(hood, 0));
-                joystick.b().whileTrue(
-                                new edu.wpi.first.wpilibj2.command.StartEndCommand(
-                                                () -> {
-                                                        intake.setSpeed(1.0);
-                                                        intake.open();
-                                                },
-                                                () -> intake.stop(),
-                                                intake));
         }
 
         // =========================
@@ -279,7 +272,6 @@ public class RobotContainer {
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
         }
-
 
         public CommandSwerveDrivetrain getDrivetrain() {
                 return drivetrain;
