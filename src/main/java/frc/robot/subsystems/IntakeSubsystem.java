@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,6 +27,8 @@ public class IntakeSubsystem extends SubsystemBase {
         config.CurrentLimits.StatorCurrentLimit = Constants.Intake.STATOR_CURRENT_LIMIT_A;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
         intakeMotor.getConfigurator().apply(config);
+
+        setName("Intake");
     }
 
     public void open() {
@@ -40,7 +43,19 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotor.set(speed);
     }
 
+    public double getSpeed() {
+        return intakeMotor.get();
+    }
+
     public void stop() {
         intakeMotor.stopMotor();
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Intake Speed", this::getSpeed, null);
+
+        // Appeler l'implémentation parent de initSendable()
+        super.initSendable(builder);
     }
 }

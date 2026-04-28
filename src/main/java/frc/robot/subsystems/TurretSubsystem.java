@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,6 +22,8 @@ public final class TurretSubsystem extends SubsystemBase {
     // Requests
     // =========================
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
+
+    private double lastCommandedAngle = 0;
     
 
     public TurretSubsystem() {
@@ -50,6 +53,7 @@ public final class TurretSubsystem extends SubsystemBase {
      * Donc en s'éloignant du switch, les rotations moteur deviennent négatives.
      */
     public void setTargetAngleDeg(double targetDeg) {
+        lastCommandedAngle = targetDeg;
         double clampedDeg = MathUtils.clamp(
                 targetDeg,
                 Constants.Turret.ANGLE_MIN_DEG,
@@ -81,6 +85,10 @@ public final class TurretSubsystem extends SubsystemBase {
 
     public double getAngleRad() {
         return Math.toRadians(getAngleDeg());
+    }
+
+    public double getLastCommandedTurretAngle() {
+        return lastCommandedAngle;
     }
 
     public boolean isAtAngleDeg(double targetDeg) {
@@ -149,5 +157,14 @@ public final class TurretSubsystem extends SubsystemBase {
     // =========================
     public Command setTargetAngleCommand(double angleDegrees) {
         return Commands.runOnce(() -> setTargetAngleDeg(angleDegrees), this);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Current Turret Angle", this::getAngleDeg, null);
+        builder.addDoubleProperty("Commanded Turret Angle", this::getLastCommandedTurretAngle, null);
+
+        // Appeler l'implémentation parent de initSendable()
+        super.initSendable(builder);
     }
 }

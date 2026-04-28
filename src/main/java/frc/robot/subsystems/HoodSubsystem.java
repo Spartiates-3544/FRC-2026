@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,8 +23,11 @@ public final class HoodSubsystem extends SubsystemBase {
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
     
 
+    private double lastCommandedAngle = 0;
+
     public HoodSubsystem() {
         applyConfigs();
+        setName("Hood");
     }
     
 
@@ -33,11 +36,6 @@ public final class HoodSubsystem extends SubsystemBase {
     // =========================
     private void applyConfigs() {
         hoodMotor.getConfigurator().apply(Constants.Hood.CONFIG);
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Hood/Crent Deg", getAngleDeg());
     }
 
     // =========================
@@ -51,6 +49,7 @@ public final class HoodSubsystem extends SubsystemBase {
      * Donc en s'éloignant du switch, les rotations moteur deviennent négatives.
      */
     public void setTargetAngleDeg(double targetDeg) {
+        lastCommandedAngle = targetDeg;
         double clampedDeg = MathUtils.clamp(
                 targetDeg,
                 Constants.Hood.ANGLE_MIN_DEG,
@@ -72,7 +71,6 @@ public final class HoodSubsystem extends SubsystemBase {
         double motorRotations = hoodMotor.getPosition().getValueAsDouble();
         double hoodRotationsFromHome = motorRotations / Constants.Hood.RATIO;
         double hoodDegFromHome = hoodRotationsFromHome * Constants.Hood.DEGREES_PER_REVOLUTION;
-         SmartDashboard.putNumber("Hood/hoodDegFromHome", hoodDegFromHome);
 
         return MathUtils.clamp(
                 hoodDegFromHome,
@@ -82,6 +80,10 @@ public final class HoodSubsystem extends SubsystemBase {
 
     public double getAngleRad() {
         return Math.toRadians(getAngleDeg());
+    }
+
+    public double getLastCommandedHoodAngle() {
+        return lastCommandedAngle;
     }
 
     public boolean isAtAngleDeg(double targetDeg) {
@@ -117,8 +119,15 @@ public final class HoodSubsystem extends SubsystemBase {
         hoodMotor.setPosition(positionRotations);
     }
 
-   
 
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Current Hood Angle", this::getAngleDeg, null);
+        builder.addDoubleProperty("Requested Hood Angle", this::getLastCommandedHoodAngle, null);
+
+        // Appeler l'implémentation parent de initSendable()
+        super.initSendable(builder);
+    }
 
     // =========================
     // Convenience commands
@@ -126,4 +135,5 @@ public final class HoodSubsystem extends SubsystemBase {
     public Command setTargetAngleCommand(double angleDegrees) {
         return Commands.runOnce(() -> setTargetAngleDeg(angleDegrees), this);
     }
+
 }

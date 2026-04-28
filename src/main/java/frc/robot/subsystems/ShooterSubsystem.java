@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -36,8 +38,6 @@ public class ShooterSubsystem extends SubsystemBase {
     // =========================
     // @ExtendedLogger.LoggableField(path="Shooter/ShooterRPM")
     private volatile double lastCommandedShooterRpm = 0.0;
-
-    private double lastCommandedHoodDeg = 0.0;
 
     // =========================
     // SysId
@@ -73,7 +73,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter/Current RPM", getShooterRpm());
         SmartDashboard.putNumber("Shooter/Commanded RPM", lastCommandedShooterRpm);
     }
 
@@ -161,10 +160,6 @@ public class ShooterSubsystem extends SubsystemBase {
         return lastCommandedShooterRpm;
     }
 
-    public double getLastCommandedHoodDeg() {
-        return lastCommandedHoodDeg;
-    }
-
     // =========================
     // Conversion helpers
     // =========================
@@ -174,5 +169,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private static double rpsToRpm(double rps) {
         return rps * Constants.Shooter.SECONDS_PER_MINUTE;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Current Shooter RPM", this::getShooterRpm, null);
+        builder.addDoubleProperty("Requested Shooter RPM", this::getLastCommandedShooterRpm, null);
+
+        // Appeler l'implémentation parent de initSendable()
+        super.initSendable(builder);
     }
 }

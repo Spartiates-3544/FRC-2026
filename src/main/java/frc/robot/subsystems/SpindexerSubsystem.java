@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -31,6 +32,8 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         var feedConfig = new TalonFXConfiguration();
         feedMotor.getConfigurator().apply(feedConfig);
+
+        setName("Spindexer");
     }
 
     public void setIndexerSpeed(double speed) {
@@ -123,5 +126,15 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     private static double clamp(double value) {
         return Math.max(-1.0, Math.min(1.0, value));
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addBooleanProperty("Is Drum Clearing Jam", this::isJamClearing, null);
+        builder.addDoubleProperty("Drum Spin Speed", indexerMotor::get, null);
+        builder.addDoubleProperty("Drum Feed Speed", feedMotor::get, null);
+
+        // Appeler l'implémentation parent de initSendable()
+        super.initSendable(builder);
     }
 }
