@@ -121,7 +121,6 @@ public class RobotContainer {
                 configureNamedCommands();
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
-                intake.open();
                 // Shooter YAW + RPM automatique lorsque dans la zone
                 // shooter.setDefaultCommand(buildMovingShootCommand());
         }

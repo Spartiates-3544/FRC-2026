@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.utils.MathUtils;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
@@ -127,9 +126,6 @@ public final class CrossFieldDump extends Command {
         // - le turret est dans les limites mécaniques (pas en angle mort),
         // - le turret est dans la tolérance angulaire,
         // - le flywheel a atteint son RPM cible.
-        double clampedTarget = MathUtils.clamp(rawTurretTargetDeg,
-                Constants.Turret.ANGLE_MIN_DEG, Constants.Turret.ANGLE_MAX_DEG);
-        double turretErrDeg = Math.abs(turret.getAngleDeg() - clampedTarget);
         double flywheelErrRpm = Math.abs(shooter.getShooterRpm() - rpmCmd);
 
         boolean ready = !inBlindSpot
