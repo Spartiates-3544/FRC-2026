@@ -4,11 +4,14 @@
   "holonomicMode": true,
   "pathFolders": [
     "Go Middle From Left(old)",
-    "dump-shoot-left",
+    "Calibration",
     "dump+shoot-shoot-left",
+    "dump-shoot-left",
     "shoot-shoot-left"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Calibration"
+  ],
   "defaultMaxVel": 4.5,
   "defaultMaxAccel": 4.5,
   "defaultMaxAngVel": 540.0,

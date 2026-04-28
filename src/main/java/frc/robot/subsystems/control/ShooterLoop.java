@@ -8,6 +8,7 @@ import frc.lib.utils.MathUtils;
 import frc.robot.Constants;
 import frc.robot.RobotActStateBuilder;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 
@@ -23,13 +24,14 @@ public class ShooterLoop extends SubsystemBase {
     public ShooterLoop(
             CommandSwerveDrivetrain drivetrain,
             ShooterSubsystem shooter,
+            HoodSubsystem hood,
             TurretSubsystem turret) {
 
         stateBuilder = new RobotActStateBuilder(
                 () -> drivetrain.getState().Pose,
                 () -> drivetrain.getState().Speeds,
                 () -> MathUtils.wrapRad(Math.PI - turret.getAngleRad()),
-                shooter::getHoodAngleDeg,
+                hood::getAngleDeg,
                 shooter::getShooterRpm);
     }
 
@@ -58,7 +60,7 @@ public class ShooterLoop extends SubsystemBase {
                 solverInputs.actuatorState(),
                 solverInputs.target(),
                 Constants.Shooter.FAST_RPM_TABLE,
-                Constants.Shooter.FAST_FIXED_HOOD_DEG);
+                Constants.Hood.ANGLE_MIN_DEG);
 
         double endTime = Timer.getFPGATimestamp();
         lastSolveDurationMs = (endTime - startTime) * 1000.0;

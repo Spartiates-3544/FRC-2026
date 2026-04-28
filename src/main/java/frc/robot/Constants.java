@@ -1,8 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -99,9 +100,9 @@ public final class Constants {
                 1250,
                 5500,
 
-                56.30,
-                36.14,
-                56.30,
+                Hood.HOOD_FIXED_ANGLE_DEG,
+                Hood.ANGLE_MIN_DEG,
+                Hood.ANGLE_MAX_DEG,
 
                 -180,
                 180,
@@ -124,7 +125,7 @@ public final class Constants {
                 180,
                 6500,
 
-                false,
+                true,
                 true,
 
                 0.7,
@@ -159,11 +160,10 @@ public final class Constants {
                 4,
                 0.02);
 
-        public static final double FAST_FIXED_HOOD_DEG = 38.0;
-
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2850, 2950, 3100, 3300, 3400, 3500, 3600, 3700, 3800 });
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2750, 2900, 2950, 3050, 3100, 3200, 3300, 3400, 3500, 3600 },
+                new double[] { 0.0, 2.0, 4.0, 5.5, 7.0, 9.0, 12.0, 12.0, 12.0, 14.0, 16.0, 16.0, 16.0, 18.0, 18.0 });
 
         // =========================
         // Configs
@@ -186,13 +186,6 @@ public final class Constants {
             shooterConfig.Slot0.kS = 0.16649;
             shooterConfig.Slot0.kV = 0.12109;
             shooterConfig.Slot0.kA = 0.017213;
-        }
-
-        public static final Slot0Configs hoodConfig = new Slot0Configs();
-        static {
-            hoodConfig.kP = 25.0;
-            hoodConfig.kI = 0.0;
-            hoodConfig.kD = 0.4;
         }
     }
 
@@ -241,22 +234,22 @@ public final class Constants {
     }
 
     public static final class Hood {
-        private Hood() {
-        }
-
         public static final int MOTOR_ID = 9;
 
         public static final double ANGLE_MIN_DEG = 0.0;
         public static final double ANGLE_MAX_DEG = 18.0;
+        public static final double HOOD_FIXED_ANGLE_DEG = 0;
 
-        public static final double RATIO = 124.8;
+        public static final double RATIO = 71.875;
         public static final double DEGREES_PER_REVOLUTION = 360.0;
 
         public static final double DEFAULT_ANGLE_TOLERANCE_DEG = 0.25;
-        public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
+        public static final double HOME_SENSOR_POSITION_MOTOR_ROT = -0.0;
+        public static final double HOMING_OUTPUT = -0.1;
+        public static final double HOMING_CURRENT_THRESHOLD_A = 5.0;
 
-        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 200.0;
-        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 20.0;
+        public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 300.0;
+        public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 600.0;
         public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 1200.0;
 
         public static final TalonFXConfiguration CONFIG = new TalonFXConfiguration();
@@ -342,8 +335,8 @@ public final class Constants {
         public static final double TURRET_PRESET_RIGHT_DEG = 90.0;
         public static final double TURRET_PRESET_DOWN_DEG = 0.0;
 
-        public static final double INTAKE_SPEED = -0.6;
-        public static final double SPINDEXER_SPEED = 0.40;
+        public static final double INTAKE_SPEED = -0.7;
+        public static final double SPINDEXER_SPEED = 0.35;
         public static final double FEED_SPEED = -1.0;
 
         public static final double SHOOTER_RPM = 3544.0;
@@ -365,20 +358,29 @@ public final class Constants {
 
         public static final double SHOOT_NOW_TRANSLATION_SCALE = 0.25;
         public static final double SHOOT_NOW_ROTATION_SCALE = 0.35;
+
+        // Cross-field dump TODO: TUNER
+        public static final double CROSS_DUMP_RPM_AT_OWN_WALL = 1500.0;
+        public static final double CROSS_DUMP_RPM_AT_FAR_WALL = 6500.0;
+        public static final double CROSS_DUMP_OWN_WALL_X_BLUE_M = 0.25;
+        public static final double CROSS_DUMP_OWN_WALL_X_RED_M = 16.25;
+        public static final double CROSS_DUMP_FIELD_LENGTH_M = CROSS_DUMP_OWN_WALL_X_RED_M
+                - CROSS_DUMP_OWN_WALL_X_BLUE_M;
+        public static final double CROSS_DUMP_RPM_PER_METER = (CROSS_DUMP_RPM_AT_FAR_WALL - CROSS_DUMP_RPM_AT_OWN_WALL)
+                / CROSS_DUMP_FIELD_LENGTH_M;
+        public static final double CROSS_DUMP_TURRET_TOL_DEG = 5.0;
+        public static final double CROSS_DUMP_FLYWHEEL_TOL_RPM = 1000.0;
+        public static final double CROSS_DUMP_BALL_EXIT_SPEED_MPS = 12.0;
     }
 
     public static final class Vision {
-        private Vision() {
-        }
-
-        public static Transform3d LIMELIGHT_V2_POS = new Transform3d(new Translation3d(-0.28575, -0.1143, 0.3048),
-                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(160)));
-        public static Transform3d LIMELIGHT_V3_POS = new Transform3d(new Translation3d(-0.28575, 0.10795, 0.3048),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(160)));
-        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(-0.136525, -0.2921, 0.37465),
-                new Rotation3d(0, -Math.toRadians(20), -Math.toRadians(73)));
-        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(-0.136525, 0.2921, 0.37465),
-                new Rotation3d(0, -Math.toRadians(20), Math.toRadians(73)));
+        public static Transform3d HELIOS_LEFT_POS = new Transform3d(new Translation3d(Inches.of(-7.25), Inches.of(14), Inches.of(14)),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(90)));
+        public static Transform3d HELIOS_RIGHT_POS = new Transform3d(new Translation3d(Inches.of(-6.25), Inches.of(-14), Inches.of(14)),
+                new Rotation3d(0, -Math.toRadians(15), -Math.toRadians(90)));
+        public static Transform3d HELIOS_BACK_POS = new Transform3d(new Translation3d(Inches.of(-13), Inches.of(-2.75), Inches.of(14)),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(180)));
+        public static Transform3d HELIOS_FRONT_POS = new Transform3d(new Translation3d(Inches.of(2.75), Inches.of(0), Inches.of(0)),
+                new Rotation3d(0, -Math.toRadians(15), Math.toRadians(0)));
     }
-
 }

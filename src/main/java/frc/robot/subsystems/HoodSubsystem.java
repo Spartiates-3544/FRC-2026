@@ -37,7 +37,7 @@ public final class HoodSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Hood/Courent Deg", getAngleDeg());
+        SmartDashboard.putNumber("Hood/Crent Deg", getAngleDeg());
     }
 
     // =========================
@@ -92,6 +92,14 @@ public final class HoodSubsystem extends SubsystemBase {
         return Math.abs(getAngleDeg() - targetDeg) <= Math.abs(toleranceDeg);
     }
 
+    public double getStatorCurrentA() {
+        return hoodMotor.getStatorCurrent().getValueAsDouble();
+    }
+
+    public boolean isHomed() {
+        return getStatorCurrentA() >= Constants.Hood.HOMING_CURRENT_THRESHOLD_A;
+    }
+
     // =========================
     // Manual control
     // =========================
@@ -100,6 +108,7 @@ public final class HoodSubsystem extends SubsystemBase {
     }
 
     public void stop() {
+        setTargetAngleDeg(0);
         hoodMotor.stopMotor();
     }
 
