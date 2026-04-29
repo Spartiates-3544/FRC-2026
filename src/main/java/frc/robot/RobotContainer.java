@@ -65,8 +65,6 @@ public class RobotContainer {
         private Rotation2d faceTranslationHeading = Rotation2d.kZero;
         private DriveMode lastDriveMode = DriveMode.NORMAL;
 
-        private final Telemetry telemetry = new Telemetry(maxSpeed);
-
         private boolean shouldSlowForShootNow() {
                 return CommandScheduler.getInstance().isScheduled(shootNowCommand);
         }
@@ -201,9 +199,8 @@ public class RobotContainer {
         }
 
         private void configureDashboard() {
-                drivetrain.registerTelemetry(telemetry::telemeterize);
-
                 SmartDashboard.putData("Auto Chooser", autoChooser);
+                SmartDashboard.putData("Match Telemetry", new MatchTelemetry());
 
                 for (Sendable subsystem : List.of(hood, intake, shooter, spindexer, turret)) {
                         SmartDashboard.putData(subsystem);
