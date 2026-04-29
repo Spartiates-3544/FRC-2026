@@ -27,6 +27,7 @@ public final class TurretSubsystem extends SubsystemBase {
     
 
     public TurretSubsystem() {
+        setName("Turret");
         applyConfigs();
     }
     

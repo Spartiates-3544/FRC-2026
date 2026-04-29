@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.List;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -12,6 +14,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -115,12 +118,12 @@ public class RobotContainer {
         public RobotContainer() {
                 shootNowCommand = new ShootNow(intake, spindexer, hood, shooterLoop, leds);
                 shootMovingCommand = new ShootMoving(shooter, turret, shooterLoop, leds);
+                autoChooser = AutoBuilder.buildAutoChooser();
                 configureDefaultCommands();
                 configureBindings();
-                configureDashboard();
                 configureNamedCommands();
-                autoChooser = AutoBuilder.buildAutoChooser();
-                SmartDashboard.putData("Auto Chooser", autoChooser);
+                configureDashboard();
+
                 // Shooter YAW + RPM automatique lorsque dans la zone
                 // shooter.setDefaultCommand(buildMovingShootCommand());
         }
@@ -199,6 +202,12 @@ public class RobotContainer {
 
         private void configureDashboard() {
                 drivetrain.registerTelemetry(telemetry::telemeterize);
+
+                SmartDashboard.putData("Auto Chooser", autoChooser);
+
+                for (Sendable subsystem : List.of(hood, intake, shooter, spindexer, turret)) {
+                        SmartDashboard.putData(subsystem);
+                }
         }
 
         // =========================
