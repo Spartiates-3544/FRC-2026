@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 
@@ -17,7 +16,6 @@ public class RunIntakeBack extends Command {
 
     @Override
     public void initialize() {
-        intake.open();
     }
 
     @Override
@@ -28,8 +26,6 @@ public class RunIntakeBack extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        intake.close();
-        intake.stop();
     }
 
     @Override

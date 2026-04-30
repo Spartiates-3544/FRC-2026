@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.archives;
 
 import java.util.Optional;
 
@@ -51,8 +51,6 @@ public final class DumpIntoAllianceZone extends Command {
     @Override
     public void initialize() {
         drivetrain.setDriveMode(DriveMode.FACE_TRANSLATION);
-
-        intake.open();
         intake.stop();
         spindexer.stopAll();
         shooter.stopShooter();
@@ -93,16 +91,8 @@ public final class DumpIntoAllianceZone extends Command {
 
         // Intake/unjammer roulent tout le temps
         intake.setSpeed(Constants.Commands.INTAKE_SPEED);
-
-        // Feed et indexe seulement quand prêt
-        if (ready) {
-            spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
-            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
-        } else {
-            spindexer.setFeedSpeed(0.0);
-            spindexer.setIndexerSpeed(0.0);
-        }
-
+        spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
+        spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
         leds.requestDump(ready);
     }
 
@@ -110,7 +100,6 @@ public final class DumpIntoAllianceZone extends Command {
     public void end(boolean interrupted) {
         drivetrain.setDriveMode(DriveMode.NORMAL);
         intake.stop();
-        intake.close();
         spindexer.stopAll();
         shooter.stopKicker();
         shooter.stopShooter();

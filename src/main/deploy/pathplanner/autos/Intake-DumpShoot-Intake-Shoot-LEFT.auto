@@ -9,12 +9,6 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "home"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "intake_mid_from_left_and_dump"
@@ -30,13 +24,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "aim-and-spinup"
+                  "name": "ShootMoving"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "intake-and-feed"
+                  "name": "ShootNow"
                 }
               },
               {
@@ -46,6 +40,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
           }
         },
         {
@@ -68,13 +68,13 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "aim-and-spinup"
+                  "name": "ShootMoving"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "intake-and-feed"
+                  "name": "ShootNow"
                 }
               },
               {

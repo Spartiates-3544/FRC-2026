@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
 import frc.robot.commands.RunIntakeBack;
+import frc.robot.commands.ShootManually;
 import frc.robot.commands.CrossFieldDump;
-import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
 import frc.robot.commands.ShootMoving;
 import frc.robot.generated.TunerConstants;
@@ -87,30 +87,10 @@ public class RobotContainer {
         private final SendableChooser<Command> autoChooser;
 
         private void configureNamedCommands() {
-                NamedCommands.registerCommand("run-intake",
-                                (new RunIntake(intake, leds)));
-
-                NamedCommands.registerCommand("deploy-intake",
-                                (new DeployIntake(intake)));
-
-                NamedCommands.registerCommand("aim-and-spinup",
-                                new ShootMoving(shooter, turret, shooterLoop, leds));
-
-                NamedCommands.registerCommand("intake-and-feed",
-                                new ShootNow(intake, spindexer, hood, shooterLoop, leds));
-
-                NamedCommands.registerCommand("home",
-                                new HomeTurret(turret));
-
-                NamedCommands.registerCommand("deploy-and-home",
-                                Commands.runOnce(intake::open, intake).andThen(new HomeTurret(turret)));
-
-                NamedCommands.registerCommand("reverse-intake",
-                                Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake));
-
-                NamedCommands.registerCommand("reverse-intake-3s",
-                                Commands.startEnd(() -> intake.setSpeed(1.0), intake::stop, intake)
-                                                .withTimeout(1.75));
+                NamedCommands.registerCommand("RunIntake", new RunIntake(intake, leds));
+                NamedCommands.registerCommand("ShootMoving", new ShootMoving(shooter, turret, shooterLoop, leds));
+                NamedCommands.registerCommand("ShootNow", new ShootNow(intake, spindexer, hood, shooterLoop, leds));
+                NamedCommands.registerCommand("HomeTurret_HomeHood", new HomeTurret(turret).andThen(new HomeHood(hood)));
         }
 
         public RobotContainer() {
@@ -122,9 +102,6 @@ public class RobotContainer {
                 configureNamedCommands();
                 autoChooser = AutoBuilder.buildAutoChooser();
                 SmartDashboard.putData("Auto Chooser", autoChooser);
-                intake.open();
-                // Shooter YAW + RPM automatique lorsque dans la zone
-                // shooter.setDefaultCommand(buildMovingShootCommand());
         }
 
         // =========================
@@ -183,12 +160,9 @@ public class RobotContainer {
                                         return request;
                                 }));
 
-                hood.setDefaultCommand(
-                                Commands.run(() -> hood.setTargetAngleDeg(Constants.Hood.ANGLE_MIN_DEG), hood));
-
+                hood.setDefaultCommand(Commands.run(() -> hood.setTargetAngleDeg(Constants.Hood.ANGLE_MIN_DEG), hood));
                 final var idle = new SwerveRequest.Idle();
-                RobotModeTriggers.disabled().whileTrue(
-                                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+                RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
         }
 
         private void configureBindings() {
@@ -215,7 +189,7 @@ public class RobotContainer {
 
         private void configureTurretBindings() {
                 joystick.leftBumper().onTrue(new HomeTurret(turret).andThen(new HomeHood(hood)));
-                joystick.b().whileTrue(new CrossFieldDump(shooter, drivetrain, turret, spindexer, hood, leds));
+                joystick.b().whileTrue(new CrossFieldDump(shooter, drivetrain, turret, spindexer, hood));
         }
 
         // =========================
@@ -227,11 +201,13 @@ public class RobotContainer {
         private void configureShooterBindings() {
                 joystick.a().whileTrue(shootNowCommand);
                 joystick.y().toggleOnTrue(shootMovingCommand);
+                joystick.povUp().onTrue(new ShootManually(intake, spindexer, shooter));
         }
 
         // =========================
         // Intake bindings
-        // =========================
+        // =========================<
+
         private void configureIntakeBindings() {
                 joystick.x().toggleOnTrue(new RunIntake(intake, leds));
                 joystick.start().onTrue(new RunIntakeBack(intake, leds));
@@ -288,5 +264,4 @@ public class RobotContainer {
                                 pose.getY(),
                                 pose.getRotation().plus(Rotation2d.fromDegrees(180.0)));
         }
-
 }

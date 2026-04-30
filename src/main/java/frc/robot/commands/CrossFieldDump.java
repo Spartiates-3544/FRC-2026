@@ -11,7 +11,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.CommandSwerveDrivetrain.DriveMode;
 import frc.robot.subsystems.HoodSubsystem;
-import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -38,21 +37,18 @@ public final class CrossFieldDump extends Command {
     private final TurretSubsystem turret;
     private final SpindexerSubsystem spindexer;
     private final HoodSubsystem hood;
-    private final LedSubsystem leds;
 
     public CrossFieldDump(
             ShooterSubsystem shooter,
             CommandSwerveDrivetrain drivetrain,
             TurretSubsystem turret,
             SpindexerSubsystem spindexer,
-            HoodSubsystem hood,
-            LedSubsystem leds) {
+            HoodSubsystem hood) {
         this.shooter = shooter;
         this.drivetrain = drivetrain;
         this.turret = turret;
         this.spindexer = spindexer;
         this.hood = hood;
-        this.leds = leds;
 
         // On réserve le shooter, le turret et le spindexer — le drivetrain reste libre
         // pour que le pilote puisse continuer à se déplacer pendant le tir.
@@ -90,12 +86,6 @@ public final class CrossFieldDump extends Command {
         if (rawTurretTargetDeg < -180.0)
             rawTurretTargetDeg += 360.0;
 
-        // ── 4. Détection de l'angle mort mécanique ──────────────────────────────────
-        // Le turret ne peut pas dépasser ±ANGLE_MAX_DEG physiquement. Si la cible est
-        // dans cet angle mort (ex. juste devant le robot), on bloque le spindexer
-        // pour ne pas tirer dans la mauvaise direction le temps que le robot pivote.
-        boolean inBlindSpot = Math.abs(rawTurretTargetDeg) > Constants.Turret.ANGLE_MAX_DEG;
-
         // On envoie la consigne au turret ; le sous-système la clampera lui-même aux limites.
         turret.setTargetAngleDeg(-rawTurretTargetDeg);
 
@@ -120,32 +110,8 @@ public final class CrossFieldDump extends Command {
         hood.setTargetAngleDeg(Constants.Hood.ANGLE_MAX_DEG);
         shooter.setShooterRpm(rpmCmd);
         shooter.setKickerRpm(Constants.Commands.KICKER_RPM);
-
-        // ── 6. Vérification de l'état "prêt à tirer" ────────────────────────────────
-        // On n'alimente les balles que si toutes les conditions sont remplies simultanément :
-        // - le turret est dans les limites mécaniques (pas en angle mort),
-        // - le turret est dans la tolérance angulaire,
-        // - le flywheel a atteint son RPM cible.
-        double clampedTarget = MathUtils.clamp(rawTurretTargetDeg,
-                Constants.Turret.ANGLE_MIN_DEG, Constants.Turret.ANGLE_MAX_DEG);
-        double turretErrDeg = Math.abs(turret.getAngleDeg() - clampedTarget);
-        double flywheelErrRpm = Math.abs(shooter.getShooterRpm() - rpmCmd);
-
-        boolean ready = !inBlindSpot
-                && flywheelErrRpm <= Constants.Commands.CROSS_DUMP_FLYWHEEL_TOL_RPM;
-
-        if (ready) {
-            // Tout est aligné : on lance l'alimentation pour pousser la balle dans le flywheel
-            spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
-            spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
-        } else {
-            // Pas encore prêt : on attend sans alimenter pour ne pas gaspiller de balles
-            spindexer.setFeedSpeed(0.0);
-            spindexer.setIndexerSpeed(0.0);
-        }
-
-        // Indique aux LEDs si on est prêt à tirer (feedback visuel pour le pilote)
-        leds.requestDump(ready);
+        spindexer.setFeedSpeed(Constants.Commands.FEED_SPEED);
+        spindexer.setIndexerSpeed(Constants.Commands.SPINDEXER_SPEED);
     }
 
     @Override

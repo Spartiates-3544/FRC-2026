@@ -17,7 +17,6 @@ public class RunIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.open();
     }
 
     @Override
@@ -28,7 +27,6 @@ public class RunIntake extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        intake.close();
         intake.stop();
     }
 

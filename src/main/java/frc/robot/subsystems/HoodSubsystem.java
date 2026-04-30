@@ -109,7 +109,7 @@ public final class HoodSubsystem extends SubsystemBase {
 
     public void stop() {
         setTargetAngleDeg(0);
-        hoodMotor.stopMotor();
+        //hoodMotor.stopMotor();
     }
 
 

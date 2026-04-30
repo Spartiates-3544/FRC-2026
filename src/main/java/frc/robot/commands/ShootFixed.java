@@ -30,7 +30,6 @@ public class ShootFixed extends Command {
 
     @Override
     public void initialize() {
-        intake.open();
     }
 
     @Override
@@ -48,7 +47,6 @@ public class ShootFixed extends Command {
         shooter.stopShooter();
         shooter.stopKicker();
         intake.stop();
-        intake.close();
         spindexer.stopAll();
     }
 

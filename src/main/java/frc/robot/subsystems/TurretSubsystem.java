@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-//import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,18 +15,16 @@ public final class TurretSubsystem extends SubsystemBase {
     // Hardware
     // =========================
     private final TalonFX turretMotor = new TalonFX(Constants.Turret.MOTOR_ID, Constants.CAN.rio);
-    //private final DigitalInput homeSwitch = new DigitalInput(Constants.Turret.HOME_SWITCH_DIO);
+    private final DigitalInput homeSwitch = new DigitalInput(Constants.Turret.HOME_SWITCH_DIO);
 
     // =========================
     // Requests
     // =========================
     private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0.0).withSlot(0);
-    
 
     public TurretSubsystem() {
         applyConfigs();
     }
-    
 
     // =========================
     // Setup
@@ -106,8 +104,8 @@ public final class TurretSubsystem extends SubsystemBase {
         turretMotor.stopMotor();
     }
 
-        public boolean isHomed() {
-        return getStatorCurrentA() >= Constants.Turret.HOMING_CURRENT_THRESHOLD_A;
+    public boolean isHomed() {
+        return homeSwitch.get();
     }
 
     public void resetMotorPosition(double positionRotations) {

@@ -2,16 +2,8 @@
   "robotWidth": 0.92075,
   "robotLength": 0.92075,
   "holonomicMode": true,
-  "pathFolders": [
-    "Go Middle From Left(old)",
-    "Calibration",
-    "dump+shoot-shoot-left",
-    "dump-shoot-left",
-    "shoot-shoot-left"
-  ],
-  "autoFolders": [
-    "Calibration"
-  ],
+  "pathFolders": [],
+  "autoFolders": [],
   "defaultMaxVel": 4.5,
   "defaultMaxAccel": 4.5,
   "defaultMaxAngVel": 540.0,

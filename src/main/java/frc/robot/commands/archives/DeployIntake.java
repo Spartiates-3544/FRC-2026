@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.archives;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -13,7 +13,6 @@ public class DeployIntake extends Command {
 
     @Override
     public void initialize() {
-        intake.open();
     }
 
     @Override

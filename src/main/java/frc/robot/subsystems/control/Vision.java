@@ -44,11 +44,9 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class Vision {
     private final PhotonCamera heliosLeft;
     private final PhotonCamera heliosRight;
-    private final PhotonCamera heliosFront;
     private final PhotonCamera heliosBack;
     private final PhotonPoseEstimator photonEstimatorHeliosRight;
     private final PhotonPoseEstimator photonEstimatorHeliosLeft;
-    private final PhotonPoseEstimator photonEstimatorHeliosFront;
     private final PhotonPoseEstimator photonEstimatorHeliosBack;
     private Matrix<N3, N1> curStdDevs;
     private final EstimateConsumer estConsumer;
@@ -64,14 +62,11 @@ public class Vision {
         this.estConsumer = estConsumer;
         heliosLeft = new PhotonCamera("heliosLeft");
         heliosRight = new PhotonCamera("heliosRight");
-        heliosFront = new PhotonCamera("heliosFront");
         heliosBack = new PhotonCamera("heliosBack");
         photonEstimatorHeliosRight = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_RIGHT_POS);
         photonEstimatorHeliosLeft = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_LEFT_POS);
-        photonEstimatorHeliosFront = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
-                Constants.Vision.HELIOS_FRONT_POS);
         photonEstimatorHeliosBack = new PhotonPoseEstimator(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark),
                 Constants.Vision.HELIOS_BACK_POS);
     }
@@ -80,8 +75,7 @@ public class Vision {
         var cameras = List.of(
                 Map.entry(heliosLeft, photonEstimatorHeliosLeft),
                 Map.entry(heliosRight, photonEstimatorHeliosRight),
-                Map.entry(heliosBack, photonEstimatorHeliosBack),
-                Map.entry(heliosFront, photonEstimatorHeliosFront)
+                Map.entry(heliosBack, photonEstimatorHeliosBack)
         );
         for (var camera : cameras) {
             for (var result : camera.getKey().getAllUnreadResults()) {

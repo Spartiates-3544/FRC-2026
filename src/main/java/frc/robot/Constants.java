@@ -162,8 +162,8 @@ public final class Constants {
 
         public static final FastShooterSolver.DistanceRpmTable FAST_RPM_TABLE = new FastShooterSolver.DistanceRpmTable(
                 new double[] { 1.20, 1.60, 2.00, 2.40, 2.80, 3.20, 3.60, 4.00, 4.40, 4.80, 5.20, 5.60, 6.00, 6.40, 6.80 },
-                new double[] { 2000, 2300, 2400, 2500, 2600, 2750, 2900, 2950, 3050, 3100, 3200, 3300, 3400, 3500, 3600 },
-                new double[] { 0.0, 2.0, 4.0, 5.5, 7.0, 9.0, 12.0, 12.0, 12.0, 14.0, 16.0, 16.0, 16.0, 18.0, 18.0 });
+                new double[] { 2000, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3050, 3100, 3200, 3300, 3400, 3500, 3600 },
+                new double[] { 0.0, 2.0, 4.0, 5.5, 7.0, 9.0, 11.0, 12.0, 13.0, 14.0, 16.0, 16.0, 16.0, 18.0, 18.0 });
 
         // =========================
         // Configs
@@ -207,7 +207,7 @@ public final class Constants {
         public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
         public static final double HOMING_OUTPUT = 0.15;
 
-        public static final double HOMING_CURRENT_THRESHOLD_A = 9.5;
+        public static final double HOMING_CURRENT_THRESHOLD_A = 20.0;
 
         public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 200.0;
         public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 640.0;
@@ -354,15 +354,15 @@ public final class Constants {
         public static final double DUMP_RPM_MIN = 1600.0;
         public static final double DUMP_RPM_MAX = 4500.0;
 
-        public static final double DUMP_TURRET_TOL_DEG = 5.0;
-        public static final double DUMP_HOOD_TOL_DEG = 1.5;
-        public static final double DUMP_FLYWHEEL_TOL_RPM = 250.0;
+        public static final double DUMP_TURRET_TOL_DEG = 90.0;
+        public static final double DUMP_HOOD_TOL_DEG = 90.0;
+        public static final double DUMP_FLYWHEEL_TOL_RPM = 6000.0;
 
         public static final double SHOOT_NOW_TRANSLATION_SCALE = 0.25;
         public static final double SHOOT_NOW_ROTATION_SCALE = 0.35;
 
         // Cross-field dump TODO: TUNER
-        public static final double CROSS_DUMP_RPM_AT_OWN_WALL = 1500.0;
+        public static final double CROSS_DUMP_RPM_AT_OWN_WALL = 2000.0;
         public static final double CROSS_DUMP_RPM_AT_FAR_WALL = 6500.0;
         public static final double CROSS_DUMP_OWN_WALL_X_BLUE_M = 0.25;
         public static final double CROSS_DUMP_OWN_WALL_X_RED_M = 16.25;
@@ -370,8 +370,8 @@ public final class Constants {
                 - CROSS_DUMP_OWN_WALL_X_BLUE_M;
         public static final double CROSS_DUMP_RPM_PER_METER = (CROSS_DUMP_RPM_AT_FAR_WALL - CROSS_DUMP_RPM_AT_OWN_WALL)
                 / CROSS_DUMP_FIELD_LENGTH_M;
-        public static final double CROSS_DUMP_TURRET_TOL_DEG = 5.0;
-        public static final double CROSS_DUMP_FLYWHEEL_TOL_RPM = 1000.0;
+        public static final double CROSS_DUMP_TURRET_TOL_DEG = 90.0;
+        public static final double CROSS_DUMP_FLYWHEEL_TOL_RPM = 5000.0;
         public static final double CROSS_DUMP_BALL_EXIT_SPEED_MPS = 12.0;
     }
 
