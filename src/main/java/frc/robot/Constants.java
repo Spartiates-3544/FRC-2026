@@ -207,6 +207,8 @@ public final class Constants {
         public static final double HOME_SENSOR_POSITION_MOTOR_ROT = 0.0;
         public static final double HOMING_OUTPUT = 0.15;
 
+        public static final double HOMING_CURRENT_THRESHOLD_A = 9.5;
+
         public static final double MOTION_MAGIC_CRUISE_VELOCITY_RPS = 200.0;
         public static final double MOTION_MAGIC_ACCELERATION_RPS_PER_SEC = 640.0;
         public static final double MOTION_MAGIC_JERK_RPS_PER_SEC_SQ = 2000.0;

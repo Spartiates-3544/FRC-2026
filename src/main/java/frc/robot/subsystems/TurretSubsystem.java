@@ -3,7 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+//import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,7 +15,7 @@ public final class TurretSubsystem extends SubsystemBase {
     // Hardware
     // =========================
     private final TalonFX turretMotor = new TalonFX(Constants.Turret.MOTOR_ID, Constants.CAN.rio);
-    private final DigitalInput homeSwitch = new DigitalInput(Constants.Turret.HOME_SWITCH_DIO);
+    //private final DigitalInput homeSwitch = new DigitalInput(Constants.Turret.HOME_SWITCH_DIO);
 
     // =========================
     // Requests
@@ -91,6 +91,10 @@ public final class TurretSubsystem extends SubsystemBase {
         return Math.abs(getAngleDeg() - targetDeg) <= Math.abs(toleranceDeg);
     }
 
+    public double getStatorCurrentA() {
+        return turretMotor.getStatorCurrent().getValueAsDouble();
+    }
+
     // =========================
     // Manual control
     // =========================
@@ -102,31 +106,12 @@ public final class TurretSubsystem extends SubsystemBase {
         turretMotor.stopMotor();
     }
 
-    // =========================
-    // Homing / sensors
-    // =========================
-    public boolean isAtHome() {
-        return homeSwitch.get();
+        public boolean isHomed() {
+        return getStatorCurrentA() >= Constants.Turret.HOMING_CURRENT_THRESHOLD_A;
     }
 
     public void resetMotorPosition(double positionRotations) {
         turretMotor.setPosition(positionRotations);
-    }
-
-    /**
-     * Fait avancer la tourelle lentement jusqu'au switch de home,
-     * puis remet la position moteur à la valeur de référence.
-     */
-    public Command home() {
-        return Commands.run(() -> turretMotor.set(Constants.Turret.HOMING_OUTPUT), this)
-                .until(this::isAtHome)
-                .finallyDo(interrupted -> {
-                    turretMotor.stopMotor();
-
-                    if (!interrupted) {
-                        resetMotorPosition(Constants.Turret.HOME_SENSOR_POSITION_MOTOR_ROT);
-                    }
-                });
     }
 
     // =========================

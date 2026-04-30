@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 
 import frc.robot.commands.RunIntake;
+import frc.robot.commands.RunIntakeBack;
 import frc.robot.commands.CrossFieldDump;
 import frc.robot.commands.DeployIntake;
 import frc.robot.commands.ShootNow;
@@ -233,6 +234,7 @@ public class RobotContainer {
         // =========================
         private void configureIntakeBindings() {
                 joystick.x().toggleOnTrue(new RunIntake(intake, leds));
+                joystick.start().onTrue(new RunIntakeBack(intake, leds));
         }
 
         // =========================
